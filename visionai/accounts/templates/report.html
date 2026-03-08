@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Report | Vision AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",Arial,sans-serif}
+
+/* ===== BACKGROUND ===== */
+body{
+    min-height:100vh;
+    background:url("{% static 'img/d.jpg' %}") no-repeat center center fixed;
+    background-size:cover;
+    display:flex;
+    color:#fff;
+}
+
+/* ===== SIDEBAR FIXED ===== */
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    height:100vh;
+    width:260px;
+    background:rgba(19,19,19,.95);
+    backdrop-filter:blur(12px);
+    border-right:1px solid rgba(255,255,255,.1);
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.logo-area{text-align:center;padding:25px 10px}
+.logo-area img{width:70px;margin-bottom:10px}
+.logo-area h2{font-weight:600;letter-spacing:1px}
+
+.sidebar a{
+    padding:14px 25px;
+    display:block;
+    color:#cfd8ff;
+    text-decoration:none;
+    transition:.3s;
+}
+.sidebar a:hover{background:#3a7bd5;color:#fff}
+
+.user{text-align:center;padding:20px;border-top:1px solid rgba(255,255,255,.1)}
+.user img{width:60px;height:60px;border-radius:50%;object-fit:cover;margin-bottom:10px}
+
+/* ===== MAIN ===== */
+.main{
+    margin-left:260px;
+    padding:40px;
+    width:100%;
+}
+
+/* ===== CARD ===== */
+.main-card{
+    background:rgba(255,255,255,.08);
+    backdrop-filter:blur(10px);
+    padding:40px;
+    border-radius:14px;
+    box-shadow:0 20px 50px rgba(0,0,0,.4);
+    text-align:center;
+}
+
+/* ===== CHART BOX ===== */
+.chart-box{
+    width:100%;
+    max-width:420px;
+    margin:40px auto;
+}
+</style>
+</head>
+
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<div class="sidebar">
+    <div>
+        <div class="logo-area">
+            <img src="{% static 'img/logo.png' %}">
+            <h2>Vision AI</h2>
+        </div>
+
+        <a href="{% url 'profile' %}">👤 Profile</a>
+        <a href="{% url 'attendance' %}">📅 Attendance</a>
+        <a href="{% url 'report' %}">📊 Report</a>
+    </div>
+
+    <div class="user">
+        {% if profile.image %}
+            <img src="{{ profile.image.url }}">
+        {% else %}
+            <img src="{% static 'img/default-user.png' %}">
+        {% endif %}
+        <p><b>{{ request.user.username }}</b></p>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main">
+    <div class="main-card">
+        <h2>📊 Attendance Report</h2>
+
+        <div class="chart-box">
+            <canvas id="pieChart"></canvas>
+        </div>
+
+        <div class="chart-box">
+            <canvas id="barChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+const present = {{ present_count }};
+const absent = {{ absent_count }};
+
+// ===== GRADIENT COLORS =====
+const ctx = document.getElementById('barChart').getContext('2d');
+const gradient1 = ctx.createLinearGradient(0, 0, 0, 400);
+gradient1.addColorStop(0, '#00ff87');
+gradient1.addColorStop(1, '#60efff');
+
+const gradient2 = ctx.createLinearGradient(0, 0, 0, 400);
+gradient2.addColorStop(0, '#ff512f');
+gradient2.addColorStop(1, '#dd2476');
+
+// ===== DOUGHNUT CHART =====
+new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Present', 'Absent'],
+        datasets: [{
+            data: [present, absent],
+            backgroundColor: ['#00ff87', '#ff4d4d'],
+            borderWidth:0
+        }]
+    },
+    options:{
+        cutout:'65%',
+        plugins:{
+            legend:{labels:{color:'#fff'}}
+        }
+    }
+});
+
+// ===== MODERN BAR CHART =====
+new Chart(document.getElementById('barChart'), {
+    type: 'bar',
+    data: {
+        labels: ['Present', 'Absent'],
+        datasets: [{
+            label: 'Attendance',
+            data: [present, absent],
+            backgroundColor: [gradient1, gradient2],
+            borderRadius:12,
+            barThickness:40
+        }]
+    },
+    options:{
+        plugins:{
+            legend:{labels:{color:'#fff'}}
+        },
+        scales:{
+            x:{ticks:{color:'#fff'}},
+            y:{ticks:{color:'#fff'}}
+        }
+    }
+});
+</script>
+
+</body>
+</html>

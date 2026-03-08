@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Vision AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    height: 100vh;
+    background: url("{% static 'img/d.jpg' %}") no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+/* GLASS CONTAINER */
+.container {
+    background: rgba(20, 30, 48, 0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    padding: 60px 50px;
+    text-align: center;
+    max-width: 850px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+}
+
+/* LOGO */
+.logo-img {
+    width: 110px;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 8px 18px rgba(0,0,0,0.6));
+    animation: floatLogo 3s ease-in-out infinite;
+}
+
+@keyframes floatLogo {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+
+/* TITLE */
+.container h1 {
+    font-size: 52px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+/* SUBTITLE */
+.container p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #d6d6d6;
+    margin-bottom: 45px;
+}
+
+/* BUTTON GROUP */
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* BUTTON STYLE */
+.btn {
+    padding: 14px 38px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+/* LOGIN BUTTON */
+.btn-login {
+    background: #eb742a;
+    color: #000;
+}
+
+.btn-login:hover {
+    transform: scale(1.07);
+    box-shadow: 0 8px 25px rgba(235,116,42,0.5);
+}
+
+/* REGISTER BUTTON */
+.btn-register {
+    border: 2px solid #fff;
+    color: #fff;
+}
+
+.btn-register:hover {
+    background: #fff;
+    color: #000;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <img src="{% static 'img/logo.png' %}" class="logo-img">
+
+    <h1>Vision AI</h1>
+
+    <p>
+        Real-time face recognition from camera feeds. Automated attendance,
+        smart visitor tracking, and intelligent access control — all in one powerful platform.
+    </p>
+
+    <div class="buttons">
+        <a href="{% url 'login' %}" class="btn btn-login">Login</a>
+        <a href="{% url 'register' %}" class="btn btn-register">Register</a>
+    </div>
+
+</div>
+
+</body>
+</html>

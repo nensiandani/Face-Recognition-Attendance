@@ -1,0 +1,164 @@
+{% extends 'adminpanel/base.html' %}
+{% block content %}
+
+
+<style>
+
+    .title {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Form Card */
+.form-card {
+    background: #c4bad7ff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.form-card input {
+    padding: 19px;
+    width: 450px;
+    border: 3px solid #4b4f4bff;
+    border-radius: 5px;
+    font-size:20px;
+}
+
+.form-card button {
+    padding: 20px 30px;
+    background: #4CAF50;
+    border: 2px solid #27ec11ff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-card button:hover {
+    background: #45a049;
+}
+
+/* Table Card */
+.table-card {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #f4f4f4;
+}
+
+th, td {
+    padding: 13px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+    background: #f9f9f9;
+}
+
+/* Delete Button */
+.delete-btn {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: #e60000;
+}
+
+
+
+
+.edit-btn {
+    background: #5824d4ff;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.edit-btn:hover {
+    background: #989df6ff;
+}
+
+
+</style>
+<h2 class="title">Manage Faculties</h2>
+
+<!-- Add Faculty Form -->
+<div class="form-card">
+<form method="POST"
+      action="{% if edit_faculty %}{% url 'edit_faculty' edit_faculty.id %}{% else %}{% url 'faculties' %}{% endif %}">
+    {% csrf_token %}
+
+    <input type="text" name="faculty_name"
+           placeholder="Enter Faculty Name"
+           value="{% if edit_faculty %}{{ edit_faculty.name }}{% endif %}"
+           required>
+
+    {% if edit_faculty %}
+        <button type="submit">Update Faculty</button>
+    {% else %}
+        <button type="submit">Add Faculty</button>
+    {% endif %}
+</form>
+
+</div>
+
+<!-- Faculties Table -->
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Faculty Name</th>
+                <th></th>
+                <th>Action</th>
+                <th></th>
+            </tr>
+        </thead>
+       <tbody>
+    {% for faculty in faculties %}
+    <tr>
+        <td>{{ faculty.id }}</td>
+        <td>{{ faculty.name }}</td>
+        <td>
+            <a href="{% url 'delete_faculty' faculty.id %}">
+                <button class="delete-btn">Delete</button>
+            </a>
+            <td>
+                <a href="{% url 'edit_faculty' faculty.id %}">
+                <button class="edit-btn">Edit</button>
+                
+                </a>
+             
+            </td>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3">No Faculties Added</td>
+    </tr>
+    {% endfor %}
+</tbody>
+
+    </table>
+</div>
+
+{% endblock %}

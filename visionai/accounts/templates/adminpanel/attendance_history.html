@@ -1,0 +1,86 @@
+{% extends 'adminpanel/base.html' %}
+{% block content %}
+
+<style>
+    .page-title {
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.table-wrapper {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.history-table th {
+    background: #f7f7f7;
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+}
+
+.history-table td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.history-table tr:hover {
+    background: #fafafa;
+}
+
+.download-btn {
+    padding: 6px 12px;
+    background: #000;
+    color: white;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 13px;
+}
+
+.download-btn:hover {
+    opacity: 0.8;
+}
+</style>
+
+<h2 class="page-title">📅 Attendance History</h2>
+
+<div class="table-wrapper">
+<table class="history-table">
+    <tr>
+        <th>Date</th>
+        <th>Faculty</th>
+        <th>Department</th>
+        <th>Program</th>
+        <th>Semester</th>
+        <th>Division</th>
+        <th>Subject</th> 
+        <th>Action</th>
+    </tr>
+
+    {% for s in sessions %}
+    <tr>
+        <td>{{ s.date }}</td>
+        <td>{{ s.faculty }}</td>
+        <td>{{ s.department }}</td>
+        <td>{{ s.program }}</td>
+        <td>{{ s.semester }}</td>
+        <td>{{ s.division }}</td>
+        <td>{{ s.subject }}</td> 
+        <td>
+            <a href="{% url 'download_attendance' s.id %}" class="download-btn">⬇ Download</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+</div>
+
+{% endblock %}

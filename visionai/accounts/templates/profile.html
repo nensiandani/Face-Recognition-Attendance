@@ -1,0 +1,225 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Profile | Vision AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",Arial,sans-serif}
+
+/* ===== BACKGROUND ===== */
+body{
+    min-height:100vh;
+    background:url("{% static 'img/d.jpg' %}") no-repeat center center fixed;
+    background-size:cover;
+    display:flex;
+    color:#fff;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+    width:260px;
+    background:rgba(19, 19, 19, 0.95);
+    backdrop-filter:blur(12px);
+    border-right:1px solid rgba(255,255,255,.1);
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.logo-area{text-align:center;padding:25px 10px}
+.logo-area img{width:70px;margin-bottom:10px}
+.logo-area h2{font-weight:600;letter-spacing:1px}
+
+.sidebar a{
+    padding:14px 25px;
+    display:block;
+    color:#cfd8ff;
+    text-decoration:none;
+    transition:.3s;
+}
+.sidebar a:hover{background:#3a7bd5;color:#fff}
+
+.user{text-align:center;padding:20px;border-top:1px solid rgba(255,255,255,.1)}
+.user img{width:60px;height:60px;border-radius:50%;object-fit:cover;margin-bottom:10px}
+
+/* ===== MAIN ===== */
+.main{flex:1;padding:40px}
+
+/* ===== PROFILE CARD ===== */
+.profile-card{
+    
+    position:relative;
+    background:rgba(255,255,255,.08);
+    backdrop-filter:blur(10px);
+    padding:70px;
+    border-radius:14px;
+    box-shadow:0 20px 50px rgba(0,0,0,.4);
+}
+
+/* MESSAGE INSIDE CARD */
+.card-message{
+    position:absolute;
+    top:15px;
+    right:15px;
+    padding:10px 16px;
+    border-radius:6px;
+    font-weight:600;
+    color:#fff;
+    animation:fadeOut 5s forwards;
+}
+.card-message.success{background:#28a745}
+.card-message.error{background:#dc3545}
+
+@keyframes fadeOut{0%{opacity:1}90%{opacity:1}100%{opacity:0}}
+
+/* PROFILE HEADER */
+.profile-top{display:flex;gap:30px;align-items:center;margin-bottom:25px}
+.profile-top img{width:130px;height:130px;border-radius:50%;object-fit:cover;border:4px solid rgba(255,255,255,.2)}
+
+.edit-btn{
+    background:#ff7b00;
+    color:#000;
+    padding:10px 18px;
+    border:none;
+    border-radius:25px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+/* TABLE */
+.profile-table{width:100%;border-collapse:collapse;margin-top:30px}
+.profile-table th{padding:12px;background:rgba(30, 34, 53, 0.95);text-align:left}
+.profile-table td{padding:12px;background:rgba(33, 39, 119, 0.95)}
+
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center}
+.modal-content{background:#0a192f;width:420px;padding:25px;border-radius:12px}
+input,select{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:none}
+button{width:100%;padding:10px;background:#ff7b00;border:none;border-radius:6px;font-weight:bold}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+    <div>
+        <div class="logo-area">
+            <img src="{% static 'img/logo.png' %}">
+            <h2>Vision AI</h2>
+        </div>
+        <a href="{% url 'profile' %}">👤 Profile</a>
+        <a href="{% url 'attendance' %}">📅 Attendance</a>
+        <a href="{% url 'report' %}">📊 Report</a>
+    </div>
+
+    <div class="user">
+       {% if profile and profile.image %}
+            <img src="{{ profile.image.url }}">
+        {% else %}
+            <img src="{% static 'img/user.png' %}">
+        {% endif %}
+        <p><b>{{ request.user.username }}</b></p>
+        <a href="{% url 'logout_user' %}" class="logout-btn">Logout</a>
+    </div>
+</div>
+
+<div class="main">
+    <div class="profile-card">
+            
+        {% if messages %}
+            {% for m in messages %}
+                <div class="card-message {{ m.tags }}">{{ m }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <div class="profile-top">
+           {% if profile and profile.image %}
+                <img src="{{ profile.image.url }}">
+            {% else %}
+                <img src="{% static 'img/user.png' %}">
+            {% endif %}
+            <div>
+                <h2>{{ request.user.first_name }}</h2>
+                <p>{{ request.user.email }}</p><br>
+                <button class="edit-btn" onclick="openModal()">Edit Profile</button>
+            </div>
+        </div>
+
+        <table class="profile-table">
+            <tr><th>Mobile</th><td>{{ profile.mobile }}</td></tr>
+            <tr><th>Roll</th><td>{{ profile.roll }}</td></tr>
+            <tr><th>Faculty</th><td>{{ profile.faculty }}</td></tr>
+            <tr><th>Department</th><td>{{ profile.department }}</td></tr>
+            <tr><th>Program</th><td>{{ profile.program }}</td></tr>
+            <tr><th>Semester</th><td>{{ profile.semester }}</td></tr>
+            <tr><th>Division</th><td>{{ profile.division }}</td></tr>
+        </table>
+    </div>
+</div>
+
+<!-- ===== MODAL ===== -->
+<div class="modal" id="modal">
+    <div class="modal-content">
+        <h2>Edit Profile</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input name="mobile" value="{{ profile.mobile }}" placeholder="Mobile Number">
+            <input name="roll" value="{{ profile.roll }}" placeholder="Roll Number">
+
+            <!-- Faculty -->
+            <select name="faculty" required>
+                <option value="" disabled {% if not profile.faculty %}selected{% endif %}>Select Faculty</option>
+                <option value="Faculty of Science" {% if profile.faculty == "Faculty of Science" %}selected{% endif %}>Faculty of Science</option>
+                <option value="Faculty of Commerce" {% if profile.faculty == "Faculty of Commerce" %}selected{% endif %}>Faculty of Commerce</option>
+                <option value="Faculty of Arts" {% if profile.faculty == "Faculty of Arts" %}selected{% endif %}>Faculty of Arts</option>
+            </select>
+
+            <!-- Department -->
+            <select name="department" required>
+                <option value="" disabled {% if not profile.department %}selected{% endif %}>Select Department</option>
+                <option value="Computer Science" {% if profile.department == "Computer Science" %}selected{% endif %}>Computer Science</option>
+                <option value="Information Technology" {% if profile.department == "Information Technology" %}selected{% endif %}>Information Technology</option>
+                <option value="Data Science" {% if profile.department == "Data Science" %}selected{% endif %}>Data Science</option>
+            </select>
+
+            <!-- Program -->
+            <select name="program" required>
+                <option value="" disabled {% if not profile.program %}selected{% endif %}>Select Program</option>
+                <option value="BCA" {% if profile.program == "BCA" %}selected{% endif %}>BCA</option>
+                <option value="MCA" {% if profile.program == "MCA" %}selected{% endif %}>MCA</option>
+                <option value="BSc IT" {% if profile.program == "BSc IT" %}selected{% endif %}>BSc IT</option>
+            </select>
+
+            <!-- Semester -->
+            <select name="semester" required>
+                <option value="" disabled {% if not profile.semester %}selected{% endif %}>Select Semester</option>
+                <option value="Semester 1" {% if profile.semester == "Semester 1" %}selected{% endif %}>Semester 1</option>
+                <option value="Semester 2" {% if profile.semester == "Semester 2" %}selected{% endif %}>Semester 2</option>
+                <option value="Semester 3" {% if profile.semester == "Semester 3" %}selected{% endif %}>Semester 3</option>
+            </select>
+
+            <!-- Division -->
+            <select name="division" required>
+                <option value="" disabled {% if not profile.division %}selected{% endif %}>Select Division</option>
+                <option value="y1" {% if profile.division == "y1" %}selected{% endif %}>Division y1</option>
+                <option value="y2" {% if profile.division == "y2" %}selected{% endif %}>Division y2</option>
+                <option value="y3" {% if profile.division == "y3" %}selected{% endif %}>Division y3</option>
+            </select>
+
+            <input type="file" name="image">
+            <button type="submit">Save Changes</button><br><br>
+            <button type="button" onclick="closeModal()">Close</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function openModal(){document.getElementById("modal").style.display="flex";}
+function closeModal(){document.getElementById("modal").style.display="none";}
+</script>
+
+</body>
+</html>

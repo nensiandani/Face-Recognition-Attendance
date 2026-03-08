@@ -1,0 +1,243 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Attendance | Vision AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",Arial,sans-serif}
+
+/* ===== BACKGROUND ===== */
+body{
+    min-height:100vh;
+    background:url("{% static 'img/d.jpg' %}") no-repeat center center fixed;
+    background-size:cover;
+    display:flex;
+    color:#fff;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+    width:260px;
+    background:rgba(19,19,19,.95);
+    backdrop-filter:blur(12px);
+    border-right:1px solid rgba(255,255,255,.1);
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+}
+
+.logo-area{text-align:center;padding:25px 10px}
+.logo-area img{width:70px;margin-bottom:10px}
+.logo-area h2{font-weight:600;letter-spacing:1px}
+
+.sidebar a{
+    padding:14px 25px;
+    display:block;
+    color:#cfd8ff;
+    text-decoration:none;
+    transition:.3s;
+}
+.sidebar a:hover{background:#3a7bd5;color:#fff}
+
+.user{text-align:center;padding:20px;border-top:1px solid rgba(255,255,255,.1)}
+.user img{width:60px;height:60px;border-radius:50%;object-fit:cover;margin-bottom:10px}
+
+/* ===== MAIN ===== */
+.main{flex:1;padding:40px}
+
+/* ===== CARD ===== */
+.main-card{
+    background:rgba(255,255,255,.08);
+    backdrop-filter:blur(10px);
+    padding:40px;
+    border-radius:14px;
+    box-shadow:0 20px 50px rgba(0,0,0,.4);
+}
+
+/* ===== TABLE ===== */
+.attendance-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:25px;
+}
+
+.attendance-table th{
+    padding:14px;
+    background:rgba(30,34,53,.95);
+    text-align:left;
+}
+
+.attendance-table td{
+    padding:14px;
+    background:rgba(33,39,119,.95);
+}
+
+.present{color:#28a745;font-weight:bold}
+.absent{color:#dc3545;font-weight:bold}
+
+
+/* ===== FILTER FORM ===== */
+.filter-form{
+    display:flex;
+    align-items:end;
+    gap:15px;
+    flex-wrap:wrap;
+    margin-bottom:25px;
+    background:rgba(255,255,255,.06);
+    padding:15px 20px;
+    border-radius:12px;
+    backdrop-filter:blur(8px);
+}
+
+.filter-group{
+    display:flex;
+    flex-direction:column;
+}
+
+.filter-group label{
+    font-size:13px;
+    margin-bottom:5px;
+    color:#cfd8ff;
+}
+
+.filter-group input{
+    padding:10px 12px;
+    border:none;
+    border-radius:8px;
+    background:rgba(255,255,255,.1);
+    color:#fff;
+    outline:none;
+}
+
+.filter-group input::-webkit-calendar-picker-indicator{
+    filter:invert(1);
+    cursor:pointer;
+}
+
+/* FILTER BUTTON */
+.filter-btn{
+    padding:10px 18px;
+    border:none;
+    border-radius:8px;
+    background:linear-gradient(135deg,#3a7bd5,#00d2ff);
+    color:#fff;
+    font-weight:600;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.filter-btn:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 10px #00d2ff;
+}
+
+/* CLEAR BUTTON */
+.clear-btn{
+    padding:10px 18px;
+    border-radius:8px;
+    background:rgba(255,77,77,.2);
+    color:#ff4d4d;
+    text-decoration:none;
+    font-weight:600;
+    transition:.3s;
+}
+
+.clear-btn:hover{
+    background:#ff4d4d;
+    color:#fff;
+}
+
+
+</style>
+</head>
+
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<div class="sidebar">
+    <div>
+        <div class="logo-area">
+            <img src="{% static 'img/logo.png' %}">
+            <h2>Vision AI</h2>
+        </div>
+
+        <a href="{% url 'profile' %}">👤 Profile</a>
+        <a href="{% url 'attendance' %}">📅 Attendance</a>
+        <a href="{% url 'report' %}">📊 Report</a>
+    </div>
+
+    <div class="user">
+        {% if profile.image %}
+            <img src="{{ profile.image.url }}">
+        {% else %}
+            <img src="{% static 'img/default-user.png' %}">
+        {% endif %}
+        <p><b>{{ request.user.username }}</b></p>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="main">
+    <div class="main-card">
+        <h2>📅 Attendance Record</h2>
+
+
+<form method="GET" class="filter-form">
+    <div class="filter-group">
+        <label>📅 Select Date</label>
+       <input type="date" name="date" value="{{ selected_date }}">
+    </div>
+
+    <button type="submit" class="filter-btn">Filter</button>
+
+    <a href="{% url 'attendance' %}" class="clear-btn">Clear</a>
+</form>
+
+
+
+
+<table class="attendance-table">
+    <tr>
+        <th>Date</th>
+        <th>Subject</th> 
+        <th>Program</th>
+        <th>Semester</th>
+        <th>Division</th>
+        <th>Status</th>
+    </tr>
+
+    {% for a in attendance %}
+    <tr>
+        <td>{{ a.session.date|date:"d-m-Y" }}</td>
+
+        <!-- PROFILE DATA -->
+        <td>{{ a.session.subject }}</td> 
+        <td>{{ profile.program }}</td>
+        <td>{{ profile.semester }}</td>
+        <td>{{ profile.division }}</td>
+
+        <td>
+            {% if a.status %}
+                <span class="present">Present</span>
+            {% else %}
+                <span class="absent">Absent</span>
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5">No attendance data found</td>
+    </tr>
+    {% endfor %}
+</table>
+
+
+    </div>
+</div>
+
+</body>
+</html>

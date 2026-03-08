@@ -1,0 +1,219 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/master.css' %}">
+
+{% block content %}
+<style>
+    .page-title {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+
+/* Form Card */
+.form-card {
+    background: #c4bad7ff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.form-card input {
+    padding: 20px;
+    width: 250px;
+    font-size: 16px;
+    border: 3px solid #4b4f4bff;
+    border-radius: 5px;
+}
+
+.form-card button {
+    padding: 20px 40px;
+    background: #4CAF50;
+    border: 2px solid #27ec11ff;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-card button:hover {
+    background: #45a049;
+}
+
+.form-card input:focus {
+    border-color: #27d43bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(33,150,243,0.4);
+}
+
+.form-card select {
+    padding: 20px;
+    width: 290px;
+    font-size: 16px;
+    border: 3px solid #4b4f4bff;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+/* focus same as input */
+.form-card select:focus {
+    border-color: #27d43bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(33,150,243,0.4);
+}
+.form-card select option {
+    font-size: 16px;
+}
+
+/* Table Card */
+.table-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #f4f4f4;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+    background: #f9f9f9;
+}
+
+/* Delete Button */
+.delete-btn {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: #e60000;
+}
+
+.edit-btn {
+    background: #2196F3;   /* blue */
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.edit-btn:hover {
+    background: #0b7dda;
+}
+
+</style>
+<h2 class="page-title">Manage Semester</h2>
+
+<div class="form-card">
+   <form method="POST"
+      action="{% if edit_semester %}{% url 'edit_semester' edit_semester.id %}{% else %}{% url 'semesters' %}{% endif %}">
+    {% csrf_token %}
+
+    <!-- Faculty -->
+    <select name="faculty" required>
+        <option value="" disabled selected>Select Faculty</option>
+        {% for f in faculties %}
+            <option value="{{ f.id }}"
+                {% if edit_semester and edit_semester.faculty.id == f.id %}selected{% endif %}>
+                {{ f.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <!-- Department -->
+    <select name="department" required>
+        <option value="" disabled selected>Select Department</option>
+        {% for d in departments %}
+            <option value="{{ d.id }}"
+                {% if edit_semester and edit_semester.department.id == d.id %}selected{% endif %}>
+                {{ d.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <!-- Program -->
+    <select name="program" required>
+        <option value="" disabled selected>Select Program</option>
+        {% for p in programs %}
+            <option value="{{ p.id }}"
+                {% if edit_semester and edit_semester.program.id == p.id %}selected{% endif %}>
+                {{ p.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <!-- Semester -->
+    <input type="text" name="semester_name"
+           placeholder="Enter Semester (e.g. Sem 1)"
+           value="{% if edit_semester %}{{ edit_semester.name }}{% endif %}"
+           required>
+
+    {% if edit_semester %}
+        <button type="submit">Update Semester</button>
+    {% else %}
+        <button type="submit">Add Semester</button>
+    {% endif %}
+</form>
+
+</div>
+
+<div class="table-card">
+   <table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Faculty</th>
+            <th>Department</th>
+            <th>Program</th>
+            <th>Semester</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in semesters %}
+        <tr>
+            <td>{{ s.id }}</td>
+            <td>{{ s.faculty.name }}</td>
+            <td>{{ s.department.name }}</td>
+            <td>{{ s.program.name }}</td>
+            <td>{{ s.name }}</td>
+            <td>
+                <a href="{% url 'edit_semester' s.id %}">
+                    <button class="edit-btn">Edit</button>
+                </a>
+                <a href="{% url 'delete_semester' s.id %}">
+                    <button class="delete-btn">Delete</button>
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">No Semesters</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div>
+
+{% endblock %}

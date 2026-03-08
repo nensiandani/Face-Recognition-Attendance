@@ -1,0 +1,171 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login | Vision AI</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", sans-serif;
+            background: url("{% static 'img/d.jpg' %}") no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* GLASS CARD */
+        .login-card {
+            width: 380px;
+            padding: 40px 30px 80px 30px;
+            border-radius: 18px;
+            background: rgba(20, 30, 48, 0.85);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            color: white;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* LOGO */
+        .logo-img {
+            width: 85px;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 6px 14px rgba(0,0,0,0.5));
+            animation: floatLogo 3s ease-in-out infinite;
+        }
+
+        @keyframes floatLogo {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .subtitle {
+            font-size: 13px;
+            opacity: 0.7;
+            margin-bottom: 25px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 18px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 12px 12px 40px;
+            border-radius: 25px;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+
+        .input-group input::placeholder {
+            color: #bbb;
+        }
+
+        .icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            opacity: 0.7;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 25px;
+            border: none;
+            background: #eb742a;
+            color: #000;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(249,178,51,0.4);
+        }
+
+        .register-link {
+            margin-top: 15px;
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .register-link a {
+            color: #00d2ff;
+            text-decoration: none;
+        }
+
+        .error {
+            background: rgba(255, 80, 80, 0.2);
+            color: #ffb3b3;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        /* WAVE DESIGN */
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: linear-gradient(135deg, #3a7bd5, #10082e);
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 18px;
+            clip-path: ellipse(70% 100% at 50% 100%);
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+
+    <!-- LOGO -->
+    <img src="{% static 'img/logo.png' %}" class="logo-img">
+
+    <div class="subtitle">Login to your Vision AI account</div>
+
+    {% for message in messages %}
+        <div class="error">{{ message }}</div>
+    {% endfor %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="input-group">
+            <span class="icon">📧</span>
+            <input type="email" name="email" placeholder="Email Address" required>
+        </div>
+
+        <div class="input-group">
+            <span class="icon">🔒</span>
+            <input type="password" name="pass" placeholder="Password" required>
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+    </form>
+
+    <div class="register-link">
+        Don’t have an account? <a href="{% url 'register' %}">Register</a>
+    </div>
+
+    <div class="wave"></div>
+</div>
+
+</body>
+</html>

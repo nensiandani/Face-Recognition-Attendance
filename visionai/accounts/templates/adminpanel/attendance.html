@@ -1,0 +1,344 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+h1 {
+    margin-bottom: 10px;
+    margin-top:0;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+form {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    max-width: 1010px;
+    
+}
+
+select {
+    width: 30%;
+    padding: 10px;
+    margin: 8px 1%;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background: #f9f9f9;
+   
+}
+
+select:focus {
+    outline: none;
+    border-color: #4CAF50;
+    background: #fff;
+}
+
+input[type="file"] {
+    margin-top: 10px;
+    padding: 6px;
+}
+
+button {
+    background: #4CAF50;
+    color: white;
+    padding: 10px 22px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #45a049;
+    transform: scale(1.03);
+}
+
+#preview-box {
+    background: #fafafa;
+    border-radius: 10px;
+}
+
+h3 {
+    margin-top: 30px;
+    color: #2c3e50;
+}
+
+.detected-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 🔥 4 CARDS PER ROW */
+    gap: 50px;
+    margin-top: 20px;
+}
+
+.student-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: 0.3s;
+    width: 90%;
+}
+
+.student-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+}
+
+.student-card img {
+    border-radius: 50%;
+    margin-bottom: 8px;
+}
+
+.student-card p {
+    margin: 4px 0;
+    font-size: 14px;
+}
+
+.present {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.student-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    text-align: center;
+    transition: 0.2s;
+}
+
+.student-card:hover {
+    transform: translateY(-3px);
+}
+
+.student-photo {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+    border: 2px solid #eee;
+}
+
+.student-details {
+    text-align: left;
+    font-size: 13px;
+    margin-top: 8px;
+}
+
+.student-details p {
+    margin: 3px 0;
+}
+
+.present {
+    margin-top: 10px;
+    color: green;
+    font-weight: bold;
+}
+
+
+@media (max-width: 1200px) {
+    .detected-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .detected-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 500px) {
+    .detected-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+</style>
+
+<h1>Mark Attendance</h1>
+<form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- Faculty -->
+    <select name="faculty" required>
+        <option value="" disabled selected>Select Faculty</option>
+        {% for f in faculties %}
+            <option value="{{ f.name }}">{{ f.name }}</option>
+        {% empty %}
+            <option disabled>No Faculty Found</option>
+        {% endfor %}
+    </select>
+
+    <!-- Department -->
+    <select name="department" required>
+        <option value="" disabled selected>Select Department</option>
+        {% for d in departments %}
+            <option value="{{ d.name }}">{{ d.name }}</option>
+        {% empty %}
+            <option disabled>No Department Found</option>
+        {% endfor %}
+    </select>
+
+    <!-- Program -->
+    <select name="program" required>
+        <option value="" disabled selected>Select Program</option>
+        {% for p in programs %}
+            <option value="{{ p.name }}">{{ p.name }}</option>
+        {% empty %}
+            <option disabled>No Program Found</option>
+        {% endfor %}
+    </select>
+
+    <!-- Semester -->
+    <select name="semester" required>
+        <option value="" disabled selected>Select Semester</option>
+        {% for s in semesters %}
+            <option value="{{ s.name }}">{{ s.name }}</option>
+        {% empty %}
+            <option disabled>No Semester Found</option>
+        {% endfor %}
+    </select>
+
+    <!-- Division -->
+    <select name="division" required>
+        <option value="" disabled selected>Select Division</option>
+        {% for d in divisions %}
+            <option value="{{ d.name }}">{{ d.name }}</option>
+        {% empty %}
+            <option disabled>No Division Found</option>
+        {% endfor %}
+    </select>
+
+  
+
+
+<select name="subject" required>
+    <option value="" disabled selected>Select Subject</option>
+    {% for sub in subjects %}
+        <option value="{{ sub.id }}">{{ sub.name }}</option>
+    {% empty %}
+        <option disabled>No Subjects Found</option>
+    {% endfor %}
+</select>
+    
+<!-- Lecture Slot -->
+<select name="slot" required>
+    <option value="" disabled selected>Select Lecture Slot</option>
+    <option value="1">Lecture 1</option>
+    <option value="2">Lecture 2</option>
+    <option value="3">Lecture 3</option>
+    <option value="4">Lecture 4</option>
+    <option value="5">Lecture 5</option>
+</select>
+  <br><br>
+
+  <input type="file"
+       name="media"
+       accept="image/*,video/*"
+       multiple
+       onchange="previewMedia(event)"
+       required>
+
+    <br><br>
+  <div id="preview-container" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
+
+    <br><br>
+
+    <button type="submit">Submit Attendance</button>
+</form>
+<script>
+function previewMedia(event) {
+    const container = document.getElementById('preview-container');
+    container.innerHTML = "";
+
+    const files = event.target.files;
+
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+
+            // 📸 IMAGE PREVIEW
+            if (file.type.startsWith("image/")) {
+                const img = document.createElement("img");
+                img.src = e.target.result;
+                img.style.width = "120px";
+                img.style.height = "120px";
+                img.style.objectFit = "cover";
+                img.style.borderRadius = "8px";
+                img.style.border = "1px solid #ddd";
+                container.appendChild(img);
+            }
+
+            // 🎥 VIDEO PREVIEW
+            else if (file.type.startsWith("video/")) {
+                const video = document.createElement("video");
+                video.src = e.target.result;
+                video.controls = true;
+                video.style.width = "160px";
+                video.style.height = "120px";
+                video.style.borderRadius = "8px";
+                video.style.border = "1px solid #ddd";
+                container.appendChild(video);
+            }
+        };
+
+        reader.readAsDataURL(file);
+    }
+}
+</script>
+
+{% if detected_students %}
+<hr>
+<h3>Detected Students ({{ detected_students|length }})</h3>
+
+<!-- 🔽 Roll Number Summary -->
+<div style="margin-bottom:15px;">
+    <b>Roll Numbers :</b>
+    <input type="text"
+           value="{% for student in detected_students %}{{ student.profile.roll }}{% if not forloop.last %}, {% endif %}{% endfor %}"
+           readonly
+           style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;background:#f9f9f9; font-size:15px;">
+</div>
+
+<div class="detected-grid">
+{% for student in detected_students %}
+  <div class="student-card">
+    
+    {% if student.profile.image %}
+        <img src="{{ student.profile.image.url }}" class="student-photo">
+    {% else %}
+        <img src="{% static 'img/default-user.png' %}" class="student-photo">
+    {% endif %}
+
+    <h4>{{ student.first_name }}</h4>
+
+    <div class="student-details">
+        <p><b>Email:</b> {{ student.email }}</p>
+        <p><b>Mobile:</b> {{ student.profile.mobile }}</p>
+        <p><b>Roll:</b> {{ student.profile.roll }}</p>
+        <p><b>Faculty:</b> {{ student.profile.faculty }}</p>
+        <p><b>Department:</b> {{ student.profile.department }}</p>
+        <p><b>Program:</b> {{ student.profile.program }}</p>
+        <p><b>Semester:</b> {{ student.profile.semester }}</p>
+        <p><b>Division:</b> {{ student.profile.division }}</p>
+    </div>
+
+    <p class="present">Present ✔</p>
+</div>
+
+{% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}

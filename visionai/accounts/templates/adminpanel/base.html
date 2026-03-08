@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vision AI Admin</title>
+
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",sans-serif;}
+
+        body{background:#f5f6fa;color:#000;}
+
+        /* SIDEBAR */
+        .sidebar{
+            width:250px;height:100vh;position:fixed;left:0;top:0;
+            background:#0b0b0c;display:flex;flex-direction:column;justify-content:space-between;
+        }
+
+        .logo-area{text-align:center;padding:15px 10px;}
+        .logo-area img{width:70px;}
+
+        .menu a{
+            display:block;padding:10px 15px;color:#cfd8ff;text-decoration:none;
+        }
+        .menu a:hover{background:#3a7bd5;color:#fff;}
+
+        .sidebar-footer{text-align:center;padding:20px;}
+        .admin-photo{width:50px;height:50px;border-radius:50%;margin-bottom:8px;}
+        .email{font-size:13px;color:#ddd;}
+        .role{font-size:13px;color:#ffb703;margin-bottom:10px;}
+
+        .logout-btn{
+            display:inline-block;padding:6px 14px;background:#ff7b00;color:#000;
+            text-decoration:none;border-radius:20px;font-size:12px;font-weight:bold;
+        }
+
+        /* MAIN CONTENT */
+        .layout-wrapper{
+            margin-left:250px;
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
+        }
+
+        .main-content{
+            flex:1;
+            padding:35px;
+        }
+
+        /* FOOTER */
+        .footer{
+            text-align:center;
+            padding:20px;
+           background: #d4cfdcff;
+            color:#666;
+            font-size:20px;
+            border-top:1px solid #03015aff;
+        }
+
+        .footer span{color:blue;font-weight:600;}
+        .footer b{color:black;font-weight:600;padding-right:5px;}
+    </style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+
+    <div class="logo-area">
+        <img src="{% static 'img/logo.png' %}">
+    </div>
+
+    <div class="menu">
+        <a href="{% url 'admin_dashboard' %}">👥 Users</a>
+        <a href="{% url 'faculties' %}">🏫 Faculties</a>
+        <a href="{% url 'departments' %}">🏬 Departments</a>
+        <a href="{% url 'programs' %}">📘 Programs</a>
+        <a href="{% url 'semesters' %}">📅 Semesters</a>
+        <a href="{% url 'divisions' %}">📂 Divisions</a>
+        <a href="{% url 'subjects' %}">📘 Subjects</a>
+        <a href="{% url 'mark_attendance' %}">📸 Mark Attendance</a>
+        <a href="{% url 'attendance_history' %}">📊 Attendance History</a>
+        <a href="{% url 'admin_profile' %}">👤 My Profile</a>
+    </div>
+
+    <div class="sidebar-footer">
+        <img src="{% static 'img/user.png' %}" class="admin-photo">
+        <p class="email">{{ request.user.email }}</p>
+        <p class="role">Role: Admin</p>
+        <a href="{% url 'admin_logout' %}" class="logout-btn">Logout</a>
+    </div>
+
+</div>
+
+<!-- MAIN WRAPPER -->
+<div class="layout-wrapper">
+
+    <div class="main-content">
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <footer class="footer">
+        <b>Developed by</b>  <span>Nensi Andani & Jaimeen Chauhan</span> 🚀
+    </footer>
+
+</div>
+
+</body>
+</html>

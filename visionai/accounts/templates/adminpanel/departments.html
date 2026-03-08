@@ -1,0 +1,193 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/master.css' %}">
+
+{% block content %}
+<style>
+    .page-title {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Form Card */
+.form-card {
+    background: #c4bad7ff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.form-card input {
+    padding: 20px;
+    width: 370px;
+    font-size: 16px;
+    border: 3px solid #4b4f4bff;
+    border-radius: 5px;
+}
+
+.form-card button {
+    padding: 20px 40px;
+    background: #4CAF50;
+    border: 2px solid #27ec11ff;
+    border: none;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-card button:hover {
+    background: #45a049;
+}
+
+.form-card input:focus {
+    border-color: #27d43bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(33,150,243,0.4);
+}
+
+/* Table Card */
+.table-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: #f4f4f4;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+tr:hover {
+    background: #f9f9f9;
+}
+
+.action-btn {
+    border: none;
+    padding: 6px 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+}
+
+.edit-btn {
+    background: #2196F3;
+}
+
+.edit-btn:hover {
+    background: #0b7dda;
+}
+
+.delete-btn {
+    background: #ff4d4d;
+}
+
+.delete-btn:hover {
+    background: #e60000;
+}
+
+
+select {
+   padding: 20px 20px;
+    font-size: 16px;
+    width: 370px;
+    border: 3px solid #4b4f4bff;
+    border-radius: 6px;
+}
+
+select option {
+    font-size: 16px;
+}
+select:focus {
+    border-color: #27d43bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(33,150,243,0.4);
+}
+
+
+</style>
+<h2 class="page-title">Manage Departments</h2>
+
+<div class="form-card">
+<form method="POST"
+      action="{% if edit_department %}{% url 'edit_department' edit_department.id %}{% else %}{% url 'departments' %}{% endif %}">
+    {% csrf_token %}
+
+    <select name="faculty" required>
+        <option value="" disabled selected>Select Faculty</option>
+        {% for f in faculties %}
+            <option value="{{ f.id }}"
+                {% if edit_department and edit_department.faculty.id == f.id %}selected{% endif %}>
+                {{ f.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <input type="text" name="department_name"
+           placeholder="Enter Department Name"
+           value="{% if edit_department %}{{ edit_department.name }}{% endif %}"
+           required>
+
+    {% if edit_department %}
+        <button type="submit" class="action-btn edit-btn">Update Department</button>
+        <a href="{% url 'departments' %}">
+            <button type="button" class="action-btn">Cancel</button>
+        </a>
+    {% else %}
+        <button type="submit" class="action-btn edit-btn">Add Department</button>
+    {% endif %}
+</form>
+
+
+
+</div>
+
+<div class="table-card">
+    <table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Faculty</th>
+            <th>Department</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in departments %}
+        <tr>
+            <td>{{ d.id }}</td>
+            <td>{{ d.faculty.name }}</td>
+            <td>{{ d.name }}</td>
+            <td>
+
+                 <a href="{% url 'edit_department' d.id %}">
+                    <button class="action-btn edit-btn">Edit</button>
+                </a>
+                <a href="{% url 'delete_department' d.id %}">
+                    <button class="action-btn delete-btn">Delete</button>
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">No Departments</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</div>
+
+{% endblock %}

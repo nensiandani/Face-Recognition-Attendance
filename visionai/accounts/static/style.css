@@ -1,0 +1,25 @@
+table {
+    width: 70%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th {
+    background: #2c3e50;
+    color: white;
+    padding: 10px;
+}
+
+td {
+    padding: 10px;
+    text-align: center;
+}
+
+button {
+    background: orange;
+    border: none;
+    padding: 8px 15px;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+}
