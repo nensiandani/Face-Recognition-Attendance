@@ -5,33 +5,29 @@ ENV DLIB_NUM_THREADS=1
 ENV CMAKE_BUILD_PARALLEL_LEVEL=1
 ENV PIP_NO_CACHE_DIR=1
 
-# Install ONLY the required system deps for dlib and postgres
+# Added python3-dev here (Crucial for dlib C++ compilation)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
     pkg-config \
+    python3-dev \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Copy only requirements first for caching
 COPY requirements.txt .
 
-# Install wheel and cmake via pip first to avoid dlib errors
-RUN pip install --upgrade pip setuptools wheel cmake
+# Removed cmake from here to avoid the broken python wrapper
+RUN pip install --upgrade pip setuptools wheel
 
-# Install the rest of the requirements
 RUN pip install -r requirements.txt
 
-# Copy app
 COPY . .
 
-# Collect static and migrate
 RUN python manage.py collectstatic --no-input || true
 RUN python manage.py migrate --no-input || true
 
 EXPOSE 8000
 
-# Start Gunicorn server
 CMD ["gunicorn", "visionai.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
