@@ -30,4 +30,5 @@ RUN python manage.py migrate --no-input || true
 
 EXPOSE 8000
 
-CMD ["gunicorn", "visionai.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3"]
+# Use 1 worker and 2 threads to save RAM, with a longer timeout
+CMD ["gunicorn", "visionai.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "1", "--threads", "2", "--timeout", "120"]
