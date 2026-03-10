@@ -1,0 +1,224 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login | LookIn AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* ========== PREMIUM DARK AI THEME (ORANGE) ========== */
+        :root {
+            --primary: #ff7b00;
+            --primary-glow: rgba(255, 123, 0, 0.5);
+            --bg-dark: #0b0f19;
+            --bg-panel: rgba(15, 23, 42, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            /* Background matching the dashboard */
+            background: radial-gradient(circle at top left, #1a233a 0%, #0b0f19 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle glowing background orbs for premium feel */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -20%; left: -10%;
+            width: 500px; height: 500px;
+            background: rgba(255, 123, 0, 0.15);
+            filter: blur(150px);
+            z-index: 0;
+            border-radius: 50%;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: -20%; right: -10%;
+            width: 400px; height: 400px;
+            background: rgba(0, 198, 255, 0.1);
+            filter: blur(150px);
+            z-index: 0;
+            border-radius: 50%;
+        }
+
+        /* ========== GLASS CARD ========== */
+        .login-card {
+            width: 400px;
+            padding: 50px 40px;
+            border-radius: 24px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* LOGO ANIMATION */
+        .logo-img {
+            width: 220px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+            animation: floatLogo 4s ease-in-out infinite;
+        }
+
+        @keyframes floatLogo {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 35px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* ========== INPUT FIELDS ========== */
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 16px 20px 16px 50px;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            outline: none;
+            font-size: 14px;
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(255, 123, 0, 0.15);
+        }
+
+        .icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .input-group input:focus + .icon,
+        .input-group input:not(:placeholder-shown) + .icon {
+            color: var(--primary);
+        }
+
+        /* ========== BUTTON ========== */
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            border: none;
+            background: linear-gradient(135deg, #ff7b00 0%, #ff5500 100%);
+            color: #fff;
+            font-weight: 800;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px var(--primary-glow);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 123, 0, 0.6);
+        }
+
+        /* ========== BOTTOM LINKS & ERRORS ========== */
+        .register-link {
+            margin-top: 25px;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .register-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .register-link a:hover {
+            color: #ff9d00;
+            text-decoration: underline;
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <img src="{% static 'img/logo2.png' %}" alt="LookIn Logo" class="logo-img" />
+
+        <div class="subtitle">Secure AI Access Portal</div>
+
+        {% for message in messages %}
+            <div class="error">{{ message }}</div>
+        {% endfor %}
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="input-group">
+                <input type="email" name="email" placeholder="Email Address" required />
+                <div class="icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="pass" placeholder="Password" required />
+                <div class="icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                </div>
+            </div>
+
+            <button type="submit" class="login-btn">Initialize Login</button>
+        </form>
+
+        <div class="register-link">
+            Don’t have an account? <a href="{% url 'register' %}">Request Access</a>
+        </div>
+    </div>
+</body>
+</html>

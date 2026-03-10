@@ -1,0 +1,232 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+    /* ========== LOOKIN MODERN WHITE THEME ========== */
+    .main-wrapper { 
+        max-width: 1200px; 
+        margin: 0 auto; 
+        padding: 10px;
+    }
+
+    .main-wrapper h2 { 
+        color: #ff7b00 !important; 
+        font-weight: 800 !important; 
+        margin-bottom: 25px; 
+        text-transform: uppercase;
+        border-left: 6px solid #ff7b00;
+        padding-left: 15px;
+        font-size: 24px;
+    }
+
+    /* FORM CARD - Clean White Theme */
+    form.glass-form {
+        background: #f8fafc !important; /* Very Light Gray */
+        padding: 35px !important;
+        border-radius: 15px !important;
+        border: 1px solid #e2e8f0 !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 20px !important;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
+    }
+
+    .form-group { display: flex; flex-direction: column; }
+
+    .form-group label {
+        font-size: 13px !important;
+        color: #334155 !important; /* Dark Slate */
+        margin-bottom: 8px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase;
+    }
+
+    form.glass-form input, form.glass-form select {
+        padding: 12px 15px !important;
+        background: #ffffff !important; 
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        color: #1e293b !important; 
+        font-size: 15px !important;
+        outline: none !important;
+        width: 100% !important;
+        transition: 0.3s;
+    }
+
+    form.glass-form input:focus, form.glass-form select:focus {
+        border-color: #ff7b00 !important;
+        box-shadow: 0 0 8px rgba(255, 123, 0, 0.15) !important;
+    }
+
+    .full-width { grid-column: span 2 !important; }
+
+    .submit-btn {
+        grid-column: span 2 !important;
+        padding: 15px !important;
+        background: #ff7b00 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        font-size: 16px !important;
+        margin-top: 10px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        transition: 0.3s;
+    }
+    .submit-btn:hover { background: #e66f00 !important; transform: translateY(-2px); }
+
+    /* USER CARDS GRID */
+    .user-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+        gap: 25px !important;
+        margin-top: 30px !important;
+    }
+
+    .user-card {
+        background: #ffffff !important; 
+        border: 1px solid #e2e8f0 !important;
+        padding: 25px !important;
+        border-radius: 15px !important;
+        text-align: center !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+        transition: 0.3s !important;
+    }
+    .user-card:hover { border-color: #ff7b00 !important; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;}
+
+    .user-card img { 
+        width: 85px !important; 
+        height: 85px !important; 
+        border-radius: 50% !important; 
+        object-fit: cover !important; 
+        border: 3px solid #ff7b00 !important; 
+        margin-bottom: 12px !important;
+    }
+
+    .user-card h4 { color: #1e293b !important; font-size: 18px !important; font-weight: bold !important; margin-bottom: 5px !important;}
+    
+    .btn-group { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
+
+    .edit-link { background: #3498db !important; color: white !important; padding: 7px 18px !important; border-radius: 6px !important; text-decoration: none !important; font-size: 12px !important; font-weight: 600 !important; }
+    .delete-link { background: #e74c3c !important; color: white !important; padding: 7px 18px !important; border-radius: 6px !important; text-decoration: none !important; font-size: 12px !important; font-weight: 600 !important; }
+
+    /* ALERT COLORS */
+    .alert {
+        padding: 15px !important;
+        border-radius: 8px !important;
+        margin-bottom: 20px !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        color: #ffffff !important;
+    }
+    .alert.success { background-color: #28a745 !important; }
+    .alert.info { background-color: #3498db !important; }
+    .alert.error { background-color: #e74c3c !important; }
+</style>
+
+<div class="main-wrapper">
+    {% for message in messages %}
+        <div class="alert {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+
+    <h2>{% if edit_user %}Update User Details{% else %}Add New Student{% endif %}</h2>
+
+    <form method="POST" enctype="multipart/form-data" class="glass-form">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="name" placeholder="Enter Full Name" value="{% if edit_user %}{{ edit_user.first_name }}{% endif %}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" name="email" placeholder="student@daiict.ac.in" value="{% if edit_user %}{{ edit_user.email }}{% endif %}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Mobile Number</label>
+            <input type="text" name="mobile" placeholder="91-XXXXXXXXXX" value="{% if profile %}{{ profile.mobile }}{% endif %}">
+        </div>
+
+        <div class="form-group">
+            <label>Roll Number (ID)</label>
+            <input type="text" name="roll" placeholder="ID Number" value="{% if profile %}{{ profile.roll }}{% endif %}">
+        </div>
+
+        <div class="form-group">
+            <label>Branch</label>
+            <select name="department" required>
+                <option value="" disabled {% if not profile %}selected{% endif %}>Select Branch</option>
+                <option value="ICT" {% if profile.department == "ICT" %}selected{% endif %}>ICT</option>
+                <option value="ICT-CS" {% if profile.department == "ICT-CS" %}selected{% endif %}>ICT-CS</option>
+                <option value="MnC" {% if profile.department == "MnC" %}selected{% endif %}>MnC</option>
+                <option value="EVD" {% if profile.department == "EVD" %}selected{% endif %}>EVD</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Degree Program</label>
+            <select name="program" required>
+                <option value="" disabled {% if not profile %}selected{% endif %}>Select Program</option>
+                <option value="BTech" {% if profile.program == "BTech" %}selected{% endif %}>BTech</option>
+                <option value="MTech" {% if profile.program == "MTech" %}selected{% endif %}>MTech</option>
+                <option value="Msc" {% if profile.program == "Msc" %}selected{% endif %}>Msc</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Current Semester</label>
+            <select name="semester" required>
+                <option value="" disabled {% if not profile %}selected{% endif %}>Select Semester</option>
+                {% for i in "12345678"|make_list %}
+                    <option value="Semester {{ i }}" {% if profile.semester == "Semester "|add:i %}selected{% endif %}>Semester {{ i }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Division</label>
+            <select name="division" required>
+                <option value="" disabled {% if not profile %}selected{% endif %}>Select Division</option>
+                <option value="A" {% if profile.division == "A" %}selected{% endif %}>A</option>
+                <option value="B" {% if profile.division == "B" %}selected{% endif %}>B</option>
+            </select>
+        </div>
+
+        <div class="full-width">
+            <label>Profile Photo</label>
+            <input type="file" name="image" style="border: none; background: none; padding-left: 0;">
+        </div>
+
+        <button type="submit" class="submit-btn">
+            {% if edit_user %}Update Profile{% else %}Add Student to LookIn{% endif %}
+        </button>
+    </form>
+
+    <h2 style="margin-top: 60px;">LookIn Directory</h2>
+    
+    <div class="user-grid">
+        {% for u in users %}
+        <div class="user-card">
+            {% if u.profile.image %}
+                <img src="{{ u.profile.image.url }}">
+            {% else %}
+                <img src="{% static 'img/user.png' %}">
+            {% endif %}
+            <h4>{{ u.first_name }}</h4>
+            <p style="color: #ff7b00; font-weight: bold; font-size: 15px; margin-bottom: 2px;">ID: {{ u.profile.roll|default:"--" }}</p>
+            <p style="color: #64748b; font-size: 13px;">{{ u.profile.program }} | {{ u.profile.department }}</p>
+            <div class="btn-group">
+                <a href="{% url 'edit_user' u.id %}" class="edit-link">Edit</a>
+                <a href="{% url 'delete_user' u.id %}" class="delete-link" onclick="return confirm('Are you sure?')">Delete</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

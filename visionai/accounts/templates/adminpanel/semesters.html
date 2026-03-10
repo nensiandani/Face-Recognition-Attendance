@@ -1,0 +1,228 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* ========== MODERN LOOKIN THEME ========== */
+    .page-title {
+        color: #ff7b00; 
+        font-weight: 800; 
+        margin-bottom: 25px; 
+        text-transform: uppercase; 
+        border-left: 6px solid #ff7b00; 
+        padding-left: 15px;
+        font-size: 24px;
+    }
+
+    /* Form Card Style */
+    .form-card {
+        background: #f8fafc;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-bottom: 35px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .form-flex {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap; /* responsive layout */
+        align-items: center;
+    }
+
+    .form-flex select, .form-flex input {
+        padding: 12px 15px;
+        font-size: 15px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #1e293b;
+        outline: none;
+        flex: 1; /* uniform width */
+        min-width: 200px;
+        transition: 0.3s;
+    }
+
+    .form-flex select:focus, .form-flex input:focus {
+        border-color: #ff7b00;
+        box-shadow: 0 0 8px rgba(255, 123, 0, 0.15);
+    }
+
+    /* Submit Button */
+    .submit-btn {
+        padding: 12px 25px;
+        background: #ff7b00;
+        border: none;
+        color: white;
+        border-radius: 10px;
+        font-weight: bold;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: 0.3s;
+        min-width: 160px;
+    }
+
+    .submit-btn:hover {
+        background: #e66f00;
+        transform: translateY(-2px);
+    }
+
+    /* Table Card Style */
+    .table-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border: 1px solid #f1f5f9;
+        overflow-x: auto; /* for smaller screens */
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead tr {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    th {
+        padding: 15px;
+        text-align: left;
+        color: #475569;
+        font-weight: 700;
+        font-size: 13px;
+        text-transform: uppercase;
+    }
+
+    td {
+        padding: 15px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #1e293b;
+        font-size: 14px;
+    }
+
+    tr:hover {
+        background: #fcfcfc;
+    }
+
+    /* Action Buttons */
+    .action-group {
+        display: flex;
+        gap: 8px;
+    }
+
+    .edit-link {
+        background: #3498db;
+        color: white;
+        padding: 7px 15px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .delete-link {
+        background: #e74c3c;
+        color: white;
+        padding: 7px 15px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+    .edit-link:hover { background: #2980b9; }
+    .delete-link:hover { background: #c0392b; }
+
+</style>
+
+<h2 class="page-title">Manage Semesters</h2>
+
+<div class="form-card">
+    <form method="POST" action="{% if edit_semester %}{% url 'edit_semester' edit_semester.id %}{% else %}{% url 'semesters' %}{% endif %}" class="form-flex">
+        {% csrf_token %}
+
+        <select name="faculty" required>
+            <option value="" disabled selected>Select Faculty</option>
+            {% for f in faculties %}
+                <option value="{{ f.id }}"
+                    {% if edit_semester and edit_semester.faculty.id == f.id %}selected{% endif %}>
+                    {{ f.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="department" required>
+            <option value="" disabled selected>Select Department</option>
+            {% for d in departments %}
+                <option value="{{ d.id }}"
+                    {% if edit_semester and edit_semester.department.id == d.id %}selected{% endif %}>
+                    {{ d.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="program" required>
+            <option value="" disabled selected>Select Program</option>
+            {% for p in programs %}
+                <option value="{{ p.id }}"
+                    {% if edit_semester and edit_semester.program.id == p.id %}selected{% endif %}>
+                    {{ p.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <input type="text" name="semester_name"
+               placeholder="Enter Semester (e.g. Sem 1)"
+               value="{% if edit_semester %}{{ edit_semester.name }}{% endif %}"
+               required>
+
+        <button type="submit" class="submit-btn">
+            {% if edit_semester %}Update Semester{% else %}Add Semester{% endif %}
+        </button>
+    </form>
+</div>
+
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Faculty</th>
+                <th>Department</th>
+                <th>Program</th>
+                <th>Semester</th>
+                <th style="text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in semesters %}
+            <tr>
+                <td><strong>#{{ s.id|add:-1 }}</strong></td>
+                <td>{{ s.faculty.name }}</td>
+                <td>{{ s.department.name }}</td>
+                <td>{{ s.program.name }}</td>
+                <td><span style="color: #ff7b00; font-weight: 700;">{{ s.name }}</span></td>
+                <td>
+                    <div class="action-group" style="justify-content: center;">
+                        <a href="{% url 'edit_semester' s.id %}" class="edit-link">Edit</a>
+                        <a href="{% url 'delete_semester' s.id %}" class="delete-link" onclick="return confirm('Pakku delete karvu che?')">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center; padding: 30px; color: #94a3b8;">No Semesters Found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
