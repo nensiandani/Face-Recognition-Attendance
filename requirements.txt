@@ -11,4 +11,4 @@ openpyxl
 cloudinary
 django-cloudinary-storage
 face-recognition
-dlib==19.24.0
+dlib
