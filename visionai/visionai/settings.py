@@ -89,14 +89,10 @@ import dj_database_url
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'visionai_db',
-        'USER': 'root',
-        'PASSWORD': '9115@#Jaimeen',
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600
+    )
 }
 
 # --- RENDER DEPLOYMENT DATABASE SETTING ---

@@ -1,0 +1,221 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+.profile-wrapper{
+    max-width: 900px;
+    margin: auto;
+}
+
+.profile-card{
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    border-radius: 14px;
+    padding: 60px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    color: #fff;
+    
+}
+
+.profile-top{
+    display:flex;
+    gap:30px;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.profile-top img{
+    width:130px;
+    height:130px;
+    border-radius:50%;
+    object-fit:cover;
+    border:4px solid rgba(255,255,255,0.2);
+}
+
+.profile-top h2{
+    color:black;
+    margin-bottom:6px;
+}
+
+.role-badge{
+    background:#ffb703;
+    color:#000;
+    padding:6px 14px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+    display:inline-block;
+}
+
+.profile-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+.profile-table th{
+    text-align:left;
+    padding:12px;
+    width:30%;
+    background:rgba(10,25,47,0.9);
+}
+
+.profile-table td{
+    padding:12px;
+    background:rgba(21,41,71,0.9);
+}
+
+.edit-btn{
+    margin-top:20px;
+    background:#ff7b00;
+    color:#000;
+    padding:10px 20px;
+    border:none;
+    border-radius:25px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+/* ===== MODAL ===== */
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.7);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:999;
+}
+
+.modal-content{
+    background:#0a192f;
+    width:420px;
+    padding:25px;
+    border-radius:12px;
+    color:#fff;
+}
+
+.modal-content input,
+.modal-content select{
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border-radius:6px;
+    border:none;
+}
+
+.modal-content button{
+    width:100%;
+    padding:10px;
+    margin-top:8px;
+    border:none;
+    border-radius:6px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.modal-content button[type="submit"]{
+    background:#ff7b00;
+    color:#000;
+}
+</style>
+
+<div class="profile-wrapper">
+    <div class="profile-card">
+
+        <div class="profile-top">
+            {% if request.user.profile.image %}
+                <img src="{{ request.user.profile.image.url }}">
+            {% else %}
+                <img src="{% static 'img/default-user.png' %}">
+            {% endif %}
+
+            <div>
+            <h2 style="color:black; font-weight:600;">
+                {{ request.user.get_full_name|default:request.user.username }}
+            </h2>
+
+            <p style="color:black; font-size:15px;">
+                {{ request.user.email|default:"Email not added" }}
+            </p><br>
+                <div class="role-badge">NENSI ANDANI</div>
+            </div>
+        </div>
+
+        <table class="profile-table">
+            
+            <tr><th>Mobile</th><td>{{ request.user.profile.mobile }}</td></tr>
+            <tr><th>Faculty</th><td>{{ request.user.profile.faculty }}</td></tr>
+            <tr><th>Department</th><td>{{ request.user.profile.department }}</td></tr>
+            <tr><th>Program</th><td>{{ request.user.profile.program }}</td></tr>
+            <tr><th>Semester</th><td>{{ request.user.profile.semester }}</td></tr>
+            <tr><th>Division</th><td>{{ request.user.profile.division }}</td></tr>
+        </table>
+
+        <button class="edit-btn" onclick="openModal()">Edit My Profile</button>
+    </div>
+</div>
+
+<!-- ===== EDIT PROFILE MODAL ===== -->
+<div class="modal" id="editModal">
+    <div class="modal-content">
+        <h2>Edit Admin Profile</h2>
+
+        <form method="POST" enctype="multipart/form-data" action="{% url 'admin_profile' %}">
+
+            {% csrf_token %}
+
+            <input type="text" name="mobile" placeholder="Mobile Number"
+                   value="{{ request.user.profile.mobile }}">
+
+            <select name="faculty">
+                <option value="">Select Faculty</option>
+                <option {% if request.user.profile.faculty == "Faculty of Science" %}selected{% endif %}>Faculty of Science</option>
+                <option {% if request.user.profile.faculty == "Faculty of Commerce" %}selected{% endif %}>Faculty of Commerce</option>
+                <option {% if request.user.profile.faculty == "Faculty of Arts" %}selected{% endif %}>Faculty of Arts</option>
+            </select>
+
+            <select name="department">
+                <option value="">Select Department</option>
+                <option {% if request.user.profile.department == "Computer Science" %}selected{% endif %}>Computer Science</option>
+                <option {% if request.user.profile.department == "IT" %}selected{% endif %}>IT</option>
+                <option {% if request.user.profile.department == "Data Science" %}selected{% endif %}>Data Science</option>
+            </select>
+
+            <select name="program">
+                <option value="">Select Program</option>
+                <option {% if request.user.profile.program == "BCA" %}selected{% endif %}>BCA</option>
+                <option {% if request.user.profile.program == "MCA" %}selected{% endif %}>MCA</option>
+            </select>
+
+            <select name="semester">
+                <option value="">Select Semester</option>
+                <option {% if request.user.profile.semester == "Semester 1" %}selected{% endif %}>Semester 1</option>
+                <option {% if request.user.profile.semester == "Semester 2" %}selected{% endif %}>Semester 2</option>
+            </select>
+
+            <select name="division">
+                <option value="">Select Division</option>
+                <option {% if request.user.profile.division == "A" %}selected{% endif %}>y1</option>
+                <option {% if request.user.profile.division == "B" %}selected{% endif %}>y2</option>
+            </select>
+
+            <input type="file" name="image">
+
+            <button type="submit">Save Changes</button>
+            <button type="button" onclick="closeModal()">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<script>
+function openModal(){
+    document.getElementById("editModal").style.display="flex";
+}
+function closeModal(){
+    document.getElementById("editModal").style.display="none";
+}
+</script>
+
+{% endblock %}
