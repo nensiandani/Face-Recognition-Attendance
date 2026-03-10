@@ -1,3 +1,6 @@
+import os
+import dj_database_url
+
 """
 Django settings for visionai project.
 
@@ -76,6 +79,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'visionai.wsgi.application'
 
 
+import os
+import dj_database_url
+
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -84,11 +90,17 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'visionai_db',
         'USER': 'root',
-        'PASSWORD': 'admin',
+        'PASSWORD': '9115@#Jaimeen',
         'HOST': 'localhost',
         'PORT': '3306',
     }
 }
+
+# --- RENDER DEPLOYMENT DATABASE SETTING ---
+# જો Render પરથી લિંક મળશે, તો આ કોડ જાતે જ PostgreSQL કનેક્ટ કરી લેશે
+database_url = os.environ.get("DATABASE_URL")
+if database_url:
+    DATABASES['default'] = dj_database_url.parse(database_url)
 
 
 
@@ -146,8 +158,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = '/login/'              # Normal user login
 LOGIN_REDIRECT_URL = '/profile/'   # User login pachi
 LOGOUT_REDIRECT_URL = '/login/'
-
-LOGOUT_REDIRECT_URL = 'admin_login'
 
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

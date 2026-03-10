@@ -2,253 +2,231 @@
 {% load static %}
 {% block content %}
 
-{% for message in messages %}
-  <div class="alert">{{ message }}</div>
-{% endfor %}
-
-
 <style>
- /* ========== GLOBAL ========== */
-body {
-    margin: 0;
-    font-family: "Segoe UI", sans-serif;
-    background: #f4f6f9;
-    color: #333;
-}
+    /* ========== LOOKIN MODERN WHITE THEME ========== */
+    .main-wrapper { 
+        max-width: 1200px; 
+        margin: 0 auto; 
+        padding: 10px;
+    }
 
-h1, h2, h3 {
-    margin-top: 0;
-}
+    .main-wrapper h2 { 
+        color: #ff7b00 !important; 
+        font-weight: 800 !important; 
+        margin-bottom: 25px; 
+        text-transform: uppercase;
+        border-left: 6px solid #ff7b00;
+        padding-left: 15px;
+        font-size: 24px;
+    }
 
+    /* FORM CARD - Clean White Theme */
+    form.glass-form {
+        background: #f8fafc !important; /* Very Light Gray */
+        padding: 35px !important;
+        border-radius: 15px !important;
+        border: 1px solid #e2e8f0 !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 20px !important;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
+    }
 
+    .form-group { display: flex; flex-direction: column; }
 
-/* ========== MAIN CONTENT AREA ========== */
-.main {
-    margin-left: 230px;
-    padding: 35px;
-    min-height: 100vh;
-}
+    .form-group label {
+        font-size: 13px !important;
+        color: #334155 !important; /* Dark Slate */
+        margin-bottom: 8px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase;
+    }
 
-/* ========== ALERT MESSAGE ========== */
-.alert {
-    background: #ffecec;
-    color: #782304ff;
-    padding: 10px 14px;
-    border-radius: 6px;
-    margin-bottom: 15px;
-    font-size: 15px;
-}
+    form.glass-form input, form.glass-form select {
+        padding: 12px 15px !important;
+        background: #ffffff !important; 
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 8px !important;
+        color: #1e293b !important; 
+        font-size: 15px !important;
+        outline: none !important;
+        width: 100% !important;
+        transition: 0.3s;
+    }
 
-/* ========== FORM LAYOUT (2 FIELDS SIDE BY SIDE) ========== */
-form {
-    background: #ffffff;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
-    max-width: 2000px;
-    margin-bottom: 30px;
+    form.glass-form input:focus, form.glass-form select:focus {
+        border-color: #ff7b00 !important;
+        box-shadow: 0 0 8px rgba(255, 123, 0, 0.15) !important;
+    }
 
-    display: grid;
-    grid-template-columns: 1fr 1fr; /* 🔥 2 SIDE BY SIDE */
-    gap: 14px 25px;
-}
+    .full-width { grid-column: span 2 !important; }
 
-/* Inputs */
-form input[type="text"],
-form input[type="email"],
-form select {
-    padding: 9px 15px;
-    font-size: 17px;
-    border: 1px solid #dcdcdc;
-    border-radius: 6px;
-    width: 100%;
-    box-sizing: border-box;
-    transition: 0.2s;
-}
+    .submit-btn {
+        grid-column: span 2 !important;
+        padding: 15px !important;
+        background: #ff7b00 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 10px !important;
+        font-weight: bold !important;
+        cursor: pointer !important;
+        font-size: 16px !important;
+        margin-top: 10px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        transition: 0.3s;
+    }
+    .submit-btn:hover { background: #e66f00 !important; transform: translateY(-2px); }
 
-form input:focus {
-    outline: none;
-    border-color: #000;
-}
+    /* USER CARDS GRID */
+    .user-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+        gap: 25px !important;
+        margin-top: 30px !important;
+    }
 
-/* File input full width */
-form input[type="file"] {
-    grid-column: span 2;
-}
+    .user-card {
+        background: #ffffff !important; 
+        border: 1px solid #e2e8f0 !important;
+        padding: 25px !important;
+        border-radius: 15px !important;
+        text-align: center !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+        transition: 0.3s !important;
+    }
+    .user-card:hover { border-color: #ff7b00 !important; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;}
 
-/* Profile preview image */
-form img {
-    grid-column: span 2;
-    margin-top: 5px;
-    border-radius: 50%;
-}
+    .user-card img { 
+        width: 85px !important; 
+        height: 85px !important; 
+        border-radius: 50% !important; 
+        object-fit: cover !important; 
+        border: 3px solid #ff7b00 !important; 
+        margin-bottom: 12px !important;
+    }
 
-/* Submit button full width */
-form button {
-    grid-column: span 2;
-    padding: 11px;
-    background: #000;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-}
-form button:hover {
-    opacity: 0.9;
-}
+    .user-card h4 { color: #1e293b !important; font-size: 18px !important; font-weight: bold !important; margin-bottom: 5px !important;}
+    
+    .btn-group { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
 
-/* ========== USER CARDS GRID ========== */
-.user-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-}
+    .edit-link { background: #3498db !important; color: white !important; padding: 7px 18px !important; border-radius: 6px !important; text-decoration: none !important; font-size: 12px !important; font-weight: 600 !important; }
+    .delete-link { background: #e74c3c !important; color: white !important; padding: 7px 18px !important; border-radius: 6px !important; text-decoration: none !important; font-size: 12px !important; font-weight: 600 !important; }
 
-.user-card {
-    background: white;
-    border-radius: 10px;
-    padding: 18px;
-    text-align: center;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    transition: 0.2s;
-}
-.user-card:hover {
-    transform: translateY(-3px);
-}
-
-.user-card img {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 8px;
-}
-
-.user-card h4 {
-    margin: 6px 0;
-    font-size: 15px;
-}
-
-.user-card p {
-    margin: 3px 0;
-    font-size: 13px;
-    color: #555;
-}
-
-.user-card button {
-    margin-top: 8px;
-    padding: 6px 10px;
-    font-size: 12px;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-}
-
-.user-card button:first-child {
-    background: #3498db;
-    color: white;
-}
-
-.user-card button:last-child {
-    background: #ee9b91ff;
-    color: white;
-}
-
-
-
+    /* ALERT COLORS */
+    .alert {
+        padding: 15px !important;
+        border-radius: 8px !important;
+        margin-bottom: 20px !important;
+        font-weight: bold !important;
+        text-align: center !important;
+        color: #ffffff !important;
+    }
+    .alert.success { background-color: #28a745 !important; }
+    .alert.info { background-color: #3498db !important; }
+    .alert.error { background-color: #e74c3c !important; }
 </style>
 
-<h2>{% if edit_user %}Update User{% else %}Add User{% endif %}</h2>
+<div class="main-wrapper">
+    {% for message in messages %}
+        <div class="alert {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
 
-<form method="POST" enctype="multipart/form-data" style="background:#fff;padding:20px;border-radius:8px;">
-    {% csrf_token %}
+    <h2>{% if edit_user %}Update User Details{% else %}Add New Student{% endif %}</h2>
 
-<input type="text" name="name" placeholder="Name"
-       value="{% if form_data.name %}{{ form_data.name }}
-              {% elif edit_user %}{{ edit_user.first_name }}
-              {% endif %}" required>
+    <form method="POST" enctype="multipart/form-data" class="glass-form">
+        {% csrf_token %}
 
-              
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="name" placeholder="Enter Full Name" value="{% if edit_user %}{{ edit_user.first_name }}{% endif %}" required>
+        </div>
 
-<input type="email" name="email" placeholder="Email"
-       value="{% if form_data.email %}{{ form_data.email }}
-              {% elif edit_user %}{{ edit_user.email }}
-              {% endif %}" required>
+        <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" name="email" placeholder="student@daiict.ac.in" value="{% if edit_user %}{{ edit_user.email }}{% endif %}" required>
+        </div>
 
-             
+        <div class="form-group">
+            <label>Mobile Number</label>
+            <input type="text" name="mobile" placeholder="91-XXXXXXXXXX" value="{% if profile %}{{ profile.mobile }}{% endif %}">
+        </div>
 
-<input type="text" name="mobile" placeholder="Mobile"
-       value="{% if form_data.mobile %}{{ form_data.mobile }}
-              {% elif profile %}{{ profile.mobile }}
-              {% endif %}">
+        <div class="form-group">
+            <label>Roll Number (ID)</label>
+            <input type="text" name="roll" placeholder="ID Number" value="{% if profile %}{{ profile.roll }}{% endif %}">
+        </div>
 
-<input type="text" name="roll" placeholder="Roll Number"
-       value="{% if form_data.roll %}{{ form_data.roll }}
-              {% elif profile %}{{ profile.roll }}
-              {% endif %}">
+        <div class="form-group">
+            <label>Branch</label>
+            <select name="department" required>
+                <option value="" disabled {% if not profile %}selected{% endif %}>Select Branch</option>
+                <option value="ICT" {% if profile.department == "ICT" %}selected{% endif %}>ICT</option>
+                <option value="ICT-CS" {% if profile.department == "ICT-CS" %}selected{% endif %}>ICT-CS</option>
+                <option value="MnC" {% if profile.department == "MnC" %}selected{% endif %}>MnC</option>
+                <option value="EVD" {% if profile.department == "EVD" %}selected{% endif %}>EVD</option>
+            </select>
+        </div>
 
-<input type="text" name="faculty" placeholder="Faculty"
-       value="{% if form_data.faculty %}{{ form_data.faculty }}
-              {% elif profile %}{{ profile.faculty }}
-              {% endif %}">
-<br><br>
-<input type="text" name="department" placeholder="Department"
-       value="{% if form_data.department %}{{ form_data.department }}
-              {% elif profile %}{{ profile.department }}
-              {% endif %}">
+        <div class="form-group">
+            <label>Degree Program</label>
+            <select name="program" required>
+                <option value="" disabled {% if not profile %}selected{% endif %}>Select Program</option>
+                <option value="BTech" {% if profile.program == "BTech" %}selected{% endif %}>BTech</option>
+                <option value="MTech" {% if profile.program == "MTech" %}selected{% endif %}>MTech</option>
+                <option value="Msc" {% if profile.program == "Msc" %}selected{% endif %}>Msc</option>
+            </select>
+        </div>
 
-<input type="text" name="program" placeholder="Program"
-       value="{% if form_data.program %}{{ form_data.program }}
-              {% elif profile %}{{ profile.program }}
-              {% endif %}">
+        <div class="form-group">
+            <label>Current Semester</label>
+            <select name="semester" required>
+                <option value="" disabled {% if not profile %}selected{% endif %}>Select Semester</option>
+                {% for i in "12345678"|make_list %}
+                    <option value="Semester {{ i }}" {% if profile.semester == "Semester "|add:i %}selected{% endif %}>Semester {{ i }}</option>
+                {% endfor %}
+            </select>
+        </div>
 
-<input type="text" name="semester" placeholder="Semester"
-       value="{% if form_data.semester %}{{ form_data.semester }}
-              {% elif profile %}{{ profile.semester }}
-              {% endif %}">
+        <div class="form-group">
+            <label>Division</label>
+            <select name="division" required>
+                <option value="" disabled {% if not profile %}selected{% endif %}>Select Division</option>
+                <option value="A" {% if profile.division == "A" %}selected{% endif %}>A</option>
+                <option value="B" {% if profile.division == "B" %}selected{% endif %}>B</option>
+            </select>
+        </div>
 
-<input type="text" name="division" placeholder="Division"
-       value="{% if form_data.division %}{{ form_data.division }}
-              {% elif profile %}{{ profile.division }}
-              {% endif %}">
-<br><br>
+        <div class="full-width">
+            <label>Profile Photo</label>
+            <input type="file" name="image" style="border: none; background: none; padding-left: 0;">
+        </div>
 
+        <button type="submit" class="submit-btn">
+            {% if edit_user %}Update Profile{% else %}Add Student to LookIn{% endif %}
+        </button>
+    </form>
 
-
-    <input type="file" name="image">
-
-    {% if profile and profile.image %}
-        <img src="{{ profile.image.url }}" width="80" style="border-radius:50%;">
-    {% endif %}
-
-    <button type="submit">{% if edit_user %}Update{% else %}Add{% endif %}</button>
-</form>
-
-<hr>
-
-<h2>All Users</h2>
-
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
-{% for u in users %}
-<div style="border:1px solid #ddd;padding:15px;border-radius:8px;background:#fff;">
+    <h2 style="margin-top: 60px;">LookIn Directory</h2>
     
-    {% if u.profile.image %}
-        <img src="{{ u.profile.image.url }}" width="60" height="60" style="border-radius:50%;">
-    {% else %}
-        <img src="{% static 'img/default-user.png' %}" width="60">
-    {% endif %}
-
-    <h4>{{ u.first_name }}</h4>
-    <p>{{ u.email }}</p>
-    <p>{{ u.profile.mobile }}</p>
-    <p>{{ u.profile.program }}</p>
-
-    <a href="{% url 'edit_user' u.id %}"><button style="background:lightblue; ">Edit</button></a>
-    <a href="{% url 'delete_user' u.id %}"><button style="background:red;color:white;">Delete</button></a>
-</div>
-{% endfor %}
+    <div class="user-grid">
+        {% for u in users %}
+        <div class="user-card">
+            {% if u.profile.image %}
+                <img src="{{ u.profile.image.url }}">
+            {% else %}
+                <img src="{% static 'img/user.png' %}">
+            {% endif %}
+            <h4>{{ u.first_name }}</h4>
+            <p style="color: #ff7b00; font-weight: bold; font-size: 15px; margin-bottom: 2px;">ID: {{ u.profile.roll|default:"--" }}</p>
+            <p style="color: #64748b; font-size: 13px;">{{ u.profile.program }} | {{ u.profile.department }}</p>
+            <div class="btn-group">
+                <a href="{% url 'edit_user' u.id %}" class="edit-link">Edit</a>
+                <a href="{% url 'delete_user' u.id %}" class="delete-link" onclick="return confirm('Are you sure?')">Delete</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 
 {% endblock %}

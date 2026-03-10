@@ -56,7 +56,7 @@ def admin_required(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
-def admin_login(request):        #  email = admin@gmail.com  , password = admin123
+def admin_login(request):       
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
@@ -115,8 +115,8 @@ def admin_profile(request):
 
 
 def admin_logout(request):
-    request.session.flush()
     logout(request)
+    # session.flush() ni jarur nathi, logout() pote j badhu clean kari nakhe che
     return redirect('admin_login')
 
 
@@ -659,7 +659,7 @@ def edit_user(request, user_id):
         user.save()
         profile.save()
 
-        messages.success(request, "User updated successfully!")
+        messages.info(request, "User updated successfully!")
         return redirect("admin_dashboard")
 
     return render(request, "adminpanel/edit_user.html", {"u": user, "p": profile})
@@ -669,7 +669,7 @@ def edit_user(request, user_id):
 def delete_user(request, user_id):
     user = get_object_or_404(User, id=user_id)
     user.delete()
-    messages.success(request, "User deleted successfully")
+    messages.error(request, "User deleted successfully")
     return redirect("admin_dashboard")
 
 @user_passes_test(admin_check, login_url='admin_login')
@@ -1287,9 +1287,11 @@ def delete_subject(request, id):
 
 
 def logout_user(request):
-    is_admin = request.user.is_staff
-    logout(request)
-
+    # Logout karya pehla check kari lo ke user admin che ke nahi
+    is_admin = request.user.is_staff 
+    
+    logout(request) # Have detail clear thai jase
+    
     if is_admin:
         return redirect('admin_login')
     else:

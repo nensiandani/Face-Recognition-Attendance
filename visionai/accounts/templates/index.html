@@ -1,130 +1,194 @@
 {% load static %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Vision AI</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <title>LookIn AI | Face Recognition System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Segoe UI", Arial, sans-serif;
-}
+    <style>
+      /* ========== PREMIUM DARK AI THEME (ORANGE) ========== */
+      :root {
+          --primary: #ff7b00;
+          --primary-glow: rgba(255, 123, 0, 0.5);
+          --bg-dark: #0b0f19;
+          --bg-panel: rgba(15, 23, 42, 0.65);
+          --glass-border: rgba(255, 255, 255, 0.08);
+          --text-muted: #94a3b8;
+      }
 
-body {
-    height: 100vh;
-    background: url("{% static 'img/d.jpg' %}") no-repeat center center fixed;
-    background-size: cover;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-}
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
 
-/* GLASS CONTAINER */
-.container {
-    background: rgba(20, 30, 48, 0.85);
-    backdrop-filter: blur(12px);
-    border-radius: 18px;
-    padding: 60px 50px;
-    text-align: center;
-    max-width: 850px;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
-}
+      body {
+        min-height: 100vh;
+        /* Matches Login, Register, and Dashboard background */
+        background: radial-gradient(circle at top left, #1a233a 0%, #0b0f19 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        padding: 20px;
+      }
 
-/* LOGO */
-.logo-img {
-    width: 110px;
-    margin-bottom: 15px;
-    filter: drop-shadow(0 8px 18px rgba(0,0,0,0.6));
-    animation: floatLogo 3s ease-in-out infinite;
-}
+      /* Glowing background orbs for premium feel */
+      body::before {
+          content: '';
+          position: absolute;
+          top: -20%; left: -10%;
+          width: 600px; height: 600px;
+          background: rgba(255, 123, 0, 0.12);
+          filter: blur(150px);
+          z-index: 0;
+          border-radius: 50%;
+      }
 
-@keyframes floatLogo {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-8px); }
-    100% { transform: translateY(0px); }
-}
+      body::after {
+          content: '';
+          position: absolute;
+          bottom: -20%; right: -10%;
+          width: 500px; height: 500px;
+          background: rgba(0, 198, 255, 0.08);
+          filter: blur(150px);
+          z-index: 0;
+          border-radius: 50%;
+      }
 
-/* TITLE */
-.container h1 {
-    font-size: 52px;
-    font-weight: 600;
-    margin-bottom: 15px;
-}
+      /* ========== GLASS CARD ========== */
+      .container {
+        width: 750px;
+        max-width: 100%;
+        padding: 60px 50px;
+        text-align: center;
+        background: var(--bg-panel);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border-radius: 24px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6);
+        border: 1px solid var(--glass-border);
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        position: relative;
+        z-index: 1;
+      }
 
-/* SUBTITLE */
-.container p {
-    font-size: 18px;
-    line-height: 1.7;
-    color: #d6d6d6;
-    margin-bottom: 45px;
-}
+      /* ========== LOGO ========== */
+      .logo-img {
+        width: 280px;
+        margin-bottom: 15px;
+        filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.5));
+        animation: floatLogo 4s ease-in-out infinite;
+      }
 
-/* BUTTON GROUP */
-.buttons {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-}
+      @keyframes floatLogo {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-8px); }
+        100% { transform: translateY(0px); }
+      }
 
-/* BUTTON STYLE */
-.btn {
-    padding: 14px 38px;
-    border-radius: 30px;
-    font-size: 16px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: 0.3s;
-}
+      /* ========== TITLE & TEXT ========== */
+      .container h1 {
+        font-size: 42px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        margin-bottom: 15px;
+      }
 
-/* LOGIN BUTTON */
-.btn-login {
-    background: #eb742a;
-    color: #000;
-}
+      .container h1 span {
+        color: var(--primary); /* Highlights "AI" in Orange */
+      }
 
-.btn-login:hover {
-    transform: scale(1.07);
-    box-shadow: 0 8px 25px rgba(235,116,42,0.5);
-}
+      .container p {
+        font-size: 16px;
+        line-height: 1.8;
+        color: var(--text-muted);
+        margin-bottom: 40px;
+        padding: 0 20px;
+      }
 
-/* REGISTER BUTTON */
-.btn-register {
-    border: 2px solid #fff;
-    color: #fff;
-}
+      /* ========== BUTTON GROUP ========== */
+      .buttons {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
 
-.btn-register:hover {
-    background: #fff;
-    color: #000;
-}
-</style>
-</head>
+      .btn {
+        padding: 15px 40px;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 700;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+      }
 
-<body>
+      /* LOGIN BUTTON (Primary Orange) */
+      .btn-login {
+        background: linear-gradient(135deg, #ff7b00 0%, #ff5500 100%);
+        color: white;
+        border: none;
+        box-shadow: 0 6px 20px var(--primary-glow);
+      }
 
-<div class="container">
+      .btn-login:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(255, 123, 0, 0.6);
+      }
 
-    <img src="{% static 'img/logo.png' %}" class="logo-img">
+      /* REGISTER BUTTON (Outline Glass) */
+      .btn-register {
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        background: transparent;
+      }
 
-    <h1>Vision AI</h1>
+      .btn-register:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--primary);
+        color: var(--primary);
+        transform: translateY(-3px);
+      }
 
-    <p>
+      /* Responsive Adjustments */
+      @media (max-width: 600px) {
+        .container { padding: 40px 25px; }
+        .logo-img { width: 220px; }
+        .container h1 { font-size: 32px; }
+        .container p { padding: 0; font-size: 14px; }
+        .buttons { flex-direction: column; gap: 15px; }
+        .btn { width: 100%; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <img
+        src="{% static 'img/logo2.png' %}"
+        class="logo-img"
+        alt="LookIn Logo"
+      />
+
+      <h1>LookIn <span>AI</span></h1>
+      <!-- Attendance Intelligence -->
+      <p>
         Real-time face recognition from camera feeds. Automated attendance,
-        smart visitor tracking, and intelligent access control — all in one powerful platform.
-    </p>
+        smart visitor tracking, and intelligent access control — all in one
+        powerful, secure platform.
+      </p>
 
-    <div class="buttons">
-        <a href="{% url 'login' %}" class="btn btn-login">Login</a>
-        <a href="{% url 'register' %}" class="btn btn-register">Register</a>
+      <div class="buttons">
+        <a href="{% url 'login' %}" class="btn btn-login">Login Securely</a>
+        <a href="{% url 'register' %}" class="btn btn-register">Request Access</a>
+      </div>
     </div>
-
-</div>
-
-</body>
+  </body>
 </html>

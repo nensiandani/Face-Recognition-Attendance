@@ -1,344 +1,505 @@
 {% extends 'adminpanel/base.html' %}
 {% load static %}
+
 {% block content %}
-
 <style>
-h1 {
-    margin-bottom: 10px;
-    margin-top:0;
-    font-weight: 600;
-    color: #2c3e50;
-}
-
-form {
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    max-width: 1010px;
-    
-}
-
-select {
-    width: 30%;
-    padding: 10px;
-    margin: 8px 1%;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    background: #f9f9f9;
-   
-}
-
-select:focus {
-    outline: none;
-    border-color: #4CAF50;
-    background: #fff;
-}
-
-input[type="file"] {
-    margin-top: 10px;
-    padding: 6px;
-}
-
-button {
-    background: #4CAF50;
-    color: white;
-    padding: 10px 22px;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: 0.3s;
-}
-
-button:hover {
-    background: #45a049;
-    transform: scale(1.03);
-}
-
-#preview-box {
-    background: #fafafa;
-    border-radius: 10px;
-}
-
-h3 {
-    margin-top: 30px;
-    color: #2c3e50;
-}
-
-.detected-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 🔥 4 CARDS PER ROW */
-    gap: 50px;
-    margin-top: 20px;
-}
-
-.student-card {
-    background: #fff;
-    border-radius: 12px;
-    padding: 18px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    transition: 0.3s;
-    width: 90%;
-}
-
-.student-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
-}
-
-.student-card img {
-    border-radius: 50%;
-    margin-bottom: 8px;
-}
-
-.student-card p {
-    margin: 4px 0;
-    font-size: 14px;
-}
-
-.present {
-    color: #28a745;
-    font-weight: bold;
-}
-
-.student-card {
-    background: #fff;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    text-align: center;
-    transition: 0.2s;
-}
-
-.student-card:hover {
-    transform: translateY(-3px);
-}
-
-.student-photo {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-bottom: 10px;
-    border: 2px solid #eee;
-}
-
-.student-details {
-    text-align: left;
-    font-size: 13px;
-    margin-top: 8px;
-}
-
-.student-details p {
-    margin: 3px 0;
-}
-
-.present {
-    margin-top: 10px;
-    color: green;
-    font-weight: bold;
-}
-
-
-@media (max-width: 1200px) {
-    .detected-grid {
-        grid-template-columns: repeat(3, 1fr);
+    /* ========== NEXT-LEVEL AI THEME ========== */
+    :root {
+        --primary: #ff7b00;
+        --primary-glow: rgba(255, 123, 0, 0.4);
+        --bg-glass: rgba(255, 255, 255, 0.95);
+        --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.04);
+        --shadow-hover: 0 15px 50px rgba(255, 123, 0, 0.1);
+        --success-bg: #dcfce7;
+        --success-text: #15803d;
     }
-}
 
-@media (max-width: 900px) {
-    .detected-grid {
-        grid-template-columns: repeat(2, 1fr);
+    .page-title {
+        color: var(--primary); 
+        font-weight: 900; 
+        margin-bottom: 30px; 
+        text-transform: uppercase; 
+        border-left: 6px solid var(--primary); 
+        padding-left: 15px;
+        font-size: 28px;
+        letter-spacing: 1.5px;
+        text-shadow: 2px 2px 10px rgba(255,123,0,0.1);
     }
-}
 
-@media (max-width: 500px) {
-    .detected-grid {
-        grid-template-columns: 1fr;
+    /* Form Card */
+    .form-card {
+        background: var(--bg-glass);
+        padding: 35px;
+        border-radius: 20px;
+        box-shadow: var(--shadow-soft);
+        margin-bottom: 40px;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        backdrop-filter: blur(10px);
     }
-}
 
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+        gap: 20px;
+        align-items: end;
+    }
 
+    .form-group label {
+        font-size: 13px; 
+        font-weight: 700; 
+        color: #475569; 
+        margin-bottom: 8px; 
+        display: block;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-grid select, .file-input {
+        padding: 14px 18px;
+        font-size: 15px;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        background: #f8fafc;
+        color: #1e293b;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        width: 100%;
+        box-sizing: border-box;
+        font-weight: 500;
+        cursor: pointer;
+    }
+
+    .form-grid select:focus {
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 4px var(--primary-glow);
+        outline: none;
+        transform: translateY(-2px);
+    }
+
+    /* Premium Upload Zone */
+    .upload-zone {
+        grid-column: 1 / -1;
+        border: 2px dashed #cbd5e1;
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 25px;
+        text-align: center;
+        transition: 0.3s;
+        position: relative;
+    }
+
+    .upload-zone:hover {
+        border-color: var(--primary);
+        background: #fffaf5;
+    }
+
+    .upload-zone .file-input {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    /* Accumulated Preview Box */
+    .preview-box {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        margin-top: 15px;
+        justify-content: center;
+    }
+
+    .preview-item {
+        position: relative;
+        width: 90px;
+        height: 90px;
+        border-radius: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: 0.3s;
+    }
+
+    .preview-item:hover { transform: scale(1.05) translateY(-5px); }
+
+    .preview-media {
+        width: 100%;
+        height: 100%;
+        border-radius: 12px;
+        object-fit: cover;
+        border: 2px solid var(--primary);
+    }
+
+    .remove-btn {
+        position: absolute;
+        top: -8px; right: -8px;
+        background: #ef4444; color: white;
+        border: none; width: 24px; height: 24px;
+        border-radius: 50%; font-size: 14px; font-weight: bold;
+        cursor: pointer; display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+        opacity: 0; transition: 0.3s; z-index: 10;
+    }
+    .preview-item:hover .remove-btn { opacity: 1; }
+    .remove-btn:hover { transform: scale(1.15); background: #dc2626; }
+
+    /* Glowing AI Button */
+    .submit-btn {
+        grid-column: 1 / -1;
+        padding: 18px;
+        background: linear-gradient(135deg, #ff7b00 0%, #ff5500 100%);
+        border: none;
+        color: white;
+        border-radius: 14px;
+        font-weight: 800;
+        font-size: 16px;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-top: 20px;
+        transition: all 0.4s ease;
+        box-shadow: 0 6px 20px var(--primary-glow);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .submit-btn:hover {
+        letter-spacing: 3px;
+        box-shadow: 0 10px 30px rgba(255, 85, 0, 0.5);
+        transform: translateY(-3px);
+    }
+
+    /* Result Section */
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin: 50px 0 25px;
+    }
+
+    .ai-badge {
+        background: var(--primary);
+        color: white;
+        padding: 8px 18px;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 800;
+        box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    /* Detected Students Grid */
+    .detected-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+    }
+
+    .student-card {
+        background: white;
+        border-radius: 20px;
+        padding: 25px 20px;
+        text-align: center;
+        border: 1px solid #f1f5f9;
+        box-shadow: var(--shadow-soft);
+        transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .student-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-hover);
+        border-color: rgba(255, 123, 0, 0.3);
+    }
+
+    /* 🔥 THE AI LASER SCAN EFFECT 🔥 */
+    .photo-wrapper {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        margin: 0 auto 20px;
+        border-radius: 25px;
+        overflow: hidden; /* Keeps laser inside */
+        border: 3px solid #f1f5f9;
+        transition: 0.3s;
+    }
+
+    .student-card:hover .photo-wrapper {
+        border-color: var(--primary);
+        box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .student-photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .laser-scan {
+        position: absolute;
+        top: -100%;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: #00ffcc; /* Sci-fi cyan/green color */
+        box-shadow: 0 0 15px 3px #00ffcc;
+        z-index: 5;
+        opacity: 0;
+        transition: 0.3s;
+    }
+
+    /* Animate laser only on hover */
+    .student-card:hover .laser-scan {
+        opacity: 0.8;
+        animation: scanAnim 2s cubic-bezier(0.53, 0.21, 0.29, 0.67) infinite;
+    }
+
+    @keyframes scanAnim {
+        0% { top: 0%; }
+        50% { top: 100%; }
+        100% { top: 0%; }
+    }
+
+    .student-card h4 {
+        font-size: 20px;
+        font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 15px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 4px;
+        background: #f8fafc;
+    }
+
+    .info-row b { color: #1e293b; font-weight: 700; }
+
+    /* Verified Badge */
+    .present-status {
+        margin-top: 20px;
+        background: var(--success-bg);
+        color: var(--success-text);
+        padding: 10px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        box-shadow: 0 4px 10px rgba(21, 128, 61, 0.1);
+    }
 </style>
 
-<h1>Mark Attendance</h1>
-<form method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
+<h2 class="page-title">Mark Attendance</h2>
 
-    <!-- Faculty -->
-    <select name="faculty" required>
-        <option value="" disabled selected>Select Faculty</option>
-        {% for f in faculties %}
-            <option value="{{ f.name }}">{{ f.name }}</option>
-        {% empty %}
-            <option disabled>No Faculty Found</option>
-        {% endfor %}
-    </select>
+<div class="form-card">
+    <form method="POST" enctype="multipart/form-data" class="form-grid" id="attendanceForm">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label>Faculty</label>
+            <select name="faculty" required>
+                <option value="" disabled selected>Select Faculty</option>
+                {% for f in faculties %}<option value="{{ f.name }}">{{ f.name }}</option>{% endfor %}
+            </select>
+        </div>
 
-    <!-- Department -->
-    <select name="department" required>
-        <option value="" disabled selected>Select Department</option>
-        {% for d in departments %}
-            <option value="{{ d.name }}">{{ d.name }}</option>
-        {% empty %}
-            <option disabled>No Department Found</option>
-        {% endfor %}
-    </select>
+        <div class="form-group">
+            <label>Department</label>
+            <select name="department" required>
+                <option value="" disabled selected>Select Department</option>
+                {% for d in departments %}<option value="{{ d.name }}">{{ d.name }}</option>{% endfor %}
+            </select>
+        </div>
 
-    <!-- Program -->
-    <select name="program" required>
-        <option value="" disabled selected>Select Program</option>
-        {% for p in programs %}
-            <option value="{{ p.name }}">{{ p.name }}</option>
-        {% empty %}
-            <option disabled>No Program Found</option>
-        {% endfor %}
-    </select>
+        <div class="form-group">
+            <label>Program</label>
+            <select name="program" required>
+                <option value="" disabled selected>Select Program</option>
+                {% for p in programs %}<option value="{{ p.name }}">{{ p.name }}</option>{% endfor %}
+            </select>
+        </div>
 
-    <!-- Semester -->
-    <select name="semester" required>
-        <option value="" disabled selected>Select Semester</option>
-        {% for s in semesters %}
-            <option value="{{ s.name }}">{{ s.name }}</option>
-        {% empty %}
-            <option disabled>No Semester Found</option>
-        {% endfor %}
-    </select>
+        <div class="form-group">
+            <label>Semester</label>
+            <select name="semester" required>
+                <option value="" disabled selected>Select Semester</option>
+                {% for s in semesters %}<option value="{{ s.name }}">{{ s.name }}</option>{% endfor %}
+            </select>
+        </div>
 
-    <!-- Division -->
-    <select name="division" required>
-        <option value="" disabled selected>Select Division</option>
-        {% for d in divisions %}
-            <option value="{{ d.name }}">{{ d.name }}</option>
-        {% empty %}
-            <option disabled>No Division Found</option>
-        {% endfor %}
-    </select>
+        <div class="form-group">
+            <label>Division</label>
+            <select name="division" required>
+                <option value="" disabled selected>Select Division</option>
+                {% for d in divisions %}<option value="{{ d.name }}">{{ d.name }}</option>{% endfor %}
+            </select>
+        </div>
 
-  
+        <div class="form-group">
+            <label>Subject</label>
+            <select name="subject" required>
+                <option value="" disabled selected>Select Subject</option>
+                {% for sub in subjects %}<option value="{{ sub.id }}">{{ sub.name }}</option>{% endfor %}
+            </select>
+        </div>
 
+        <div class="form-group">
+            <label>Lecture Slot</label>
+            <select name="slot" required>
+                <option value="" disabled selected>Select Slot</option>
+                <option value="1">Lecture 1</option>
+                <option value="2">Lecture 2</option>
+                <option value="3">Lecture 3</option>
+                <option value="4">Lecture 4</option>
+                <option value="5">Lecture 5</option>
+            </select>
+        </div>
 
-<select name="subject" required>
-    <option value="" disabled selected>Select Subject</option>
-    {% for sub in subjects %}
-        <option value="{{ sub.id }}">{{ sub.name }}</option>
-    {% empty %}
-        <option disabled>No Subjects Found</option>
-    {% endfor %}
-</select>
-    
-<!-- Lecture Slot -->
-<select name="slot" required>
-    <option value="" disabled selected>Select Lecture Slot</option>
-    <option value="1">Lecture 1</option>
-    <option value="2">Lecture 2</option>
-    <option value="3">Lecture 3</option>
-    <option value="4">Lecture 4</option>
-    <option value="5">Lecture 5</option>
-</select>
-  <br><br>
+        <div class="upload-zone">
+            <input type="file" id="mediaInput" name="media" accept="image/*,video/*" multiple class="file-input">
+            <div style="pointer-events: none;">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 10px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <h4 style="color: #475569; margin: 0 0 5px 0;">Drag & Drop or Click to Upload</h4>
+                <p style="color: #94a3b8; font-size: 12px; margin: 0;">Upload class photos or video for face detection</p>
+            </div>
+            <div id="preview-container" class="preview-box"></div>
+        </div>
 
-  <input type="file"
-       name="media"
-       accept="image/*,video/*"
-       multiple
-       onchange="previewMedia(event)"
-       required>
-
-    <br><br>
-  <div id="preview-container" style="display:flex; gap:10px; flex-wrap:wrap;"></div>
-
-    <br><br>
-
-    <button type="submit">Submit Attendance</button>
-</form>
-<script>
-function previewMedia(event) {
-    const container = document.getElementById('preview-container');
-    container.innerHTML = "";
-
-    const files = event.target.files;
-
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const reader = new FileReader();
-
-        reader.onload = function(e) {
-
-            // 📸 IMAGE PREVIEW
-            if (file.type.startsWith("image/")) {
-                const img = document.createElement("img");
-                img.src = e.target.result;
-                img.style.width = "120px";
-                img.style.height = "120px";
-                img.style.objectFit = "cover";
-                img.style.borderRadius = "8px";
-                img.style.border = "1px solid #ddd";
-                container.appendChild(img);
-            }
-
-            // 🎥 VIDEO PREVIEW
-            else if (file.type.startsWith("video/")) {
-                const video = document.createElement("video");
-                video.src = e.target.result;
-                video.controls = true;
-                video.style.width = "160px";
-                video.style.height = "120px";
-                video.style.borderRadius = "8px";
-                video.style.border = "1px solid #ddd";
-                container.appendChild(video);
-            }
-        };
-
-        reader.readAsDataURL(file);
-    }
-}
-</script>
+        <button type="submit" class="submit-btn">
+                INITIALIZE AI RECOGNITION
+        </button>
+    </form>
+</div>
 
 {% if detected_students %}
-<hr>
-<h3>Detected Students ({{ detected_students|length }})</h3>
+<div class="section-header">
+    <h3 style="color: #1e293b; margin: 0; font-size: 24px; font-weight: 800;">AI Detection Results</h3>
+    <span class="ai-badge">{{ detected_students|length }} Faces Matched</span>
+</div>
 
-<!-- 🔽 Roll Number Summary -->
-<div style="margin-bottom:15px;">
-    <b>Roll Numbers :</b>
-    <input type="text"
-           value="{% for student in detected_students %}{{ student.profile.roll }}{% if not forloop.last %}, {% endif %}{% endfor %}"
-           readonly
-           style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;background:#f9f9f9; font-size:15px;">
+<div style="background: white; padding: 15px 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.02);">
+    <label style="font-size: 13px; font-weight: 800; color: #475569; text-transform: uppercase;">Verified Roll Numbers:</label>
+    <p style="color: #ff7b00; font-weight: 700; font-size: 15px; margin: 8px 0 0 0; letter-spacing: 1px;">
+        {% for student in detected_students %}#{{ student.profile.roll }}{% if not forloop.last %}, {% endif %}{% endfor %}
+    </p>
 </div>
 
 <div class="detected-grid">
-{% for student in detected_students %}
-  <div class="student-card">
-    
-    {% if student.profile.image %}
-        <img src="{{ student.profile.image.url }}" class="student-photo">
-    {% else %}
-        <img src="{% static 'img/default-user.png' %}" class="student-photo">
-    {% endif %}
+    {% for student in detected_students %}
+    <div class="student-card">
+        <div class="photo-wrapper">
+            <div class="laser-scan"></div>
+            {% if student.profile.image %}
+                <img src="{{ student.profile.image.url }}" class="student-photo">
+            {% else %}
+                <img src="{% static 'img/default-user.png' %}" class="student-photo">
+            {% endif %}
+        </div>
 
-    <h4>{{ student.first_name }}</h4>
+        <h4>{{ student.first_name }} {{ student.last_name }}</h4>
+        
+        <div class="info-row"><span>Roll Number</span> <b>#{{ student.profile.roll }}</b></div>
+        <div class="info-row"><span>Division</span> <b>{{ student.profile.division }}</b></div>
+        <div class="info-row"><span>Email</span> <b style="font-size: 11px;">{{ student.email|truncatechars:20 }}</b></div>
 
-    <div class="student-details">
-        <p><b>Email:</b> {{ student.email }}</p>
-        <p><b>Mobile:</b> {{ student.profile.mobile }}</p>
-        <p><b>Roll:</b> {{ student.profile.roll }}</p>
-        <p><b>Faculty:</b> {{ student.profile.faculty }}</p>
-        <p><b>Department:</b> {{ student.profile.department }}</p>
-        <p><b>Program:</b> {{ student.profile.program }}</p>
-        <p><b>Semester:</b> {{ student.profile.semester }}</p>
-        <p><b>Division:</b> {{ student.profile.division }}</p>
+        <div class="present-status">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            MATCH VERIFIED
+        </div>
     </div>
-
-    <p class="present">Present ✔</p>
-</div>
-
-{% endfor %}
+    {% endfor %}
 </div>
 {% endif %}
 
+<script>
+    let accumulatedFiles = [];
+    const mediaInput = document.getElementById('mediaInput');
+    const container = document.getElementById('preview-container');
+    const form = document.getElementById('attendanceForm');
+
+    mediaInput.addEventListener('change', function(event) {
+        const files = event.target.files;
+        const newFilesArray = Array.from(files);
+        accumulatedFiles = accumulatedFiles.concat(newFilesArray);
+        event.target.value = ''; // Reset
+        updateUI();
+    });
+
+    function updateUI() {
+        container.innerHTML = "";
+        
+        if (accumulatedFiles.length === 0) {
+            return; // Khali rakho jo file na hoy
+        }
+
+        accumulatedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "preview-item";
+
+            // Cross Button
+            const removeBtn = document.createElement("button");
+            removeBtn.className = "remove-btn";
+            removeBtn.innerHTML = "×";
+            removeBtn.onclick = function(e) { 
+                e.preventDefault(); // Prevent form submit
+                removeFile(index); 
+            };
+            itemDiv.appendChild(removeBtn);
+
+            reader.onload = function(e) {
+                if (file.type.startsWith("image/")) {
+                    const img = document.createElement("img");
+                    img.src = e.target.result;
+                    img.className = "preview-media";
+                    itemDiv.appendChild(img);
+                } else if (file.type.startsWith("video/")) {
+                    const vidPlaceholder = document.createElement("div");
+                    vidPlaceholder.className = "preview-media";
+                    vidPlaceholder.style.background = "#1e293b";
+                    vidPlaceholder.style.color = "white";
+                    vidPlaceholder.style.display = "flex";
+                    vidPlaceholder.style.alignItems = "center";
+                    vidPlaceholder.style.justifyContent = "center";
+                    vidPlaceholder.style.fontSize = "12px";
+                    vidPlaceholder.style.fontWeight = "bold";
+                    vidPlaceholder.innerHTML = "🎥 VID";
+                    itemDiv.appendChild(vidPlaceholder);
+                }
+            };
+            
+            reader.readAsDataURL(file);
+            container.appendChild(itemDiv);
+        });
+    }
+
+    function removeFile(indexToRemove) {
+        accumulatedFiles.splice(indexToRemove, 1);
+        updateUI();
+    }
+
+    form.addEventListener('submit', function(e) {
+        if (accumulatedFiles.length === 0) {
+            e.preventDefault();
+            alert("Bhai, photo ke video toh upload kar!");
+            return;
+        }
+
+        const dt = new DataTransfer();
+        for (let file of accumulatedFiles) {
+            dt.items.add(file);
+        }
+        mediaInput.files = dt.files;
+        
+        const btn = form.querySelector('.submit-btn');
+        btn.innerHTML = "SCANNING FACES... PLEASE WAIT";
+        btn.style.opacity = '0.8';
+        btn.style.pointerEvents = 'none';
+        btn.style.animation = 'pulse 1s infinite';
+    });
+</script>
 {% endblock %}

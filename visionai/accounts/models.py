@@ -68,17 +68,22 @@ class Session(models.Model):
         return self.name
 
 # accounts/models.py
+# accounts/models.py
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     mobile = models.CharField(max_length=15, blank=True, null=True)
     roll = models.CharField(max_length=20)
-    faculty = models.CharField(max_length=100)
-    department = models.CharField(max_length=100)
+    
+    # Faculty field ne optional rakho (karan ke tame HTML mathi kadhi nakhyu che)
+    faculty = models.CharField(max_length=100, blank=True, null=True)
+    
+    # Department field database ma 'department' rahese pan tya 'ICT/MnC' save thase
+    department = models.CharField(max_length=100, blank=True, null=True)
+    
     program = models.CharField(max_length=50)
     semester = models.CharField(max_length=50)
     division = models.CharField(max_length=10)
     image = models.ImageField(upload_to='profiles/', blank=True, null=True)
-
 
     def __str__(self):
         return self.user.username

@@ -2,109 +2,123 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Vision AI Admin</title>
-
+    <title>LookIn Admin | Vision AI</title>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",sans-serif;}
-
-        body{background:#f5f6fa;color:#000;}
+        
+        /* 1. BACKGROUND WHITE */
+        body{background:#ffffff; color:#333;} 
 
         /* SIDEBAR */
         .sidebar{
-            width:250px;height:100vh;position:fixed;left:0;top:0;
-            background:#0b0b0c;display:flex;flex-direction:column;justify-content:space-between;
+            width:250px; height:100vh; position:fixed; left:0; top:0;
+            background:#020617; display:flex; flex-direction:column;
+            border-right: 1px solid rgba(0,0,0,0.1);
         }
 
-        .logo-area{text-align:center;padding:15px 10px;}
-        .logo-area img{width:70px;}
+        .logo-area{ text-align:center; padding:25px 10px; }
+        .logo-area img{ width:150px; height:auto; transition: 0.3s; }
 
+        /* MENU AREA */
+        .menu { flex-grow: 1; margin-top: 10px; }
         .menu a{
-            display:block;padding:10px 15px;color:#cfd8ff;text-decoration:none;
+            display:block; padding:12px 25px; color:#94a3b8; text-decoration:none;
+            font-size: 15px; transition: 0.3s; border-left: 4px solid transparent;
         }
-        .menu a:hover{background:#3a7bd5;color:#fff;}
 
-        .sidebar-footer{text-align:center;padding:20px;}
-        .admin-photo{width:50px;height:50px;border-radius:50%;margin-bottom:8px;}
-        .email{font-size:13px;color:#ddd;}
-        .role{font-size:13px;color:#ffb703;margin-bottom:10px;}
+        /* 2. CLICK KARIYA PACHI ORANGE RAKHVA MATE (ACTIVE CLASS) */
+        .menu a:hover, .menu a.active { 
+            background:#1e293b; 
+            color:#ff7b00 !important; 
+            border-left: 4px solid #ff7b00; 
+            font-weight: bold;
+        }
+
+        /* 3. LOGOUT BUTTON - THODU UPAR SET KARYU CHE */
+        .logout-container {
+            padding: 10px 20px;
+            margin-bottom: 20px; /* આનાથી બટન થોડું ઉપર જશે */
+        }
 
         .logout-btn{
-            display:inline-block;padding:6px 14px;background:#ff7b00;color:#000;
-            text-decoration:none;border-radius:20px;font-size:12px;font-weight:bold;
+            display:block; padding:10px; background:linear-gradient(45deg, #ff7b00, #ff4500); 
+            color:#fff; text-decoration:none; border-radius:8px; 
+            font-size:13px; font-weight:bold; text-align: center;
         }
 
-        /* MAIN CONTENT */
-        .layout-wrapper{
-            margin-left:250px;
-            min-height:100vh;
-            display:flex;
-            flex-direction:column;
-        }
+        /* SIDEBAR FOOTER */
+        .sidebar-footer{ text-align:center; padding:15px; background: #010409; border-top: 1px solid #1e293b; }
+        .admin-photo{ width:45px; height:45px; border-radius:50%; border: 2px solid #ff7b00; margin-bottom: 5px; }
+        .email{ font-size:11px; color:#94a3b8; }
+        .role{ font-size:11px; color:#ff7b00; font-weight: bold; }
 
-        .main-content{
-            flex:1;
-            padding:35px;
-        }
+        /* MAIN CONTENT AREA */
+        .layout-wrapper{ margin-left:250px; min-height:100vh; display:flex; flex-direction:column; }
+        .main-content{ flex:1; padding:35px; background: #ffffff; }
 
         /* FOOTER */
         .footer{
-            text-align:center;
-            padding:20px;
-           background: #d4cfdcff;
-            color:#666;
-            font-size:20px;
-            border-top:1px solid #03015aff;
+            text-align:center; padding:20px; background: #f8fafc;
+            color:#64748b; font-size:14px; border-top:1px solid #e2e8f0;
         }
-
-        .footer span{color:blue;font-weight:600;}
-        .footer b{color:black;font-weight:600;padding-right:5px;}
+        .footer span{ color:#ff7b00; font-weight:600; }
     </style>
 </head>
-
 <body>
 
-<!-- SIDEBAR -->
 <div class="sidebar">
-
     <div class="logo-area">
-        <img src="{% static 'img/logo.png' %}">
+        <a href="{% url 'admin_dashboard' %}">
+            <img src="{% static 'img/logo2.png' %}" alt="LookIn Logo">
+        </a>
     </div>
 
-    <div class="menu">
-        <a href="{% url 'admin_dashboard' %}">👥 Users</a>
-        <a href="{% url 'faculties' %}">🏫 Faculties</a>
-        <a href="{% url 'departments' %}">🏬 Departments</a>
-        <a href="{% url 'programs' %}">📘 Programs</a>
-        <a href="{% url 'semesters' %}">📅 Semesters</a>
-        <a href="{% url 'divisions' %}">📂 Divisions</a>
-        <a href="{% url 'subjects' %}">📘 Subjects</a>
-        <a href="{% url 'mark_attendance' %}">📸 Mark Attendance</a>
-        <a href="{% url 'attendance_history' %}">📊 Attendance History</a>
-        <a href="{% url 'admin_profile' %}">👤 My Profile</a>
+    <div class="menu" id="navMenu">
+        <a href="{% url 'admin_dashboard' %}" class="nav-link">👥 Users Directory</a>
+        <a href="{% url 'faculties' %}" class="nav-link">🏫 Faculties</a>
+        <a href="{% url 'departments' %}" class="nav-link">🏬 Departments</a>
+        <a href="{% url 'programs' %}" class="nav-link">📘 Programs</a>
+        <a href="{% url 'semesters' %}" class="nav-link">📅 Semesters</a>
+        <a href="{% url 'divisions' %}" class="nav-link">📂 Divisions</a>
+        <a href="{% url 'subjects' %}" class="nav-link">📘 Subjects</a>
+        <a href="{% url 'mark_attendance' %}" class="nav-link">📸 Mark Attendance</a>
+        <a href="{% url 'attendance_history' %}" class="nav-link">📊 History</a>
     </div>
 
+    
     <div class="sidebar-footer">
         <img src="{% static 'img/user.png' %}" class="admin-photo">
         <p class="email">{{ request.user.email }}</p>
-        <p class="role">Role: Admin</p>
-        <a href="{% url 'admin_logout' %}" class="logout-btn">Logout</a>
+        <p class="role">ADMIN PANEL</p>
     </div>
 
+    <div class="logout-container">
+        <a href="{% url 'admin_logout' %}" class="logout-btn">LOGOUT</a>
+    </div>
 </div>
 
-<!-- MAIN WRAPPER -->
 <div class="layout-wrapper">
-
     <div class="main-content">
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </div>
-
     <footer class="footer">
-        <b>Developed by</b>  <span>Nensi Andani & Jaimeen Chauhan</span> 🚀
+        Developed with ❤️ by <span>Nensi Andani & Jaimeen Chauhan</span>
     </footer>
-
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const currentUrl = window.location.href;
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        navLinks.forEach(link => {
+            // જો લિંકનું URL અત્યારના પેજ જેવું જ હોય, તો 'active' ક્લાસ ઉમેરો
+            if (currentUrl.includes(link.getAttribute('href'))) {
+                link.classList.add('active');
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

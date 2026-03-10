@@ -1,130 +1,194 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Register | Vision AI</title>
+    <meta charset="UTF-8">
+    <title>Register | LookIn AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        /* ========== PREMIUM DARK AI THEME (ORANGE) ========== */
+        :root {
+            --primary: #ff7b00;
+            --primary-glow: rgba(255, 123, 0, 0.5);
+            --bg-dark: #0b0f19;
+            --bg-panel: rgba(15, 23, 42, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-muted: #94a3b8;
+        }
+
         body {
             margin: 0;
-            font-family: "Segoe UI", sans-serif;
-            background: url("{% static 'img/d.jpg' %}") no-repeat center center fixed;
-            background-size: cover;
-            height: 100vh;
+            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at top left, #1a233a 0%, #0b0f19 100%);
+            
+            /* FIXED HEIGHT ISSUE HERE */
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
+            color: #fff;
+            position: relative;
+            overflow-y: auto; /* Allows scrolling if screen is small */
+            overflow-x: hidden;
+            padding: 40px 20px; /* Gives top/bottom breathing room */
+            box-sizing: border-box;
         }
 
+        /* Glowing background orbs */
+        body::before {
+            content: '';
+            position: fixed; /* Changed to fixed so it doesn't move on scroll */
+            top: -20%; left: -10%;
+            width: 500px; height: 500px;
+            background: rgba(255, 123, 0, 0.12);
+            filter: blur(150px);
+            z-index: 0;
+            border-radius: 50%;
+        }
+
+        body::after {
+            content: '';
+            position: fixed; /* Changed to fixed */
+            bottom: -20%; right: -10%;
+            width: 400px; height: 400px;
+            background: rgba(0, 198, 255, 0.08);
+            filter: blur(150px);
+            z-index: 0;
+            border-radius: 50%;
+        }
+
+        /* ========== GLASS CARD ========== */
         .login-card {
             width: 400px;
-            padding: 40px 30px 90px 30px;
-            border-radius: 18px;
-            background: rgba(20, 30, 48, 0.85);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-            color: white;
+            /* Slightly reduced padding to fit smaller screens better */
+            padding: 40px 35px; 
+            border-radius: 24px;
+            background: var(--bg-panel);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
             text-align: center;
             position: relative;
-            overflow: hidden;
+            z-index: 1;
         }
 
+        /* LOGO ANIMATION */
         .logo-img {
-            width: 85px;
-            margin-bottom: 8px;
-            filter: drop-shadow(0 6px 14px rgba(0,0,0,0.5));
-            animation: floatLogo 3s ease-in-out infinite;
+            width: 220px; /* Reduced slightly to save space */
+            margin-bottom: 5px;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+            animation: floatLogo 4s ease-in-out infinite;
         }
 
         @keyframes floatLogo {
             0% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
+            50% { transform: translateY(-5px); }
             100% { transform: translateY(0px); }
         }
 
         .subtitle {
             font-size: 13px;
-            opacity: 0.7;
-            margin-bottom: 25px;
+            color: var(--text-muted);
+            margin-bottom: 25px; /* Reduced from 30px */
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
+        /* ========== INPUT FIELDS ========== */
         .input-group {
             position: relative;
-            margin-bottom: 16px;
+            margin-bottom: 15px; /* Reduced from 18px */
         }
 
         .input-group input {
             width: 100%;
-            padding: 12px 14px 12px 42px;
-            border-radius: 25px;
-            border: none;
+            /* Reduced padding to make inputs sleeker */
+            padding: 13px 20px 13px 45px; 
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             outline: none;
             font-size: 14px;
-            background: rgba(255,255,255,0.08);
+            background: rgba(0, 0, 0, 0.3);
             color: white;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
 
-        .input-group input::placeholder {
-            color: #bbb;
+        .input-group input:focus {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(255, 123, 0, 0.15);
         }
 
         .icon {
             position: absolute;
-            left: 14px;
+            left: 15px;
             top: 50%;
             transform: translateY(-50%);
-            font-size: 14px;
-            opacity: 0.8;
+            color: var(--text-muted);
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
+        .input-group input:focus + .icon,
+        .input-group input:not(:placeholder-shown) + .icon {
+            color: var(--primary);
+        }
+
+        /* ========== BUTTON ========== */
         .register-btn {
             width: 100%;
-            padding: 12px;
-            border-radius: 25px;
+            padding: 14px; /* Reduced slightly */
+            border-radius: 12px;
             border: none;
-            background: #eb742a;
-            color: #000;
-            font-weight: bold;
+            background: linear-gradient(135deg, #ff7b00 0%, #ff5500 100%);
+            color: #fff;
+            font-weight: 800;
             font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             cursor: pointer;
-            margin-top: 8px;
-            transition: 0.3s;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px var(--primary-glow);
         }
 
         .register-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(249,178,51,0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 123, 0, 0.6);
         }
 
-        .footer {
-            margin-top: 15px;
+        /* ========== BOTTOM LINKS & ERRORS ========== */
+        .footer-link {
+            margin-top: 20px;
             font-size: 13px;
-            opacity: 0.8;
+            color: var(--text-muted);
         }
 
-        .footer a {
-            color: #00d2ff;
+        .footer-link a {
+            color: var(--primary);
             text-decoration: none;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .footer-link a:hover {
+            color: #ff9d00;
+            text-decoration: underline;
         }
 
         .error {
-            background: rgba(255, 80, 80, 0.2);
-            color: #ffb3b3;
-            padding: 6px;
-            border-radius: 6px;
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            padding: 10px;
+            border-radius: 10px;
             font-size: 12px;
-            margin-bottom: 10px;
-        }
-
-        .wave {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 70px;
-            background: linear-gradient(135deg, #3a7bd5, #10082e);
-            border-bottom-left-radius: 18px;
-            border-bottom-right-radius: 18px;
-            clip-path: ellipse(70% 100% at 50% 100%);
+            margin-bottom: 15px;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
     </style>
 </head>
@@ -132,52 +196,61 @@
 
 <div class="login-card">
 
-    <img src="{% static 'img/logo.png' %}" class="logo-img">
-    <div class="subtitle">Create your Vision AI account</div>
+    <img src="{% static 'img/logo2.png' %}" alt="LookIn Logo" class="logo-img">
+
+    <div class="subtitle">Initialize New User Protocol</div>
 
     {% if messages %}
-      {% for message in messages %}
-        <div class="error">{{ message }}</div>
-      {% endfor %}
+        {% for message in messages %}
+            <div class="error">{{ message }}</div>
+        {% endfor %}
     {% endif %}
 
     <form method="POST">
         {% csrf_token %}
 
         <div class="input-group">
-            <span class="icon">👤</span>
             <input type="text" name="name" placeholder="Full Name" required value="{{ old_name|default:'' }}">
+            <div class="icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </div>
         </div>
 
         <div class="input-group">
-            <span class="icon">📧</span>
             <input type="email" name="email" placeholder="Email Address" required value="{{ old_email|default:'' }}">
+            <div class="icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
         </div>
 
         <div class="input-group">
-            <span class="icon">📱</span>
-            <input type="text" name="phone" maxlength="10" pattern="[0-9]{10}" placeholder="Mobile Number"
-                   required value="{{ old_mobile|default:'' }}">
+            <input type="text" name="phone" maxlength="10" pattern="[0-9]{10}" placeholder="Mobile Number" required value="{{ old_mobile|default:'' }}">
+            <div class="icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            </div>
         </div>
 
         <div class="input-group">
-            <span class="icon">🔒</span>
-            <input type="password" name="pass" placeholder="Password" required value="{{ old_pass|default:'' }}">
+            <input type="password" name="pass" placeholder="Password" required>
+            <div class="icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
         </div>
 
         <div class="input-group">
-            <span class="icon">🔑</span>
-            <input type="password" name="cpass" placeholder="Confirm Password" required value="{{ old_cpass|default:'' }}">
+            <input type="password" name="cpass" placeholder="Confirm Password" required>
+            <div class="icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+            </div>
         </div>
 
-        <button type="submit" class="register-btn">Register</button>
+        <button type="submit" class="register-btn">Request Access</button>
     </form>
 
-    <div class="footer">
+    <div class="footer-link">
         Already registered? <a href="{% url 'login' %}">Login</a>
     </div>
 
-    <div class="wave"></div>
 </div>
 
 </body>
