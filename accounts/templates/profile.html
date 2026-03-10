@@ -1,0 +1,484 @@
+    {% load static %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <title>Student Profile | LookIn AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        /* ========== PREMIUM DARK AI THEME ========== */
+        :root {
+            --primary: #ff7b00;
+            --primary-glow: rgba(255, 123, 0, 0.5);
+            --bg-dark: #0b0f19;
+            --bg-panel: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-muted: #94a3b8;
+        }
+
+        *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI", Roboto, Helvetica, Arial, sans-serif}
+
+        body{
+            min-height:100vh;
+            /* Mast Dark Gradient Background */
+            background: radial-gradient(circle at top left, #1a233a 0%, #0b0f19 100%);
+            background-attachment: fixed;
+            display:flex;
+            color:#fff;
+        }
+
+        /* ========== SIDEBAR ========== */
+        .sidebar{
+            width: 280px; 
+            background: rgba(10, 15, 30, 0.8); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border-right: 1px solid var(--glass-border); 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: fixed;
+            height: 100vh;
+            z-index: 50;
+            box-shadow: 5px 0 30px rgba(0,0,0,0.5);
+        }
+
+        .logo-area {
+            text-align: center;
+            padding: 40px 15px 30px 15px; 
+            border-bottom: 1px solid var(--glass-border); 
+            margin-bottom: 20px;
+        }
+        
+        .logo-area img{
+            width: 240px; 
+            height: auto;
+            filter: none;
+            transition: 0.3s;
+        }
+        .logo-area img:hover {
+            transform: scale(1.05);
+        }
+
+        .sidebar-links { padding: 0 15px; flex-grow: 1; }
+
+        .sidebar a{
+            padding: 15px 25px; 
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-weight: 600; 
+            font-size: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .sidebar a:hover{
+            background: rgba(255, 123, 0, 0.1); 
+            color: var(--primary); 
+            transform: translateX(5px);
+        }
+
+        .sidebar a.active {
+            color: #fff;
+            background: linear-gradient(135deg, #ff7b00 0%, #ff5500 100%); 
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        /* ========== SIDEBAR USER SECTION (Fixed Double Email) ========== */
+        .user {
+            text-align: center;
+            padding: 25px 15px;
+            border-top: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.3); 
+        }
+        .user img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 2px solid var(--primary);
+        }
+        .user-name {
+            font-weight: 700;
+            font-size: 15px;
+            margin-bottom: 2px;
+            color: #fff;
+        }
+        .user-email {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            word-break: break-all; 
+        }
+        .logout-btn {
+            background: transparent;
+            color: #ef4444;
+            border: 1px solid #ef4444;
+            padding: 8px 25px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            width: 80%;
+        }
+        .logout-btn:hover {
+            background: #ef4444;
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }   
+
+        /* ========== MAIN CONTENT AREA ========== */
+        .main{ 
+            flex: 1; 
+            margin-left: 280px; 
+            padding: 60px 40px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+        }
+
+        /* ========== FROSTED GLASS PROFILE CARD ========== */
+        .profile-card{
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            background: var(--bg-panel); 
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            padding: 50px; 
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid var(--glass-border); 
+            border-top: 1px solid rgba(255,255,255,0.15); /* Top highlight */
+        }
+
+        /* Profile Header */
+        .profile-top{
+            display: flex; 
+            gap: 40px; 
+            align-items: center; 
+            margin-bottom: 40px; 
+            border-bottom: 1px dashed rgba(255,255,255,0.1); 
+            padding-bottom: 40px;
+        }
+        
+        .profile-img-wrapper {
+            position: relative;
+            padding: 5px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff7b00, #ff007b); /* Gradient ring */
+            box-shadow: 0 0 25px var(--primary-glow);
+        }
+        
+        .profile-img-wrapper img{
+            width: 140px; 
+            height: 140px; 
+            border-radius: 50%; 
+            object-fit: cover; 
+            border: 4px solid #0f172a; 
+            display: block;
+        }
+
+        .user-info-text h2 { 
+            font-size: 34px; 
+            margin-bottom: 8px; 
+            font-weight: 800; 
+            letter-spacing: 0.5px;
+        }
+        .user-info-text p { 
+            color: var(--text-muted); 
+            font-size: 15px;
+            margin-bottom: 20px;
+        }
+
+        .edit-btn{
+            background: linear-gradient(135deg, #ff7b00, #ff5500); 
+            color: #fff; 
+            padding: 12px 28px; 
+            border: none;
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            transition: all 0.3s ease; 
+            box-shadow: 0 4px 15px var(--primary-glow);
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .edit-btn:hover{ transform: translateY(-3px); box-shadow: 0 8px 25px rgba(255,123,0,0.6); }
+
+        /* ========== PREMIUM INFO GRID ========== */
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .info-box {
+            background: linear-gradient(145deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid var(--glass-border);
+            padding: 20px 25px;
+            border-radius: 16px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Subtle hover effect on cards */
+        .info-box:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 123, 0, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* Alert Messages */
+        .card-message{
+            position: absolute; top: -20px; right: 20px; padding: 12px 20px;
+            border-radius: 10px; font-weight: bold; color: #fff; animation: fadeOut 4s forwards;
+            font-size: 13px; z-index: 10;
+        }
+        .card-message.success{ background: #10b981; }
+        .card-message.error{ background: #ef4444; }
+        @keyframes fadeOut{ 0%{opacity:1; transform: translateY(0);} 80%{opacity:1;} 100%{opacity:0; transform: translateY(-10px);} }
+
+        /* ========== MODAL STYLING ========== */
+        .modal{
+            position:fixed; inset:0; 
+            background:rgba(0,0,0,0.85); 
+            display:none; align-items:center; justify-content:center; 
+            z-index: 1000; backdrop-filter: blur(10px);
+        }
+        .modal-content{
+            background: #0f172a; 
+            width: 500px; 
+            padding: 40px; 
+            border-radius: 24px; 
+            border: 1px solid var(--glass-border); 
+            max-height: 90vh; 
+            overflow-y: auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
+        
+        .modal-content h2 { margin-bottom: 20px; color: #fff; font-weight: 800; font-size: 24px; border-left: 5px solid var(--primary); padding-left: 15px; }
+        .section-title { font-size: 12px; color: var(--primary); text-transform: uppercase; font-weight: 800; margin: 20px 0 10px 5px; display: block; letter-spacing: 1px;}
+        
+        .modal-content input, .modal-content select { 
+            width:100%; padding:14px 18px; margin-bottom: 15px; 
+            border-radius:12px; border: 1px solid rgba(255,255,255,0.1); 
+            background: rgba(255,255,255,0.03); color: #fff; 
+            outline: none; font-size: 14px; transition: 0.3s;
+        }
+        .modal-content input:focus, .modal-content select:focus { border-color: var(--primary); background: rgba(255,255,255,0.08); box-shadow: 0 0 0 3px rgba(255, 123, 0, 0.1); }
+        .modal-content option { background: #0f172a; color: #fff; }
+
+        .modal-actions { display: flex; gap: 15px; margin-top: 25px; }
+        .save-btn{ flex: 2; padding: 14px; background: linear-gradient(135deg, #ff7b00, #ff5500); border: none; border-radius: 12px; font-weight: bold; color: #fff; cursor: pointer; transition: 0.3s; font-size: 14px; text-transform: uppercase; }
+        .save-btn:hover{ transform: translateY(-2px); box-shadow: 0 5px 15px var(--primary-glow); }
+        .close-btn{ flex: 1; padding: 14px; background: transparent; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; font-weight: bold; color: #fff; cursor: pointer; transition: 0.3s; }
+        .close-btn:hover{ background: rgba(255,255,255,0.1); }
+        .modal-content::-webkit-scrollbar { width: 6px; }
+        .modal-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+    </style>
+    </head>
+
+    <body>
+
+    <div class="sidebar">
+        <div class="sidebar-top">
+            <div class="logo-area">
+                <img src="{% static 'img/logo2.png' %}" alt="LookIn Logo">
+            </div>
+
+            <div class="sidebar-links">
+                <a href="{% url 'profile' %}" class="active">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Profile
+                </a>
+                <a href="{% url 'attendance' %}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    Attendance
+                </a>
+                <a href="{% url 'report' %}">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                    Report
+                </a>
+            </div>
+        </div>
+
+        <div class="user">
+            {% if profile and profile.image %}
+                <img src="{{ profile.image.url }}">
+            {% else %}
+                <img src="{% static 'img/user.png' %}">
+            {% endif %}
+            <p class="user-name">{{ request.user.first_name|default:"Student" }}</p>
+            <p class="user-email">{{ request.user.email }}</p>
+            
+            <form action="{% url 'logout_user' %}" method="POST">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Logout</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="main">
+        <div class="profile-card">
+            {% if messages %}
+                {% for m in messages %}
+                    <div class="card-message {{ m.tags }}">{{ m }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <div class="profile-top">
+                <div class="profile-img-wrapper">
+                    {% if profile and profile.image %}
+                        <img src="{{ profile.image.url }}">
+                    {% else %}
+                        <img src="{% static 'img/user.png' %}">
+                    {% endif %}
+                </div>
+                
+                <div class="user-info-text">
+                    <h2>{{ request.user.first_name }} {{ request.user.last_name }}</h2>
+                    <p>Welcome back to your LookIn AI Portal.</p>
+                    <button class="edit-btn" onclick="openModal()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                        Edit Profile
+                    </button>
+                </div>
+            </div>
+
+            <div class="profile-grid">
+                <div class="info-box">
+                    <div class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7b00" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg> Full Name</div>
+                    <div class="info-value">{{ request.user.first_name }} {{ request.user.last_name }}</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7b00" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg> Roll No / ID</div>
+                    <div class="info-value" style="color: #ff7b00;">#{{ profile.roll|default:"--" }}</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7b00" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg> Email Address</div>
+                    <div class="info-value">{{ request.user.email }}</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7b00" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg> Mobile Number</div>
+                    <div class="info-value">+91 {{ profile.mobile|default:"--" }}</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7b00" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg> Program</div>
+                    <div class="info-value">{{ profile.program|default:"--" }}</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7b00" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Branch / Dept</div>
+                    <div class="info-value">{{ profile.department|default:"--" }}</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7b00" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg> Semester</div>
+                    <div class="info-value">{{ profile.semester|default:"--" }}</div>
+                </div>
+                <div class="info-box">
+                    <div class="info-label"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff7b00" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg> Division</div>
+                    <div class="info-value">{{ profile.division|default:"--" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2>Update Profile</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <label class="section-title">Contact Information</label>
+                <input name="roll" value="{{ profile.roll }}" placeholder="Roll Number (e.g. 202301126)">
+                <input name="mobile" value="{{ profile.mobile }}" placeholder="Mobile Number">
+
+                <label class="section-title">Academic Details</label>
+                <select name="program" required>
+                    <option value="" disabled {% if not profile.program %}selected{% endif %}>Select Program</option>
+                    <option value="BTech" {% if profile.program == "BTech" %}selected{% endif %}>BTech</option>
+                    <option value="MTech" {% if profile.program == "MTech" %}selected{% endif %}>MTech</option>
+                    <option value="Msc" {% if profile.program == "Msc" %}selected{% endif %}>Msc</option>
+                </select>
+
+                <select name="department" required>
+                    <option value="" disabled {% if not profile.department %}selected{% endif %}>Select Branch</option>
+                    <option value="ICT" {% if profile.department == "ICT" %}selected{% endif %}>ICT</option>
+                    <option value="ICT-CS" {% if profile.department == "ICT-CS" %}selected{% endif %}>ICT-CS</option>
+                    <option value="MnC" {% if profile.department == "MnC" %}selected{% endif %}>MnC</option>
+                </select>
+
+                <select name="semester" required>
+                    <option value="" disabled {% if not profile.semester %}selected{% endif %}>Select Semester</option>
+                    {% for i in "12345678"|make_list %}
+                        <option value="Semester {{ i }}" {% if profile.semester == "Semester "|add:i %}selected{% endif %}>Semester {{ i }}</option>
+                    {% endfor %}
+                </select>
+
+                <select name="division" required>
+                    <option value="" disabled {% if not profile.division %}selected{% endif %}>Select Division</option>
+                    <option value="A" {% if profile.division == "A" %}selected{% endif %}>Division A</option>
+                    <option value="B" {% if profile.division == "B" %}selected{% endif %}>Division B</option>
+                    <option value="C" {% if profile.division == "C" %}selected{% endif %}>Division C</option>
+                </select>
+
+                <label class="section-title">Profile Photo</label>
+                <input type="file" name="image" style="padding: 10px;">
+                
+                <div class="modal-actions">
+                    <button type="button" class="close-btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="save-btn">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById("modal").style.display = "flex";
+            document.body.style.overflow = "hidden"; 
+        }
+        function closeModal() {
+            document.getElementById("modal").style.display = "none";
+            document.body.style.overflow = "auto";
+        }
+        window.onclick = function(event) {
+            let modal = document.getElementById("modal");
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+
+    </body>
+    </html>

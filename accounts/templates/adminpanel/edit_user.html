@@ -1,0 +1,42 @@
+{% extends 'adminpanel/base.html' %}
+{% block content %}
+
+<h2>Edit User</h2>
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+
+<input name="name" value="{{ u.first_name }}" placeholder="Name">
+<input name="email" value="{{ u.email }}" placeholder="Email">
+<input name="mobile" value="{{ p.mobile }}" placeholder="Mobile">
+<input name="roll" value="{{ p.roll }}" placeholder="Roll Number">
+
+<select name="faculty">
+    <option value="{{ p.faculty }}">{{ p.faculty|default:"Select Faculty" }}</option>
+</select>
+
+<select name="department">
+    <option value="{{ p.department }}">{{ p.department|default:"Select Department" }}</option>
+</select>
+
+<select name="program">
+    <option value="{{ p.program }}">{{ p.program|default:"Select Program" }}</option>
+</select>
+
+<select name="semester">
+    <option value="{{ p.semester }}">{{ p.semester|default:"Select Semester" }}</option>
+</select>
+
+<select name="division">
+    <option value="{{ p.division }}">{{ p.division|default:"Select Division" }}</option>
+</select>
+
+<input type="file" name="image">
+
+<br><br>
+<button type="submit">Update</button>
+<a href="{% url 'admin_dashboard' %}"><button type="button">Cancel</button></a>
+
+</form>
+
+{% endblock %}

@@ -1,0 +1,248 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* ========== MODERN LOOKIN THEME ========== */
+    .page-title {
+        color: #ff7b00; 
+        font-weight: 800; 
+        margin-bottom: 25px; 
+        text-transform: uppercase; 
+        border-left: 6px solid #ff7b00; 
+        padding-left: 15px;
+        font-size: 24px;
+    }
+
+    /* Form Card with Grid */
+    .form-card {
+        background: #f8fafc;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-bottom: 35px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 15px;
+        align-items: end;
+    }
+
+    .form-grid select, .form-grid input {
+        padding: 12px 15px;
+        font-size: 14px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        background: #ffffff;
+        color: #1e293b;
+        outline: none;
+        width: 100%;
+        transition: 0.3s;
+    }
+
+    .form-grid select:focus, .form-grid input:focus {
+        border-color: #ff7b00;
+        box-shadow: 0 0 8px rgba(255, 123, 0, 0.15);
+    }
+
+    /* Submit Button */
+    .submit-btn {
+        padding: 12px 25px;
+        background: #ff7b00;
+        border: none;
+        color: white;
+        border-radius: 10px;
+        font-weight: bold;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: 0.3s;
+        height: 45px;
+    }
+
+    .submit-btn:hover {
+        background: #e66f00;
+        transform: translateY(-2px);
+    }
+
+    /* Table Card Style */
+    .table-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border: 1px solid #f1f5f9;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead tr {
+        background: #f8fafc;
+        border-bottom: 2px solid #e2e8f0;
+    }
+
+    th {
+        padding: 15px;
+        text-align: left;
+        color: #475569;
+        font-weight: 700;
+        font-size: 11px;
+        text-transform: uppercase;
+    }
+
+    td {
+        padding: 15px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #1e293b;
+        font-size: 13px;
+    }
+
+    tr:hover {
+        background: #fcfcfc;
+    }
+
+    /* Action Buttons */
+    .action-group {
+        display: flex;
+        gap: 8px;
+    }
+
+    .edit-link {
+        background: #3498db;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .delete-link {
+        background: #e74c3c;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .edit-link:hover { background: #2980b9; }
+    .delete-link:hover { background: #c0392b; }
+
+</style>
+
+<h2 class="page-title">Manage Subjects</h2>
+
+<div class="form-card">
+    <form method="POST" action="{% if edit_subject %}{% url 'edit_subject' edit_subject.id %}{% else %}{% url 'subjects' %}{% endif %}" class="form-grid">
+        {% csrf_token %}
+
+        <div>
+            <label style="font-size: 11px; color: #64748b; margin-bottom: 5px; display: block;">Faculty</label>
+            <select name="faculty" required>
+                <option value="" disabled selected>Select Faculty</option>
+                {% for f in faculties %}
+                    <option value="{{ f.id }}" {% if edit_subject and edit_subject.faculty.id == f.id %}selected{% endif %}>{{ f.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label style="font-size: 11px; color: #64748b; margin-bottom: 5px; display: block;">Department</label>
+            <select name="department" required>
+                <option value="" disabled selected>Select Dept</option>
+                {% for d in departments %}
+                    <option value="{{ d.id }}" {% if edit_subject and edit_subject.department.id == d.id %}selected{% endif %}>{{ d.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label style="font-size: 11px; color: #64748b; margin-bottom: 5px; display: block;">Program</label>
+            <select name="program" required>
+                <option value="" disabled selected>Select Program</option>
+                {% for p in programs %}
+                    <option value="{{ p.id }}" {% if edit_subject and edit_subject.program.id == p.id %}selected{% endif %}>{{ p.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label style="font-size: 11px; color: #64748b; margin-bottom: 5px; display: block;">Semester</label>
+            <select name="semester" required>
+                <option value="" disabled selected>Select Sem</option>
+                {% for s in semesters %}
+                    <option value="{{ s.id }}" {% if edit_subject and edit_subject.semester.id == s.id %}selected{% endif %}>{{ s.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label style="font-size: 11px; color: #64748b; margin-bottom: 5px; display: block;">Division</label>
+            <select name="division" required>
+                <option value="" disabled selected>Select Div</option>
+                {% for d in divisions %}
+                    <option value="{{ d.id }}" {% if edit_subject and edit_subject.division.id == d.id %}selected{% endif %}>{{ d.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label style="font-size: 11px; color: #64748b; margin-bottom: 5px; display: block;">Subject Name</label>
+            <input type="text" name="subject_name" placeholder="e.g. Machine Learning" value="{% if edit_subject %}{{ edit_subject.name }}{% endif %}" required>
+        </div>
+
+        <button type="submit" class="submit-btn">
+            {% if edit_subject %}Update{% else %}Add Subject{% endif %}
+        </button>
+    </form>
+</div>
+
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Faculty</th>
+                <th>Dept</th>
+                <th>Program</th>
+                <th>Sem</th>
+                <th>Div</th>
+                <th>Subject</th>
+                <th style="text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in subjects %}
+            <tr>
+                <td><strong>#{{ s.id|add:-1 }}</strong></td>
+                <td>{{ s.faculty.name }}</td>
+                <td>{{ s.department.name }}</td>
+                <td>{{ s.program.name }}</td>
+                <td>{{ s.semester.name }}</td>
+                <td>{{ s.division.name }}</td>
+                <td><span style="color: #ff7b00; font-weight: 700;">{{ s.name }}</span></td>
+                <td>
+                    <div class="action-group" style="justify-content: center;">
+                        <a href="{% url 'edit_subject' s.id %}" class="edit-link">Edit</a>
+                        <a href="{% url 'delete_subject' s.id %}" class="delete-link" onclick="return confirm('Subject delete karvu che?')">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="8" style="text-align: center; padding: 30px; color: #94a3b8;">No Subjects Found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

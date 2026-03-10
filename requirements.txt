@@ -1,0 +1,14 @@
+Django==5.2.11
+gunicorn
+whitenoise
+dj-database-url
+psycopg2-binary
+Pillow
+opencv-python-headless
+numpy
+reportlab
+openpyxl
+cloudinary
+django-cloudinary-storage
+face-recognition
+dlib==19.24.0
