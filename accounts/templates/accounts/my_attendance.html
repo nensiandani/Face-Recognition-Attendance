@@ -1,11 +1,9 @@
-
 {% load static %}
-{% block content %}
-
-<style>
+{% include 'header.html' %}  <style>
 .attendance-container{
     max-width:1100px;
     margin:auto;
+    padding: 15px;
 }
 
 .card{
@@ -54,6 +52,25 @@
 .absent{
     color:red;
     font-weight:bold;
+}
+
+/* --- 📱 આ છે મોબાઈલ માટેનો જાદુઈ કોડ --- */
+@media (max-width: 768px) {
+    .top-grid {
+        grid-template-columns: 1fr; /* ૩ ડબ્બાની જગ્યાએ ૧ ડબ્બો થઈ જશે (એકની નીચે એક) */
+        gap: 15px;
+    }
+    .stat {
+        padding: 15px;
+    }
+    .stat h2 {
+        font-size: 24px;
+    }
+    .table {
+        display: block;
+        overflow-x: auto; /* ટેબલ મોબાઈલમાં આંગળીથી સ્ક્રોલ થશે, કપાશે નહિ */
+        white-space: nowrap;
+    }
 }
 </style>
 
@@ -108,7 +125,3 @@
 
 </table>
 </div>
-
-</div>
-
-{% endblock %}
