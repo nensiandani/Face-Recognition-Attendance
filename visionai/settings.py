@@ -11,7 +11,14 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-default')
 # 🔒 સિક્યોર કરેલું DEBUG (લાઈવ સર્વરમાં ઓટોમેટિક False થઈ જશે જો .env માં નહિ હોય તો)
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['lookin-6brm.onrender.com', '72.60.220.43', 'localhost', '127.0.0.1', '*']
+ALLOWED_HOSTS = ['lookinai.gdgdau.cloud', 'lookin-6brm.onrender.com', '72.60.220.43', 'localhost', '127.0.0.1', '*']
+
+# Django ને જણાવવા કે આ નવા ડોમેન આપણા જ છે
+CSRF_TRUSTED_ORIGINS = [
+    'https://lookinai.gdgdau.cloud',
+    'http://lookinai.gdgdau.cloud',
+    'http://72.60.220.43:8000',
+]
 
 # ... (બાકીના એપ્સ અને મિડલવેર એમ જ રાખવા) ...
 INSTALLED_APPS = [
