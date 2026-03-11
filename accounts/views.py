@@ -43,6 +43,8 @@ import re
 from django.core.mail import send_mail
 from django.conf import settings
 
+import urllib.request
+
 def admin_check(user):
     return user.is_staff    
 
@@ -307,12 +309,20 @@ def load_student_encodings():
             if not user.profile.image:
                 continue
 
-            img_path = user.profile.image.path
+            # 🔥 Cloudinary URL Support (ઓનલાઈન ફોટો વાંચવા માટે) 🔥
+            image_url = user.profile.image.url
+            
+            if image_url.startswith('http'):
+                req = urllib.request.urlopen(image_url)
+                img_array = np.asarray(bytearray(req.read()), dtype=np.uint8)
+                img_bgr = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+                img = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+            else:
+                img_path = user.profile.image.path
+                if not os.path.exists(img_path):
+                    continue
+                img = face_recognition.load_image_file(img_path)
 
-            if not os.path.exists(img_path):
-                continue
-
-            img = face_recognition.load_image_file(img_path)
             encodings = face_recognition.face_encodings(img)
 
             if encodings:
@@ -320,7 +330,7 @@ def load_student_encodings():
                 STUDENT_USERS.append(user)
 
         except Exception as e:
-            print("Encoding load error:", e)
+            print(f"Encoding load error for {user.username}:", e)
 
     print("Students loaded:", len(STUDENT_ENCODINGS))
 
@@ -331,29 +341,19 @@ def match_faces(frame_encodings):
         return matched_users
 
     for face_encoding in frame_encodings:
-
-        distances = face_recognition.face_distance(
-            STUDENT_ENCODINGS,
-            face_encoding
-        )
-
+        distances = face_recognition.face_distance(STUDENT_ENCODINGS, face_encoding)
+        
         best_index = np.argmin(distances)
         best_distance = distances[best_index]
 
-        sorted_distances = np.sort(distances)
-        second_best = sorted_distances[1] if len(sorted_distances) > 1 else 1.0
-
-        # 🔥 strict conditions
-        if best_distance > 0.45:
-            continue
-
-        if (second_best - best_distance) < 0.08:
+        # 🔥 કડકાઈ ઓછી કરી (0.45 થી 0.55 કર્યું, જેથી ક્લાસરૂમના ફોટા પણ ઓળખી લે) 🔥
+        if best_distance > 0.55:
             continue
 
         matches = face_recognition.compare_faces(
             STUDENT_ENCODINGS,
             face_encoding,
-            tolerance=0.45
+            tolerance=0.55
         )
 
         if matches[best_index]:
