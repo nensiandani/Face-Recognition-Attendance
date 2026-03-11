@@ -232,13 +232,37 @@ def mark_attendance(request):
             for user in users:
                 matched_users_total.add(user)
 
-        # ✅ PRESENT SAVE
+        # ✅ PRESENT SAVE & EMAIL
         for user in matched_users_total:
             Attendance.objects.create(
                 session=session,
                 student=user,
                 status=True
             )
+
+            # 📧 હાજર (Present) સ્ટુડન્ટને ઈમેલ મોકલવાનો કોડ
+            if user.email:
+                try:
+                    send_mail(
+                        subject="Present Alert – LookIn-AI",
+                        message=f"""
+Dear {user.first_name},
+
+You were marked PRESENT today.
+
+📚 Subject: {subject.name}
+🕒 Lecture Slot: {slot}
+📅 Date: {session.date}
+
+– LookIn-AI Attendance System
+""",
+                        from_email=settings.EMAIL_HOST_USER,
+                        recipient_list=[user.email],
+                        fail_silently=False,
+                    )
+                    print("Present Email sent to:", user.email)
+                except Exception as e:
+                    print("Present Email error:", e)
 
         # ❌ ABSENT SAVE + EMAIL
         all_students = User.objects.filter(is_staff=False)
@@ -256,7 +280,7 @@ def mark_attendance(request):
                 if student.email:
                     try:
                         send_mail(
-                            subject="Absent Alert – Vision AI",
+                            subject="Absent Alert – LookIn-AI",
                             message=f"""
 Dear {student.first_name},
 
@@ -268,17 +292,17 @@ You were marked ABSENT today.
 
 Please attend next lecture.
 
-– Vision AI Attendance System
+– LookIn-AI Attendance System
 """,
                             from_email=settings.EMAIL_HOST_USER,
                             recipient_list=[student.email],
                             fail_silently=False,
                         )
 
-                        print("Email sent to:", student.email)
+                        print("Absent Email sent to:", student.email)
 
                     except Exception as e:
-                        print("Email error:", e)
+                        print("Absent Email error:", e)
 
         detected_students = list(matched_users_total)
 
@@ -676,143 +700,6 @@ def delete_user(request, user_id):
 @login_required
 def attendance(request):
     return render(request, "adminpanel/attendance.html")
-
-
-@user_passes_test(admin_check, login_url='admin_login')
-@login_required
-def faculties(request):
-    return render(request, "adminpanel/faculties.html")
-@user_passes_test(admin_check, login_url='admin_login')
-@login_required
-def departments(request):
-    return render(request, "adminpanel/departments.html")
-
-@user_passes_test(admin_check, login_url='admin_login')
-@login_required
-def programs(request):
-    return render(request, "adminpanel/programs.html")
-
-@user_passes_test(admin_check, login_url='admin_login')
-@login_required
-def semesters(request):
-    return render(request, "adminpanel/semesters.html")
-@user_passes_test(admin_check, login_url='admin_login')
-@login_required
-def divisions(request):
-    return render(request, "adminpanel/divisions.html")
-
-
-def register(request):
-    if request.method == "POST":
-        name = request.POST.get('name', '').strip()
-        email = request.POST.get('email', '').strip()
-        mobile = request.POST.get('phone', '').strip()
-        password = request.POST.get('pass', '')
-        cpassword = request.POST.get('cpass', '')
-
-        context = {
-            "old_name": name,
-            "old_email": email,
-            "old_mobile": mobile,
-            "old_pass": password,
-            "old_cpass": cpassword,
-        }
-
-        # 🔴 REQUIRED FIELDS
-        if not all([name, email, mobile, password, cpassword]):
-            messages.error(request, "All fields are required")
-            return render(request, "register.html", context)
-
-        # 🔴 MOBILE VALIDATION
-        if not mobile.isdigit() or len(mobile) != 10:
-            messages.error(request, "Mobile number must be exactly 10 digits")
-            return render(request, "register.html", context)
-
-        # 🔴 PASSWORD MATCH
-        if password != cpassword:
-            messages.error(request, "Password and Confirm Password must be same")
-            return render(request, "register.html", context)
-
-        # 🔴 EMAIL UNIQUE
-        if User.objects.filter(username=email).exists():
-            messages.error(request, "Email already registered")
-            return render(request, "register.html", context)
-
-        # ✅ CREATE USER
-        user = User.objects.create_user(
-            username=email,
-            email=email,
-            password=password,
-            first_name=name
-        )
-
-        Profile.objects.create(user=user, mobile=mobile)
-
-        messages.success(request, "Registration successful. Please login.")
-        return redirect('login')
-
-    return render(request, "register.html")
-
-
-
-def login_user(request):
-    if request.method == "POST":
-        email = request.POST.get('email')
-        password = request.POST.get('pass')
-
-        user = authenticate(request, username=email, password=password)
-
-        if user and not user.is_staff:
-            login(request, user)   # Django session for normal user
-            return redirect("profile")
-        else:
-            messages.error(request, "Invalid user credentials")
-
-    return render(request, "login.html")
-
-
-    return render(request, "login.html")
-@login_required
-def profile(request):
-    # 🔒 Admin ne user profile ma aavta rokva
-    if request.user.is_staff:
-        return redirect('admin_dashboard')
-
-    profile = Profile.objects.filter(user=request.user).first()
-
-    if request.method == "POST":
-        if profile is None:
-            profile = Profile.objects.create(user=request.user)
-
-        mobile = request.POST.get("mobile", "").strip()
-
-        # 🔴 Mobile Validation
-        if mobile and not re.fullmatch(r"\d{10}", mobile):
-            messages.error(request, "Mobile number must be exactly 10 digits")
-            return redirect("profile")
-
-        # ✅ Save Data
-        profile.mobile = mobile
-        profile.roll = request.POST.get("roll", "").strip()
-        profile.faculty = request.POST.get("faculty", "").strip()
-        profile.department = request.POST.get("department", "").strip()
-        profile.program = request.POST.get("program", "").strip()
-        profile.semester = request.POST.get("semester", "").strip()
-        profile.division = request.POST.get("division", "").strip()
-
-        if "image" in request.FILES:
-            profile.image = request.FILES["image"]
-
-        profile.save()
-        messages.success(request, "Profile updated successfully!")
-        return redirect("profile")
-
-    return render(request, "profile.html", {
-        "profile": profile,
-        "profile_exists": profile is not None
-    })
-
-
 
 
 @user_passes_test(admin_check, login_url='admin_login')
