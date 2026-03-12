@@ -14,3 +14,4 @@ django-cloudinary-storage
 face-recognition
 dlib
 django-allauth
+PyJWT
