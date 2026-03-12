@@ -333,10 +333,10 @@
 
     <div class="user">
         {% if profile and profile.image %}
-            <img src="{{ profile.image.url }}">
-        {% else %}
-            <img src="{% static 'img/user.png' %}">
-        {% endif %}
+                <img src="{{ profile.image.url }}" style="width: 60px !important; height: 60px !important; object-fit: cover !important; border-radius: 50% !important; aspect-ratio: 1/1 !important;">
+            {% else %}
+                <img src="{% static 'img/user.png' %}" style="width: 60px !important; height: 60px !important; object-fit: cover !important; border-radius: 50% !important; aspect-ratio: 1/1 !important;">
+            {% endif %}
         <p class="user-name">{{ request.user.first_name|default:"Student" }}</p>
         <p class="user-email">{{ request.user.email }}</p>
         
