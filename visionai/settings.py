@@ -137,11 +137,15 @@ AUTHENTICATION_BACKENDS = (
 LOGIN_REDIRECT_URL = 'profile'
 LOGOUT_REDIRECT_URL = 'login'
 
-# Allauth ની ખાસ સેટિંગ્સ
+# Allauth ની ખાસ સેટિંગ્સ (Warning ફિક્સ કરેલી)
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_LOGIN_METHODS = {'email'} 
 ACCOUNT_EMAIL_VERIFICATION = 'none' 
+
+# 💡 500 એરર અને પેલા કાળા-ધોળા પેજને ગાયબ કરવાનો જાદુ:
+SOCIALACCOUNT_LOGIN_ON_GET = True  # વચલું પેજ સ્કીપ કરીને સીધું ગૂગલ ખોલશે
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # ગૂગલને કહેશે કે આપણી સાઈટ સિક્યોર (HTTPS) છે
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https' # Callback એરર નહિ આવે
 
 # Google Provider કોન્ફિગરેશન (તમારી .env માંથી કી લેશે)
 SOCIALACCOUNT_PROVIDERS = {
