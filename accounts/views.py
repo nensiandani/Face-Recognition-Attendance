@@ -31,6 +31,8 @@ import re
 
 from django.core.mail import send_mail
 import urllib.request
+import random
+
 
 def admin_check(user):
     return user.is_staff    
@@ -754,24 +756,91 @@ def register(request):
         if password != cpassword:
             messages.error(request, "Password and Confirm Password must be same")
             return render(request, "register.html", context)
+        
+        # ==========================================
+        # 💡 STRONG PASSWORD VALIDATION
+        # ==========================================
+        if len(password) < 8:
+            messages.error(request, "Password must be at least 8 characters long.")
+            return render(request, "register.html", context)
+        if not re.search(r'[A-Z]', password):
+            messages.error(request, "Password must contain at least one uppercase letter (A-Z).")
+            return render(request, "register.html", context)
+        if not re.search(r'[a-z]', password):
+            messages.error(request, "Password must contain at least one lowercase letter (a-z).")
+            return render(request, "register.html", context)
+        if not re.search(r'\d', password):
+            messages.error(request, "Password must contain at least one number (0-9).")
+            return render(request, "register.html", context)
+        if not re.search(r'[@$!%*?&#]', password):
+            messages.error(request, "Password must contain at least one special character (@, $, !, %, *, ?, &, #).")
+            return render(request, "register.html", context)
+        # ==========================================
 
         if User.objects.filter(username=email).exists():
             messages.error(request, "Email already registered")
             return render(request, "register.html", context)
 
-        user = User.objects.create_user(
-            username=email,
-            email=email,
-            password=password,
-            first_name=name
-        )
+        # 💡 અહીથી OTP નો જાદુ ચાલુ...
+        # 1. 6 આંકડાનો OTP બનાવો
+        otp = str(random.randint(100000, 999999))
 
-        Profile.objects.create(user=user, mobile=mobile)
+        # 2. બધો ડેટા ટેમ્પરરી Session માં સેવ કરો (ડેટાબેઝમાં નહિ)
+        request.session['temp_user'] = {
+            'name': name,
+            'email': email,
+            'mobile': mobile,
+            'password': password,
+            'otp': otp
+        }
 
-        messages.success(request, "Registration successful. Please login.")
-        return redirect('login')
+        # 3. ઈમેલ મોકલો
+        subject = 'Verify Your Email - LookIn AI'
+        message = f'Hello {name},\n\nYour OTP for registration is: {otp}\n\nPlease do not share this with anyone.'
+        email_from = settings.EMAIL_HOST_USER
+        recipient_list = [email]
+
+        try:
+            send_mail(subject, message, email_from, recipient_list)
+            messages.success(request, f"OTP sent to {email}. Please verify.")
+            return redirect('verify_otp') # ઈમેલ મોકલીને OTP પેજ પર મોકલી દો
+        except Exception as e:
+            messages.error(request, "Error sending email. Please try again.")
+            return render(request, "register.html", context)
 
     return render(request, "register.html")
+
+# 🚀 નવું ફંક્શન: OTP ચેક કરવા માટે
+def verify_otp(request):
+    # જો કોઈ ડાયરેક્ટ આ પેજ ખોલે તો પાછા મોકલો
+    if 'temp_user' not in request.session:
+        messages.error(request, "Please register first.")
+        return redirect('register')
+
+    if request.method == "POST":
+        user_otp = request.POST.get('otp', '').strip()
+        temp_user = request.session['temp_user']
+
+        # 💡 OTP ચેક કરો
+        if user_otp == temp_user['otp']:
+            # સાચો OTP! હવે ફાઇનલી યુઝર બનાવી દો
+            user = User.objects.create_user(
+                username=temp_user['email'],
+                email=temp_user['email'],
+                password=temp_user['password'],
+                first_name=temp_user['name']
+            )
+            Profile.objects.create(user=user, mobile=temp_user['mobile'])
+
+            # Session માંથી ડેટા કાઢી નાખો
+            del request.session['temp_user']
+
+            messages.success(request, "Email verified successfully! You can now login.")
+            return redirect('login')
+        else:
+            messages.error(request, "Invalid OTP. Please try again.")
+
+    return render(request, "verify_otp.html", {'email': request.session['temp_user']['email']})
 
 def login_user(request):
     if request.method == "POST":
@@ -798,6 +867,10 @@ def profile(request):
     if request.method == "POST":
         if profile is None:
             profile = Profile.objects.create(user=request.user)
+
+        request.user.first_name = request.POST.get("first_name", request.user.first_name).strip()
+        request.user.last_name = request.POST.get("last_name", request.user.last_name).strip()
+        request.user.save()
 
         mobile = request.POST.get("mobile", "").strip()
 

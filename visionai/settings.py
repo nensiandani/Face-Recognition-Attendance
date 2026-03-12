@@ -1,6 +1,7 @@
 import os
 import dj_database_url
 from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -123,36 +124,20 @@ EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
 
 
-
 # ==========================================
-# 🚀 GOOGLE AUTHENTICATION SETTINGS
+# 🚀 GOOGLE AUTH EXTRA FIXES
 # ==========================================
-SITE_ID = 1
+SOCIALACCOUNT_LOGIN_ON_GET = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
 
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-)
-
-LOGIN_REDIRECT_URL = 'profile'
-LOGOUT_REDIRECT_URL = 'login'
-
-# Allauth ની ખાસ સેટિંગ્સ (Warning ફિક્સ કરેલી)
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_LOGIN_METHODS = {'email'} 
-ACCOUNT_EMAIL_VERIFICATION = 'none' 
-
-# 💡 500 એરર અને પેલા કાળા-ધોળા પેજને ગાયબ કરવાનો જાદુ:
-SOCIALACCOUNT_LOGIN_ON_GET = True  # વચલું પેજ સ્કીપ કરીને સીધું ગૂગલ ખોલશે
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https') # ગૂગલને કહેશે કે આપણી સાઈટ સિક્યોર (HTTPS) છે
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https' # Callback એરર નહિ આવે
-
-# Google Provider કોન્ફિગરેશન (તમારી .env માંથી કી લેશે)
+# Google Provider કોન્ફિગરેશન 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': os.environ.get('GOOGLE_CLIENT_ID'),
-            'secret': os.environ.get('GOOGLE_CLIENT_SECRET'),
+            # 💡 os.environ.get ની જગ્યાએ config() વાપર્યું છે
+            'client_id': config('GOOGLE_CLIENT_ID', default=''),
+            'secret': config('GOOGLE_CLIENT_SECRET', default=''),
             'key': ''
         },
         'SCOPE': ['profile', 'email'],

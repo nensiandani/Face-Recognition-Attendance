@@ -431,8 +431,14 @@
             <form method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 
+                <label class="section-title">Personal Information</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" name="first_name" value="{{ request.user.first_name }}" placeholder="First Name" required style="margin-bottom: 5px;">
+                    <input type="text" name="last_name" value="{{ request.user.last_name }}" placeholder="Last Name" style="margin-bottom: 5px;">
+                </div>
+
                 <label class="section-title">Contact Information</label>
-                <input name="roll" value="{{ profile.roll }}" placeholder="Roll Number (e.g. 202301126)">
+                <input name="roll" value="{{ profile.roll }}" placeholder="Roll Number (e.g. 202301xxx)">
                 <input name="mobile" value="{{ profile.mobile }}" placeholder="Mobile Number">
 
                 <label class="section-title">Academic Details</label>
