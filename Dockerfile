@@ -5,7 +5,6 @@ ENV DLIB_NUM_THREADS=1
 ENV CMAKE_BUILD_PARALLEL_LEVEL=1
 ENV PIP_NO_CACHE_DIR=1
 
-# Added python3-dev here (Crucial for dlib C++ compilation)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     cmake \
@@ -18,8 +17,10 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-# Removed cmake from here to avoid the broken python wrapper
 RUN pip install --upgrade pip setuptools wheel
+
+# 💡 આ જાદુઈ લાઈન છે! આનાથી 15 મિનિટનું કામ 10 સેકન્ડમાં પતશે!
+RUN pip install dlib-bin
 
 RUN pip install -r requirements.txt
 
