@@ -16,3 +16,4 @@ dlib
 django-allauth
 PyJWT
 cryptography
+python-decouple
