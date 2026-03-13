@@ -19,7 +19,6 @@ COPY requirements.txt .
 
 RUN pip install --upgrade pip setuptools wheel
 
-# 💡 આ જાદુઈ લાઈન છે! આનાથી 15 મિનિટનું કામ 10 સેકન્ડમાં પતશે!
 RUN pip install dlib-bin
 
 RUN pip install -r requirements.txt
@@ -31,5 +30,5 @@ RUN python manage.py migrate --no-input || true
 
 EXPOSE 8000
 
-# Use 1 worker and 2 threads to save RAM, with a longer timeout
+
 CMD ["gunicorn", "visionai.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "1", "--threads", "2", "--timeout", "120"]

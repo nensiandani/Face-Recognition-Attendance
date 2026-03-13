@@ -1,0 +1,5 @@
+docker build . -t jaimeen911/lookinai:latest
+docker push jaimeen911/lookinai:latest
+
+
+docker run -p 8000:8000  jaimeen911/lookinai:latest
