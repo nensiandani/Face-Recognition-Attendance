@@ -122,11 +122,10 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-# અહીંયા ખાસ ધ્યાન આપજો, આપણે .env માં જે નામ છે એ જ લખીશું
+# હવે આ છુપી .env માંથી ડાયરેક્ટ લઈ લેશે!
 EMAIL_HOST_USER = config('EMAIL_USER') 
 EMAIL_HOST_PASSWORD = config('EMAIL_PASS')
 
-# ઈમેલ વેરિફિકેશન માટે આ લાઈન પણ ચેક કરી લો
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_EMAIL_REQUIRED = True
 

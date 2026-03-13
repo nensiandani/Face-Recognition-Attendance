@@ -20,6 +20,11 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Create secret .env file
+        run: |
+          echo "EMAIL_USER=${{ secrets.MY_EMAIL_USER }}" > .env
+          echo "EMAIL_PASS=${{ secrets.MY_EMAIL_PASS }}" >> .env
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
