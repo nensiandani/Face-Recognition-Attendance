@@ -116,13 +116,19 @@ LOGOUT_REDIRECT_URL = '/login/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # 🔒 સિક્યોર કરેલું Email Settings
+# settings.py માં નીચે મુજબ બદલો
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_USER') 
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
 
+# અહીંયા ખાસ ધ્યાન આપજો, આપણે .env માં જે નામ છે એ જ લખીશું
+EMAIL_HOST_USER = config('EMAIL_USER') 
+EMAIL_HOST_PASSWORD = config('EMAIL_PASS')
+
+# ઈમેલ વેરિફિકેશન માટે આ લાઈન પણ ચેક કરી લો
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_REQUIRED = True
 
 # ==========================================
 # 🚀 GOOGLE AUTH EXTRA FIXES
