@@ -33,6 +33,9 @@ from django.core.mail import send_mail
 import urllib.request
 import random
 
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.views import PasswordResetView
+
 
 def admin_check(user):
     return user.is_staff    
@@ -830,7 +833,14 @@ def verify_otp(request):
                 password=temp_user['password'],
                 first_name=temp_user['name']
             )
-            Profile.objects.create(user=user, mobile=temp_user['mobile'])
+            Profile.objects.create(
+    user=user, 
+    mobile=temp_user['mobile'],
+    roll='',
+    program='',
+    semester='',
+    division='',
+)
 
             # Session માંથી ડેટા કાઢી નાખો
             del request.session['temp_user']
@@ -897,3 +907,43 @@ def profile(request):
         "profile": profile,
         "profile_exists": profile is not None
     })
+
+
+# ✅ Permanent Fix - Password Reset
+# Aa function views.py na LAST MA add karo
+def custom_password_reset(request):
+    if request.method == "POST":
+        email = request.POST.get('email', '').strip()
+
+        # Pehla email thi shodho
+        user = User.objects.filter(email=email).first()
+
+        # Na malyo to username thi try karo
+        if not user:
+            user = User.objects.filter(username=email).first()
+
+        # User malyo to email fix karo ane reset mail moko
+        if user:
+            # Username ne email sathe sync karo - future mate
+            if user.username != user.email and user.email:
+                pass  # email already set che
+            
+            from django.contrib.auth.forms import PasswordResetForm
+            # User no email set karo jo username hoy
+            if not user.email:
+                user.email = email
+                user.save()
+
+            form = PasswordResetForm({'email': user.email})
+            if form.is_valid():
+                form.save(
+                    request=request,
+                    use_https=request.is_secure(),
+                    email_template_name='registration/password_reset_email.html',
+                    subject_template_name='registration/password_reset_subject.txt',
+                )
+
+        # Security mate - user hoy ke na hoy same page dikhaao
+        return redirect('password_reset_done')
+
+    return render(request, "password_reset.html")

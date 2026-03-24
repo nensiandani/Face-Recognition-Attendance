@@ -24,6 +24,7 @@ jobs:
         run: |
           echo "EMAIL_USER=${{ secrets.MY_EMAIL_USER }}" > .env
           echo "EMAIL_PASS=${{ secrets.MY_EMAIL_PASS }}" >> .env
+          echo "DATABASE_URL=${{ secrets.MY_DATABASE_URL }}" >> .env
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5

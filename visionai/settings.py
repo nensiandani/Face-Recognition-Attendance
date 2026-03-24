@@ -6,31 +6,28 @@ from decouple import config
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 🔒 સિક્યોર કરેલી SECRET_KEY
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-default')
 
-# 🔒 સિક્યોર કરેલું DEBUG (લાઈવ સર્વરમાં ઓટોમેટિક False થઈ જશે જો .env માં નહિ હોય તો)
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['lookinai.gdgdau.cloud', 'lookin-6brm.onrender.com', '72.60.220.43', 'localhost', '127.0.0.1', '*']
 
-# Django ને જણાવવા કે આ નવા ડોમેન આપણા જ છે
 CSRF_TRUSTED_ORIGINS = [
     'https://lookinai.gdgdau.cloud',
     'http://lookinai.gdgdau.cloud',
     'http://72.60.220.43:8000',
+    'http://localhost:8000',
 ]
 
-# ... (બાકીના એપ્સ અને મિડલવેર એમ જ રાખવા) ...
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'cloudinary_storage', 
+    'cloudinary_storage',
     'django.contrib.staticfiles',
-    'accounts', 
+    'accounts',
     'cloudinary',
     'django.contrib.sites',
     'allauth',
@@ -102,7 +99,6 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 MEDIA_URL = '/media/'
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# 🔒 સિક્યોર કરેલું Cloudinary Settings
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
@@ -115,38 +111,33 @@ LOGOUT_REDIRECT_URL = '/login/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# 🔒 સિક્યોર કરેલું Email Settings
-# settings.py માં નીચે મુજબ બદલો
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-
-# હવે આ છુપી .env માંથી ડાયરેક્ટ લઈ લેશે!
-EMAIL_HOST_USER = config('EMAIL_USER') 
-EMAIL_HOST_PASSWORD = config('EMAIL_PASS')
+EMAIL_HOST_USER = os.environ.get('EMAIL_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASS')
 
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_EMAIL_REQUIRED = False
 
 # ==========================================
-# 🚀 GOOGLE AUTH EXTRA FIXES
+# GOOGLE AUTH
 # ==========================================
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'http'
 
-# Google Provider કોન્ફિગરેશન 
+# APP block હટાવ્યો — credentials database માંથી આવશે (entrypoint.sh સેટ કરે છે)
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        'APP': {
-            # 💡 os.environ.get ની જગ્યાએ config() વાપર્યું છે
-            'client_id': config('GOOGLE_CLIENT_ID', default=''),
-            'secret': config('GOOGLE_CLIENT_SECRET', default=''),
-            'key': ''
-        },
         'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {'access_type': 'online'},
+        'APP': {
+            'client_id': os.environ.get('GOOGLE_CLIENT_ID', ''),
+            'secret': os.environ.get('GOOGLE_CLIENT_SECRET', ''),
+            'key': ''
+        }
     }
 }
 

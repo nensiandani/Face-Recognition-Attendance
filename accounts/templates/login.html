@@ -130,6 +130,24 @@
             color: var(--primary);
         }
 
+        /* ✅ Eye button - sirf aa add karyu */
+        .eye-btn {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-muted);
+            padding: 0;
+            display: flex;
+            align-items: center;
+            user-select: none;
+        }
+        .eye-btn:hover { color: var(--primary); }
+        .eye-btn svg { width: 20px; height: 20px; pointer-events: none; }
+
         .login-btn {
             width: 100%;
             padding: 16px;
@@ -179,8 +197,23 @@
             margin-bottom: 20px;
             border: 1px solid rgba(239, 68, 68, 0.3);
         }
+        .msg {
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+        .msg.success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .msg.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
         
-        /* ઓર (OR) લાઈન માટેની ડિઝાઇન */
         .divider {
             display: flex;
             align-items: center;
@@ -194,23 +227,17 @@
             flex: 1;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
-        .divider:not(:empty)::before {
-            margin-right: .5em;
-        }
-        .divider:not(:empty)::after {
-            margin-left: .5em;
-        }
-
+        .divider:not(:empty)::before { margin-right: .5em; }
+        .divider:not(:empty)::after { margin-left: .5em; }
     </style>
 </head>
 <body>
     <div class="login-card">
         <img src="{% static 'img/logo2.png' %}" alt="LookIn Logo" class="logo-img" />
-
         <div class="subtitle">Secure AI Access Portal</div>
 
         {% for message in messages %}
-            <div class="error">{{ message }}</div>
+            <div class="msg {{ message.tags }}">{{ message }}</div>
         {% endfor %}
 
         <form method="POST">
@@ -224,10 +251,22 @@
             </div>
 
             <div class="input-group" style="margin-bottom: 10px;">
-                <input type="password" name="pass" placeholder="Password" required />
+                <input type="password" id="loginPass" name="pass" placeholder="Password" required />
                 <div class="icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                 </div>
+                <!-- ✅ Sirf aa eye button add karyu -->
+                <button type="button" class="eye-btn"
+                    onmousedown="showPass('loginPass')"
+                    onmouseup="hidePass('loginPass')"
+                    onmouseleave="hidePass('loginPass')"
+                    ontouchstart="showPass('loginPass')"
+                    ontouchend="hidePass('loginPass')">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                </button>
             </div>
 
             <div style="text-align: right; margin-bottom: 20px;">
@@ -247,8 +286,13 @@
         </div>
 
         <div class="register-link">
-            Don’t have an account? <a href="{% url 'register' %}">Request Access</a>
+            Don't have an account? <a href="{% url 'register' %}">Request Access</a>
         </div>
     </div>
+
+    <script>
+    function showPass(id) { document.getElementById(id).type = 'text'; }
+    function hidePass(id) { document.getElementById(id).type = 'password'; }
+    </script>
 </body>
 </html>
