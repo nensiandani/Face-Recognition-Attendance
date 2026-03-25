@@ -1,6 +1,3 @@
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <style>
     /* કેમેરા અને ઈમેજ સ્ક્રીનની બહાર ના જાય એના માટે */
     video, img, canvas {
@@ -11,18 +8,25 @@
     /* મોબાઈલની નાની સ્ક્રીન માટે સેટિંગ્સ */
     @media (max-width: 600px) {
         .container {
-            padding: 10px;
+            padding: 15px;
+            width: 100%;
         }
+        
         /* ટેબલ મોટું હોય તો સ્ક્રોલ થાય, કપાય નહિ */
         table {
             display: block;
             overflow-x: auto;
             white-space: nowrap;
+            width: 100%; /* 💡 ટેબલ આખી સ્ક્રીનમાં સેટ થાય */
         }
+        
         /* બટનો આખી સ્ક્રીનમાં સેટ થાય */
         .btn {
             width: 100%;
             margin-bottom: 10px;
+            display: block;
+            text-align: center;
+            box-sizing: border-box;
         }
     }
 </style>
