@@ -8,161 +8,179 @@
 
     {% include 'header.html' %}
 
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
     <style>
-        /* ========== PREMIUM DARK AI THEME ========== */
-        :root {
-            --primary: #ff7b00;
-            --primary-glow: rgba(255, 123, 0, 0.5);
-            --bg-dark: #0b0f19;
-            --bg-panel: rgba(15, 23, 42, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-muted: #94a3b8;
-        }
+:root { --primary: #ff7b00; --primary-glow: rgba(255,123,0,0.5); --bg-dark: #060912; --text-muted: #5a6a8a; --text-sub: #94a3b8; --cyber-blue: #00d4ff; --green: #10b981; }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+body { min-height: 100vh; background: var(--bg-dark); display: flex; align-items: center; justify-content: center; color: #fff; overflow: hidden; font-family: 'Inter', sans-serif; position: relative; padding: 30px 20px; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
+.bg-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.bg-canvas::before { content: ''; position: absolute; inset: 0; background-image: linear-gradient(rgba(255,123,0,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,123,0,0.025) 1px, transparent 1px); background-size: 60px 60px; animation: gridDrift 20s linear infinite; }
+@keyframes gridDrift { 0% { background-position: 0 0; } 100% { background-position: 60px 60px; } }
+.bg-canvas::after { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 15% 15%, rgba(255,123,0,0.07) 0%, transparent 60%), radial-gradient(ellipse 60% 50% at 85% 85%, rgba(0,212,255,0.05) 0%, transparent 60%), radial-gradient(ellipse 50% 40% at 50% 50%, rgba(123,47,255,0.03) 0%, transparent 70%); animation: glowPulse 8s ease-in-out infinite alternate; }
+@keyframes glowPulse { 0% { opacity: 0.8; } 100% { opacity: 1; } }
+.particle { position: absolute; border-radius: 50%; animation: floatUp linear infinite; opacity: 0; }
+@keyframes floatUp { 0% { transform: translateY(100vh) translateX(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 0.6; } 100% { transform: translateY(-100px) translateX(40px); opacity: 0; } }
+.scan-beam { position: fixed; top: 0; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent 0%, rgba(255,123,0,0.6) 30%, rgba(0,212,255,0.6) 70%, transparent 100%); animation: scanBeam 6s linear infinite; z-index: 2; pointer-events: none; }
+@keyframes scanBeam { 0% { top: 0; opacity: 0; } 5% { opacity: 1; } 95% { opacity: 0.3; } 100% { top: 100vh; opacity: 0; } }
 
-        body {
-            min-height: 100vh;
-            background: radial-gradient(circle at top left, #1a233a 0%, #0b0f19 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            overflow-x: hidden; /* Screen ni bahar javano rasto bandh */
-        }
+/* ══════ CARD ══════ */
+.card {
+    position: relative; z-index: 10;
+    width: 100%; max-width: 580px;
+    background: linear-gradient(145deg, rgba(8,14,30,0.95), rgba(5,10,25,0.98));
+    backdrop-filter: blur(40px); border-radius: 28px;
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 56px 52px 48px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
+    animation: cardIn 0.8s cubic-bezier(0.23,1,0.32,1) both;
+    overflow: hidden; text-align: center;
+}
+@keyframes cardIn { from { opacity: 0; transform: translateY(40px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+.card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, transparent 0%, #ff7b00 20%, #ff007b 40%, #7b2fff 60%, #00d4ff 80%, transparent 100%); background-size: 200% 100%; animation: borderFlow 3s linear infinite; border-radius: 28px 28px 0 0; }
+@keyframes borderFlow { 0% { background-position: 0% 0; } 100% { background-position: 200% 0; } }
+.corner-deco { position: absolute; width: 60px; height: 60px; pointer-events: none; }
+.corner-deco.tl { top: 0; left: 0; border-top: 2px solid rgba(255,123,0,0.3); border-left: 2px solid rgba(255,123,0,0.3); border-radius: 28px 0 0 0; }
+.corner-deco.tr { top: 0; right: 0; border-top: 2px solid rgba(0,212,255,0.2); border-right: 2px solid rgba(0,212,255,0.2); border-radius: 0 28px 0 0; }
+.corner-deco.bl { bottom: 0; left: 0; border-bottom: 2px solid rgba(0,212,255,0.2); border-left: 2px solid rgba(0,212,255,0.2); border-radius: 0 0 0 28px; }
+.corner-deco.br { bottom: 0; right: 0; border-bottom: 2px solid rgba(255,123,0,0.3); border-right: 2px solid rgba(255,123,0,0.3); border-radius: 0 0 28px 0; }
 
-        body::before {
-            content: '';
-            position: absolute;
-            top: -20%; left: -10%;
-            width: 400px; height: 400px;
-            background: rgba(255, 123, 0, 0.12);
-            filter: blur(100px);
-            z-index: 0;
-        }
+/* ══════ LOGO ══════ */
+.logo-wrap { margin-bottom: 12px; animation: nameIn 0.8s cubic-bezier(0.23,1,0.32,1) 0.2s both; }
+@keyframes nameIn { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+.logo-wrap img { width: 200px; height: auto; animation: logoGlow 3s ease-in-out infinite alternate; }
+@keyframes logoGlow { from { filter: drop-shadow(0 0 10px rgba(255,123,0,0.3)); } to { filter: drop-shadow(0 0 30px rgba(255,123,0,0.7)); } }
 
-        body::after {
-            content: '';
-            position: absolute;
-            bottom: -20%; right: -10%;
-            width: 400px; height: 400px;
-            background: rgba(0, 198, 255, 0.08);
-            filter: blur(100px);
-            z-index: 0;
-        }
+/* ══════ CYBER LABEL ══════ */
+.cyber-label { font-family: 'Orbitron', sans-serif; font-size: 9px; color: var(--cyber-blue); letter-spacing: 4px; margin-bottom: 16px; opacity: 0.8; display: flex; align-items: center; justify-content: center; gap: 12px; animation: nameIn 0.8s cubic-bezier(0.23,1,0.32,1) 0.3s both; }
+.cyber-label::before, .cyber-label::after { content: ''; width: 30px; height: 1px; background: var(--cyber-blue); box-shadow: 0 0 8px var(--cyber-blue); }
 
-        /* ========== GLASS CARD (MOBILE FIRST) ========== */
-        .container {
-            width: 90%; /* Box screen karta 90% j moto rehse, kapase nahi */
-            max-width: 650px; 
-            margin: 20px auto; 
-            padding: 40px 20px; 
-            text-align: center;
-            background: var(--bg-panel);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--glass-border);
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            position: relative;
-            z-index: 1;
-        }
+/* ══════ TITLE ══════ */
+.main-title { font-family: 'Rajdhani', sans-serif; font-size: 48px; font-weight: 700; letter-spacing: -1px; line-height: 1; margin-bottom: 18px; animation: nameIn 0.8s cubic-bezier(0.23,1,0.32,1) 0.4s both; }
+.main-title span { color: var(--primary); }
 
-        .logo-img {
-            width: 180px; 
-            margin-bottom: 15px;
-            filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.5));
-            animation: floatLogo 4s ease-in-out infinite;
-        }
+/* ══════ DESCRIPTION ══════ */
+.desc { font-family: 'Rajdhani', sans-serif; font-size: 16px; color: var(--text-sub); line-height: 1.7; margin-bottom: 16px; font-weight: 500; animation: nameIn 0.8s cubic-bezier(0.23,1,0.32,1) 0.5s both; }
 
-        @keyframes floatLogo {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-            100% { transform: translateY(0px); }
-        }
+/* ══════ FEATURE CHIPS ══════ */
+.features { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 36px; animation: nameIn 0.8s cubic-bezier(0.23,1,0.32,1) 0.55s both; }
+.feature-chip { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 100px; padding: 6px 14px; font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; color: var(--text-muted); display: flex; align-items: center; gap: 6px; transition: all 0.3s; letter-spacing: 0.5px; }
+.feature-chip:hover { border-color: rgba(255,123,0,0.3); color: #fff; background: rgba(255,123,0,0.06); transform: translateY(-2px); }
+.feature-chip svg { color: var(--primary); }
 
-        .container h1 {
-            font-size: 32px; 
-            font-weight: 800;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
+/* ══════ BUTTONS ══════ */
+.btn-group { display: flex; gap: 14px; flex-wrap: wrap; animation: nameIn 0.8s cubic-bezier(0.23,1,0.32,1) 0.6s both; }
 
-        .container h1 span {
-            color: var(--primary);
-        }
+.btn-login {
+    flex: 1; min-width: 140px; padding: 16px 28px;
+    background: linear-gradient(135deg, #ff7b00 0%, #ff4400 100%);
+    color: #fff; border: none; border-radius: 14px;
+    cursor: pointer; font-family: 'Orbitron', sans-serif;
+    font-weight: 700; font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; text-decoration: none;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
+    box-shadow: 0 6px 30px rgba(255,123,0,0.35);
+    position: relative; overflow: hidden;
+}
+.btn-login::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent); transition: left 0.5s; }
+.btn-login:hover::before { left: 120%; }
+.btn-login:hover { transform: translateY(-3px) scale(1.01); box-shadow: 0 12px 40px rgba(255,123,0,0.6); }
 
-        .container p {
-            font-size: 14px;
-            line-height: 1.6;
-            color: var(--text-muted);
-            margin-bottom: 30px;
-        }
+.btn-register {
+    flex: 1; min-width: 140px; padding: 16px 28px;
+    background: transparent;
+    color: #e2e8f0; 
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    cursor: pointer; font-family: 'Orbitron', sans-serif;
+    font-weight: 700; font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; text-decoration: none;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
+}
+.btn-register:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.2); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
 
-        /* ========== BUTTON GROUP ========== */
-        .buttons {
-            display: flex;
-            flex-direction: column; /* Mobile ma ubha button */
-            gap: 15px;
-            width: 100%;
-        }
+/* Status badge bottom */
+.hud-status { margin-top: 26px; font-family: 'Orbitron', monospace; font-size: 8px; color: var(--text-muted); letter-spacing: 2px; opacity: 0.35; animation: nameIn 0.8s cubic-bezier(0.23,1,0.32,1) 0.7s both; }
 
-        .btn {
-            width: 100%; 
-            padding: 15px 20px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 700;
-            text-decoration: none;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            display: block;
-        }
-
-        .btn-login {
-            background: linear-gradient(135deg, #ff7b00 0%, #ff5500 100%);
-            color: white;
-            border: none;
-            box-shadow: 0 6px 20px var(--primary-glow);
-        }
-
-        .btn-register {
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            background: transparent;
-        }
-
-        /* ========== PC DESKTOP SETTINGS ========== */
-        @media (min-width: 600px) {
-            .container { padding: 60px 50px; }
-            .logo-img { width: 250px; }
-            .container h1 { font-size: 42px; }
-            .container p { font-size: 16px; }
-            .buttons { flex-direction: row; justify-content: center; }
-            .btn { width: auto; padding: 15px 40px; }
-        }
+@media (max-width: 520px) {
+    .card { padding: 44px 26px 38px; }
+    .main-title { font-size: 34px; }
+    .logo-wrap img { width: 160px; }
+    .btn-group { flex-direction: column; }
+}
     </style>
 </head>
 <body>
-    <div class="container">
-        <img src="{% static 'img/logo2.png' %}" class="logo-img" alt="LookIn Logo" />
-        <h1>LookIn <span>AI</span></h1>
-        <p>
-            Real-time face recognition from camera feeds. Automated attendance,
-            smart visitor tracking, and intelligent access control — all in one
-            powerful, secure platform.
-        </p>
-        <div class="buttons">
-            <a href="{% url 'login' %}" class="btn btn-login">Login Securely</a>
-            <a href="{% url 'register' %}" class="btn btn-register">Request Access</a>
+
+<div class="bg-canvas" id="bgCanvas"></div>
+<div class="scan-beam"></div>
+
+<div class="card">
+    <div class="corner-deco tl"></div><div class="corner-deco tr"></div>
+    <div class="corner-deco bl"></div><div class="corner-deco br"></div>
+
+    <div class="logo-wrap">
+        <img src="{% static 'img/logo2.png' %}" alt="LookIn AI">
+    </div>
+
+    <div class="cyber-label">Face Recognition System</div>
+
+    <div class="main-title">LookIn <span>AI</span></div>
+
+    <div class="desc">
+        Real-time face recognition from camera feeds. Automated attendance, smart visitor tracking, and intelligent access control — all in one powerful, secure platform.
+    </div>
+
+    <div class="features">
+        <div class="feature-chip">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8.56 2.75c4.37 6.03 6.02 9.42 8.03 17.72m2.54-15.38c-3.72 4.35-8.94 5.66-16.88 5.85m19.5 1.9c-3.5-.93-6.63-.82-8.94 0-2.58.92-5.01 2.86-7.44 6.32"/></svg>
+            AI Powered
+        </div>
+        <div class="feature-chip">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Auto Attendance
+        </div>
+        <div class="feature-chip">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Secure Access
+        </div>
+        <div class="feature-chip">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Live Tracking
         </div>
     </div>
+
+    <div class="btn-group">
+        <a href="{% url 'login' %}" class="btn-login">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Login Securely
+        </a>
+        <a href="{% url 'register' %}" class="btn-register">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Request Access
+        </a>
+    </div>
+
+    <div class="hud-status">SYS-ONLINE ◈ LookIn AI v2.0 ◈ FACE-RECOGNITION-ACTIVE</div>
+</div>
+
+<script>
+(function() {
+    const canvas = document.getElementById('bgCanvas');
+    const colors = ['rgba(255,123,0,', 'rgba(0,212,255,', 'rgba(123,47,255,'];
+    for (let i = 0; i < 25; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 3 + 1;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const opacity = Math.random() * 0.4 + 0.1;
+        p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;background:${color}${opacity});box-shadow:0 0 ${size*3}px ${color}0.6);animation-duration:${Math.random()*15+10}s;animation-delay:${Math.random()*10}s;`;
+        canvas.appendChild(p);
+    }
+})();
+</script>
 </body>
 </html>

@@ -1,271 +1,490 @@
 {% load static %}
-{% include 'header.html' %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Register | LookIn AI</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     {% include 'header.html' %}
 
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
     <style>
-        /* ========== PREMIUM DARK AI THEME (ORANGE) ========== */
-        :root {
-            --primary: #ff7b00;
-            --primary-glow: rgba(255, 123, 0, 0.5);
-            --bg-dark: #0b0f19;
-            --bg-panel: rgba(15, 23, 42, 0.65);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --text-muted: #94a3b8;
-        }
+/* ══════════════════════════════════════════
+   ROOT VARIABLES — same as profile.html
+══════════════════════════════════════════ */
+:root {
+    --primary: #ff7b00;
+    --primary-dim: rgba(255,123,0,0.15);
+    --primary-glow: rgba(255,123,0,0.5);
+    --bg-dark: #060912;
+    --bg-card: rgba(8, 14, 30, 0.85);
+    --glass-border: rgba(255,255,255,0.06);
+    --text-muted: #5a6a8a;
+    --text-sub: #94a3b8;
+    --cyber-blue: #00d4ff;
+    --cyber-purple: #7b2fff;
+    --green: #10b981;
+}
 
-        body {
-            margin: 0;
-            font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: radial-gradient(circle at top left, #1a233a 0%, #0b0f19 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #fff;
-            position: relative;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 40px 20px;
-            box-sizing: border-box;
-        }
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 
-        body::before {
-            content: '';
-            position: fixed;
-            top: -20%; left: -10%;
-            width: 500px; height: 500px;
-            background: rgba(255, 123, 0, 0.12);
-            filter: blur(150px);
-            z-index: 0;
-            border-radius: 50%;
-        }
+body {
+    min-height: 100vh;
+    background: var(--bg-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    overflow-x: hidden;
+    font-family: 'Inter', sans-serif;
+    position: relative;
+    padding: 40px 20px;
+}
 
-        body::after {
-            content: '';
-            position: fixed;
-            bottom: -20%; right: -10%;
-            width: 400px; height: 400px;
-            background: rgba(0, 198, 255, 0.08);
-            filter: blur(150px);
-            z-index: 0;
-            border-radius: 50%;
-        }
+/* ══════════════════════════════════════════
+   ANIMATED BACKGROUND
+══════════════════════════════════════════ */
+.bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
 
-        .login-card {
-            width: 400px;
-            padding: 40px 35px;
-            border-radius: 24px;
-            background: var(--bg-panel);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-            border: 1px solid var(--glass-border);
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
+.bg-canvas::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,123,0,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,123,0,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridDrift 20s linear infinite;
+}
 
-        .logo-img {
-            width: 220px;
-            margin-bottom: 5px;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
-            animation: floatLogo 4s ease-in-out infinite;
-        }
+@keyframes gridDrift {
+    0% { background-position: 0 0; }
+    100% { background-position: 60px 60px; }
+}
 
-        @keyframes floatLogo {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
-            100% { transform: translateY(0px); }
-        }
+.bg-canvas::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 80% 60% at 85% 15%, rgba(255,123,0,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 15% 85%, rgba(0,212,255,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(123,47,255,0.03) 0%, transparent 70%);
+    animation: glowPulse 8s ease-in-out infinite alternate;
+}
 
-        .subtitle {
-            font-size: 13px;
-            color: var(--text-muted);
-            margin-bottom: 25px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
+@keyframes glowPulse {
+    0% { opacity: 0.8; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.05); }
+}
 
-        .input-group {
-            position: relative;
-            margin-bottom: 15px;
-        }
+.particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: floatUp linear infinite;
+    opacity: 0;
+}
 
-        .input-group input {
-            width: 100%;
-            padding: 13px 20px 13px 45px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            outline: none;
-            font-size: 14px;
-            background: rgba(0, 0, 0, 0.3);
-            color: white;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
+@keyframes floatUp {
+    0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-100px) translateX(40px); opacity: 0; }
+}
 
-        .input-group input:focus {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(255, 123, 0, 0.15);
-        }
+.scan-beam {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,123,0,0.6) 30%, rgba(0,212,255,0.6) 70%, transparent 100%);
+    animation: scanBeam 6s linear infinite;
+    z-index: 2;
+    pointer-events: none;
+}
 
-        .icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            transition: 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+@keyframes scanBeam {
+    0% { top: 0; opacity: 0; }
+    5% { opacity: 1; }
+    95% { opacity: 0.3; }
+    100% { top: 100vh; opacity: 0; }
+}
 
-        .input-group input:focus + .icon,
-        .input-group input:not(:placeholder-shown) + .icon {
-            color: var(--primary);
-        }
+/* ══════════════════════════════════════════
+   REGISTER CARD
+══════════════════════════════════════════ */
+.register-card {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 480px;
+    background: linear-gradient(145deg, rgba(8,14,30,0.95), rgba(5,10,25,0.98));
+    backdrop-filter: blur(40px);
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 48px 44px 42px;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.04);
+    animation: cardIn 0.8s cubic-bezier(0.23,1,0.32,1) both;
+    overflow: hidden;
+}
 
-        /* ✅ Eye button - sirf aa add karyu */
-        .eye-btn {
-            position: absolute;
-            right: 13px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            color: var(--text-muted);
-            padding: 0;
-            display: flex;
-            align-items: center;
-            user-select: none;
-        }
-        .eye-btn:hover { color: var(--primary); }
-        .eye-btn svg { width: 18px; height: 18px; pointer-events: none; }
+@keyframes cardIn {
+    from { opacity: 0; transform: translateY(40px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
 
-        .register-btn {
-            width: 100%;
-            padding: 14px;
-            border-radius: 12px;
-            border: none;
-            background: linear-gradient(135deg, #ff7b00 0%, #ff5500 100%);
-            color: #fff;
-            font-weight: 800;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 6px 20px var(--primary-glow);
-        }
+/* Rainbow top border */
+.register-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        #ff7b00 20%,
+        #ff007b 40%,
+        #7b2fff 60%,
+        #00d4ff 80%,
+        transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: borderFlow 3s linear infinite;
+    border-radius: 28px 28px 0 0;
+}
 
-        .register-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(255, 123, 0, 0.6);
-        }
+@keyframes borderFlow {
+    0% { background-position: 0% 0; }
+    100% { background-position: 200% 0; }
+}
 
-        .footer-link {
-            margin-top: 20px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
+/* Corner HUD decorations */
+.corner-deco {
+    position: absolute;
+    width: 60px; height: 60px;
+    pointer-events: none;
+}
+.corner-deco.tl { top: 0; left: 0; border-top: 2px solid rgba(255,123,0,0.3); border-left: 2px solid rgba(255,123,0,0.3); border-radius: 28px 0 0 0; }
+.corner-deco.tr { top: 0; right: 0; border-top: 2px solid rgba(0,212,255,0.2); border-right: 2px solid rgba(0,212,255,0.2); border-radius: 0 28px 0 0; }
+.corner-deco.bl { bottom: 0; left: 0; border-bottom: 2px solid rgba(0,212,255,0.2); border-left: 2px solid rgba(0,212,255,0.2); border-radius: 0 0 0 28px; }
+.corner-deco.br { bottom: 0; right: 0; border-bottom: 2px solid rgba(255,123,0,0.3); border-right: 2px solid rgba(255,123,0,0.3); border-radius: 0 0 28px 0; }
 
-        .footer-link a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 700;
-            transition: 0.3s;
-        }
+/* ══════ LOGO ══════ */
+.logo-wrap {
+    text-align: center;
+    margin-bottom: 8px;
+    animation: nameIn 0.8s cubic-bezier(0.23,1,0.32,1) 0.2s both;
+}
 
-        .footer-link a:hover {
-            color: #ff9d00;
-            text-decoration: underline;
-        }
+@keyframes nameIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-        .error {
-            background: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 12px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
+.logo-wrap img {
+    width: 175px;
+    height: auto;
+    animation: logoGlow 3s ease-in-out infinite alternate;
+}
 
-        .msg {
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 13px;
-            margin-bottom: 20px;
-        }
-        .msg.success {
-            background: rgba(16, 185, 129, 0.15);
-            color: #6ee7b7;
-            border: 1px solid rgba(16, 185, 129, 0.3);
-        }
-        .msg.error {
-            background: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
+@keyframes logoGlow {
+    from { filter: drop-shadow(0 0 10px rgba(255,123,0,0.3)); }
+    to { filter: drop-shadow(0 0 28px rgba(255,123,0,0.7)); }
+}
+
+/* ══════ CYBER LABEL ══════ */
+.cyber-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px;
+    color: var(--cyber-blue);
+    letter-spacing: 4px;
+    text-align: center;
+    margin-bottom: 28px;
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    animation: nameIn 0.8s cubic-bezier(0.23,1,0.32,1) 0.3s both;
+}
+
+.cyber-label::before, .cyber-label::after {
+    content: '';
+    width: 24px; height: 1px;
+    background: var(--cyber-blue);
+    box-shadow: 0 0 8px var(--cyber-blue);
+}
+
+/* ══════ MESSAGES ══════ */
+.msg {
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+}
+.msg.success {
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.3);
+    color: #10b981;
+}
+.msg.error {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #ef4444;
+}
+
+/* ══════ FORM SECTION LABEL ══════ */
+.form-section-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8px;
+    color: var(--cyber-blue);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    margin-top: 18px;
+    display: flex; align-items: center; gap: 10px;
+    opacity: 0.8;
+}
+
+.form-section-label:first-of-type { margin-top: 0; }
+
+.form-section-label::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(0,212,255,0.3), transparent);
+}
+
+/* ══════ INPUT GROUP ══════ */
+.input-group {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+}
+
+.form-row .input-group { flex: 1; }
+
+.input-group input {
+    width: 100%;
+    padding: 13px 20px 13px 48px;
+    border-radius: 13px;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.02);
+    color: #fff;
+    outline: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+
+.input-group input::placeholder { color: var(--text-muted); }
+
+.input-group input:focus {
+    border-color: rgba(255,123,0,0.5);
+    background: rgba(255,123,0,0.04);
+    box-shadow: 0 0 0 3px rgba(255,123,0,0.1), 0 0 20px rgba(255,123,0,0.05);
+}
+
+.input-icon {
+    position: absolute;
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    display: flex; align-items: center;
+    transition: color 0.3s;
+    pointer-events: none;
+}
+
+.input-group input:focus ~ .input-icon { color: var(--primary); }
+
+.eye-btn {
+    position: absolute;
+    right: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex; align-items: center;
+    padding: 4px;
+    transition: color 0.3s;
+}
+.eye-btn:hover { color: var(--primary); }
+.eye-btn svg { width: 17px; height: 17px; pointer-events: none; }
+
+/* ══════ REGISTER BUTTON ══════ */
+.register-btn {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #ff7b00 0%, #ff4400 100%);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 20px;
+    transition: all 0.3s cubic-bezier(0.23,1,0.32,1);
+    box-shadow: 0 6px 30px rgba(255,123,0,0.35);
+    position: relative;
+    overflow: hidden;
+}
+
+.register-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+    transition: left 0.5s;
+}
+
+.register-btn:hover::before { left: 120%; }
+.register-btn:hover {
+    transform: translateY(-3px) scale(1.01);
+    box-shadow: 0 12px 40px rgba(255,123,0,0.6);
+}
+.register-btn:active { transform: translateY(-1px); }
+
+/* ══════ LOGIN LINK ══════ */
+.login-link {
+    margin-top: 20px;
+    text-align: center;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.login-link a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 700;
+    transition: all 0.3s;
+    letter-spacing: 0.5px;
+}
+.login-link a:hover { color: #ff9d00; text-shadow: 0 0 10px rgba(255,123,0,0.5); }
+
+/* ══════ HUD STATUS ══════ */
+.hud-status {
+    text-align: center;
+    margin-top: 16px;
+    font-family: 'Orbitron', monospace;
+    font-size: 8px;
+    color: var(--text-muted);
+    letter-spacing: 2px;
+    opacity: 0.4;
+}
+
+/* ══════ ANIMATION STAGGER ══════ */
+.anim { animation: nameIn 0.6s cubic-bezier(0.23,1,0.32,1) both; }
+.anim-1 { animation-delay: 0.35s; }
+.anim-2 { animation-delay: 0.42s; }
+.anim-3 { animation-delay: 0.49s; }
+.anim-4 { animation-delay: 0.56s; }
+.anim-5 { animation-delay: 0.63s; }
+.anim-6 { animation-delay: 0.70s; }
+.anim-7 { animation-delay: 0.77s; }
+
+@media (max-width: 520px) {
+    .register-card { padding: 36px 22px 32px; }
+    .logo-wrap img { width: 150px; }
+    .form-row { flex-direction: column; gap: 0; }
+}
     </style>
 </head>
 <body>
-<div class="login-card">
-    <img src="{% static 'img/logo2.png' %}" alt="LookIn Logo" class="logo-img">
-    <div class="subtitle">Initialize New User Protocol</div>
+
+<div class="bg-canvas" id="bgCanvas"></div>
+<div class="scan-beam"></div>
+
+<div class="register-card">
+    <!-- Corner HUD decorations -->
+    <div class="corner-deco tl"></div>
+    <div class="corner-deco tr"></div>
+    <div class="corner-deco bl"></div>
+    <div class="corner-deco br"></div>
+
+    <div class="logo-wrap">
+        <img src="{% static 'img/logo2.png' %}" alt="LookIn AI">
+    </div>
+
+    <div class="cyber-label">Initialize New User Protocol</div>
 
     {% for message in messages %}
-        <div class="msg {{ message.tags }}">{{ message }}</div>
+        <div class="msg {{ message.tags }}">
+            {% if 'success' in message.tags %}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            {% else %}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            {% endif %}
+            {{ message }}
+        </div>
     {% endfor %}
 
     <form method="POST">
         {% csrf_token %}
 
-        <div class="input-group">
-            <input type="text" name="name" placeholder="Full Name" required value="{{ old_name|default:'' }}">
-            <div class="icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        <!-- Personal Info -->
+        <div class="form-section-label anim anim-1">Personal Information</div>
+
+        <div class="form-row anim anim-2">
+            <div class="input-group">
+                <input type="text" name="name" placeholder="Full Name" required value="{{ old_name|default:'' }}">
+                <div class="input-icon">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
             </div>
         </div>
 
-        <div class="input-group">
+        <!-- Contact -->
+        <div class="form-section-label anim anim-3">Contact Information</div>
+
+        <div class="input-group anim anim-3">
             <input type="email" name="email" placeholder="Email Address" required value="{{ old_email|default:'' }}">
-            <div class="icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <div class="input-icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
             </div>
         </div>
 
-        <div class="input-group">
+        <div class="input-group anim anim-4">
             <input type="text" name="phone" maxlength="10" pattern="[0-9]{10}" placeholder="Mobile Number" required value="{{ old_mobile|default:'' }}">
-            <div class="icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            <div class="input-icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
             </div>
         </div>
 
-        <div class="input-group">
+        <!-- Security -->
+        <div class="form-section-label anim anim-5">Security</div>
+
+        <div class="input-group anim anim-5">
             <input type="password" id="regPass" name="pass" placeholder="Password" required>
-            <div class="icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            <div class="input-icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
             </div>
-            <!-- ✅ Sirf aa eye button add karyu -->
             <button type="button" class="eye-btn"
-                onmousedown="showPass('regPass')"
-                onmouseup="hidePass('regPass')"
-                onmouseleave="hidePass('regPass')"
-                ontouchstart="showPass('regPass')"
-                ontouchend="hidePass('regPass')">
+                onmousedown="showPass('regPass')" onmouseup="hidePass('regPass')"
+                onmouseleave="hidePass('regPass')" ontouchstart="showPass('regPass')" ontouchend="hidePass('regPass')">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -273,18 +492,14 @@
             </button>
         </div>
 
-        <div class="input-group">
+        <div class="input-group anim anim-6">
             <input type="password" id="regCPass" name="cpass" placeholder="Confirm Password" required>
-            <div class="icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+            <div class="input-icon">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
             </div>
-            <!-- ✅ Sirf aa eye button add karyu -->
             <button type="button" class="eye-btn"
-                onmousedown="showPass('regCPass')"
-                onmouseup="hidePass('regCPass')"
-                onmouseleave="hidePass('regCPass')"
-                ontouchstart="showPass('regCPass')"
-                ontouchend="hidePass('regCPass')">
+                onmousedown="showPass('regCPass')" onmouseup="hidePass('regCPass')"
+                onmouseleave="hidePass('regCPass')" ontouchstart="showPass('regCPass')" ontouchend="hidePass('regCPass')">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -292,15 +507,39 @@
             </button>
         </div>
 
-        <button type="submit" class="register-btn">Request Access</button>
+        <button type="submit" class="register-btn anim anim-7">Request Access</button>
     </form>
 
-    <div class="footer-link">
+    <div class="login-link anim anim-7">
         Already registered? <a href="{% url 'login' %}">Login</a>
     </div>
+
+    <div class="hud-status">SYS-INIT ◈ LookIn AI v2.0 ◈ NEW USER PROTOCOL</div>
 </div>
 
 <script>
+(function() {
+    const canvas = document.getElementById('bgCanvas');
+    const colors = ['rgba(255,123,0,', 'rgba(0,212,255,', 'rgba(123,47,255,'];
+    for (let i = 0; i < 25; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = Math.random() * 3 + 1;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const opacity = Math.random() * 0.4 + 0.1;
+        p.style.cssText = `
+            width: ${size}px;
+            height: ${size}px;
+            left: ${Math.random() * 100}%;
+            background: ${color}${opacity});
+            box-shadow: 0 0 ${size * 3}px ${color}0.6);
+            animation-duration: ${Math.random() * 15 + 10}s;
+            animation-delay: ${Math.random() * 10}s;
+        `;
+        canvas.appendChild(p);
+    }
+})();
+
 function showPass(id) { document.getElementById(id).type = 'text'; }
 function hidePass(id) { document.getElementById(id).type = 'password'; }
 </script>
