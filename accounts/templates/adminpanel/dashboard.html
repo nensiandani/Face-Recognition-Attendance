@@ -5,113 +5,81 @@
 <style>
     /* ========== LOOKIN MODERN WHITE THEME ========== */
     .main-wrapper { 
-        max-width: 1200px; 
+        max-width: 1250px; 
         margin: 0 auto; 
         padding: 10px;
     }
 
     .main-wrapper h2 { 
-        color: #ff7b00 !important; 
-        font-weight: 800 !important; 
+        color: #ff8c00 !important; 
+        font-weight: 900 !important; 
         margin-bottom: 25px; 
         text-transform: uppercase;
-        border-left: 6px solid #ff7b00;
+        border-left: 6px solid #ff8c00;
         padding-left: 15px;
         font-size: 24px;
+        letter-spacing: 0.5px;
     }
 
     /* FORM CARD - Clean White Theme */
     form.glass-form {
-        background: #f8fafc !important; /* Very Light Gray */
+        background: #ffffff !important;
         padding: 35px !important;
-        border-radius: 15px !important;
+        border-radius: 12px !important;
         border: 1px solid #e2e8f0 !important;
         display: grid !important;
         grid-template-columns: 1fr 1fr !important;
         gap: 20px !important;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03) !important;
     }
 
     .form-group { display: flex; flex-direction: column; }
-
     .form-group label {
         font-size: 13px !important;
-        color: #334155 !important; /* Dark Slate */
+        color: #64748b !important;
         margin-bottom: 8px !important;
-        font-weight: 700 !important;
+        font-weight: 800 !important;
         text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     form.glass-form input, form.glass-form select {
         padding: 12px 15px !important;
-        background: #ffffff !important; 
-        border: 1px solid #cbd5e1 !important;
+        background: #f8fafc !important; 
+        border: 2px solid #e2e8f0 !important;
         border-radius: 8px !important;
         color: #1e293b !important; 
-        font-size: 15px !important;
+        font-size: 14px !important;
+        font-weight: 500;
         outline: none !important;
         width: 100% !important;
         transition: 0.3s;
     }
 
     form.glass-form input:focus, form.glass-form select:focus {
-        border-color: #ff7b00 !important;
-        box-shadow: 0 0 8px rgba(255, 123, 0, 0.15) !important;
+        border-color: #ff8c00 !important;
+        background: #ffffff !important;
+        box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.15) !important;
     }
 
     .full-width { grid-column: span 2 !important; }
 
     .submit-btn {
         grid-column: span 2 !important;
-        padding: 15px !important;
-        background: #ff7b00 !important;
+        padding: 14px !important;
+        background: #ff8c00 !important;
         color: white !important;
         border: none !important;
-        border-radius: 10px !important;
-        font-weight: bold !important;
+        border-radius: 8px !important;
+        font-weight: 800 !important;
         cursor: pointer !important;
-        font-size: 16px !important;
+        font-size: 15px !important;
         margin-top: 10px !important;
         text-transform: uppercase !important;
         letter-spacing: 1px !important;
         transition: 0.3s;
     }
-    .submit-btn:hover { background: #e66f00 !important; transform: translateY(-2px); }
-
-    /* USER CARDS GRID */
-    .user-grid {
-        display: grid !important;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
-        gap: 25px !important;
-        margin-top: 30px !important;
-    }
-
-    .user-card {
-        background: #ffffff !important; 
-        border: 1px solid #e2e8f0 !important;
-        padding: 25px !important;
-        border-radius: 15px !important;
-        text-align: center !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
-        transition: 0.3s !important;
-    }
-    .user-card:hover { border-color: #ff7b00 !important; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;}
-
-    .user-card img { 
-        width: 85px !important; 
-        height: 85px !important; 
-        border-radius: 50% !important; 
-        object-fit: cover !important; 
-        border: 3px solid #ff7b00 !important; 
-        margin-bottom: 12px !important;
-    }
-
-    .user-card h4 { color: #1e293b !important; font-size: 18px !important; font-weight: bold !important; margin-bottom: 5px !important;}
-    
-    .btn-group { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
-
-    .edit-link { background: #3498db !important; color: white !important; padding: 7px 18px !important; border-radius: 6px !important; text-decoration: none !important; font-size: 12px !important; font-weight: 600 !important; }
-    .delete-link { background: #e74c3c !important; color: white !important; padding: 7px 18px !important; border-radius: 6px !important; text-decoration: none !important; font-size: 12px !important; font-weight: 600 !important; }
+    .submit-btn:hover { background: #e66f00 !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(255,140,0,0.2) !important; }
 
     /* ALERT COLORS */
     .alert {
@@ -122,9 +90,118 @@
         text-align: center !important;
         color: #ffffff !important;
     }
-    .alert.success { background-color: #28a745 !important; }
-    .alert.info { background-color: #3498db !important; }
-    .alert.error { background-color: #e74c3c !important; }
+    .alert.success { background-color: #22c55e !important; }
+    .alert.info { background-color: #3b82f6 !important; }
+    .alert.error { background-color: #ef4444 !important; }
+
+    /* ── DIRECTORY LAYOUT (LEFT SIDEBAR + RIGHT GRID) ── */
+    .directory-layout {
+        display: flex;
+        gap: 25px;
+        align-items: flex-start;
+    }
+
+    /* ── LEFT SIDEBAR (FILTERS) ── */
+    .filter-sidebar {
+        width: 250px;
+        flex-shrink: 0;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        padding: 20px;
+        position: sticky;
+        top: 20px;
+    }
+    .filter-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #e2e8f0;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+    }
+    .filter-header h3 {
+        font-size: 16px; font-weight: 900; color: #1e293b; margin: 0;
+    }
+    .btn-clear {
+        background: none; border: none; color: #ff8c00; font-size: 12px; font-weight: 700; cursor: pointer; text-transform: uppercase;
+    }
+    .btn-clear:hover { text-decoration: underline; }
+
+    .filter-section { margin-bottom: 20px; }
+    .filter-section-title {
+        font-size: 12px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px;
+    }
+    .filter-list { display: flex; flex-direction: column; gap: 8px; }
+    .filter-label {
+        display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500; color: #334155; cursor: pointer;
+    }
+    .filter-label input[type="radio"], .filter-label input[type="checkbox"] {
+        accent-color: #ff8c00; width: 15px; height: 15px; cursor: pointer;
+    }
+    .filter-count {
+        margin-left: auto; font-size: 11px; font-weight: 700; color: #ff8c00; background: #fff7ed; padding: 2px 6px; border-radius: 12px; border: 1px solid #fed7aa;
+    }
+
+    /* ── RIGHT MAIN AREA ── */
+    .directory-main { flex: 1; min-width: 0; }
+    
+    .directory-toolbar {
+        display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 16px 20px;
+        border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 15px; flex-wrap: wrap; gap: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    }
+    .search-box { flex: 1; min-width: 250px; position: relative; }
+    .search-box input {
+        width: 100%; padding: 12px 15px 12px 40px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; outline: none; transition: 0.3s; box-sizing: border-box; background: #f8fafc;
+    }
+    .search-box input:focus { border-color: #ff8c00; background: #ffffff; }
+    .search-box::before { content: "🔍"; position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 16px; color: #94a3b8; }
+
+    .bulk-actions { display: flex; align-items: center; gap: 15px; }
+    .select-all-wrapper { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: #334155; cursor: pointer; }
+    .btn-bulk-delete {
+        background: #fee2e2; color: #dc2626; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; transition: 0.3s; font-size: 13px;
+    }
+    .btn-bulk-delete:hover { background: #fca5a5; }
+    .btn-bulk-delete:disabled { background: #f1f5f9; color: #94a3b8; cursor: not-allowed; }
+
+    /* Active Filter Chips */
+    .active-filters-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; align-items: center; }
+    .showing-count { font-size: 14px; font-weight: 700; color: #64748b; margin-right: 10px; }
+    .filter-chip {
+        display: inline-flex; align-items: center; gap: 6px; background: #ff8c00; color: #fff; padding: 4px 10px; border-radius: 16px; font-size: 12px; font-weight: 700;
+    }
+    .filter-chip button { background: none; border: none; color: #fff; cursor: pointer; font-size: 12px; padding: 0 2px; }
+
+    /* ── USER CARDS GRID ── */
+    .user-grid {
+        display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px;
+    }
+    .user-card {
+        background: #ffffff; border: 1px solid #e2e8f0; padding: 25px; border-radius: 12px; text-align: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03); transition: 0.25s; position: relative;
+    }
+    .user-card:hover { border-color: #ff8c00; transform: translateY(-3px); box-shadow: 0 8px 16px rgba(0,0,0,0.08); }
+
+    .user-card img { 
+        width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid #ff8c00; margin-bottom: 12px; background: #fff;
+    }
+    .user-card h4 { color: #1e293b; font-size: 17px; font-weight: 800; margin-bottom: 4px; }
+    .user-card p.roll { color: #ff8c00; font-weight: 800; font-size: 14px; margin-bottom: 6px; font-family: monospace; letter-spacing: 0.5px; }
+    .user-card p.meta { color: #64748b; font-size: 12px; font-weight: 600; margin-bottom: 16px; }
+    
+    .btn-group { display: flex; gap: 10px; justify-content: center; }
+    .edit-link { background: #f8fafc; color: #3b82f6; border: 1px solid #bfdbfe; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 700; transition: 0.2s; }
+    .edit-link:hover { background: #eff6ff; border-color: #93c5fd; }
+    .delete-link { background: #f8fafc; color: #ef4444; border: 1px solid #fecaca; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 12px; font-weight: 700; transition: 0.2s; }
+    .delete-link:hover { background: #fef2f2; border-color: #fca5a5; }
+
+    .student-checkbox { position: absolute; top: 15px; left: 15px; width: 18px; height: 18px; cursor: pointer; accent-color: #ff8c00; }
+    
+    .empty-state {
+        grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #64748b; background: white; border-radius: 12px; border: 1px dashed #cbd5e1;
+    }
 </style>
 
 <div class="main-wrapper">
@@ -134,6 +211,7 @@
 
     <h2>{% if edit_user %}Update User Details{% else %}Add New Student{% endif %}</h2>
 
+    <!-- KEEP EXISTING FORMS UNTOUCHED -->
     <form method="POST" enctype="multipart/form-data" class="glass-form">
         {% csrf_token %}
 
@@ -207,26 +285,413 @@
         </button>
     </form>
 
+    <h2 style="margin-top: 60px;">Bulk Import Students</h2>
+    <form method="POST" action="{% url 'bulk_register' %}" enctype="multipart/form-data" class="glass-form" style="grid-template-columns: 1fr; gap: 15px;">
+        {% csrf_token %}
+        <p style="color: #64748b; font-size: 14px; margin-bottom: 10px;">
+            Upload a <strong>students.csv</strong> file containing columns (Name, Email, Mobile, Roll, Faculty, Department, Program, Semester, Division, Image_Filename) and a <strong>photos.zip</strong> containing all the corresponding images (e.g. img1.jpg). Base password for all imported students will be <strong>LookIn@123</strong>.
+        </p>
+        <div class="form-group">
+            <label>Students CSV File</label>
+            <input type="file" name="csv_file" accept=".csv" required style="border: none; background: none; padding-left: 0;">
+        </div>
+        <div class="form-group">
+            <label>Photos ZIP File</label>
+            <input type="file" name="zip_file" accept=".zip" required style="border: none; background: none; padding-left: 0;">
+        </div>
+        <button type="submit" class="submit-btn" style="background: #22c55e !important;">
+            Upload & Register Batch
+        </button>
+    </form>
+
+    <!-- ── CASCADING FILTER STUDENTS DIRECTORY ── -->
     <h2 style="margin-top: 60px;">LookIn Directory</h2>
     
-    <div class="user-grid">
-        {% for u in users %}
-        <div class="user-card">
-            {% if u.profile.image %}
-                <img src="{{ u.profile.image.url }}">
-            {% else %}
-                <img src="{% static 'img/user.png' %}">
-            {% endif %}
-            <h4>{{ u.first_name }}</h4>
-            <p style="color: #ff7b00; font-weight: bold; font-size: 15px; margin-bottom: 2px;">ID: {{ u.profile.roll|default:"--" }}</p>
-            <p style="color: #64748b; font-size: 13px;">{{ u.profile.program }} | {{ u.profile.department }}</p>
-            <div class="btn-group">
-                <a href="{% url 'edit_user' u.id %}" class="edit-link">Edit</a>
-                <a href="{% url 'delete_user' u.id %}" class="delete-link" onclick="return confirm('Are you sure?')">Delete</a>
+    <div class="directory-layout">
+        <!-- Sidebar Filters -->
+        <div class="filter-sidebar">
+            <div class="filter-header">
+                <h3>FILTERS</h3>
+                <button type="button" class="btn-clear" onclick="clearAllFilters()">Clear All</button>
+            </div>
+            <div id="filterContainer">
+                <!-- Injected via JS -->
             </div>
         </div>
-        {% endfor %}
+
+        <!-- Main Content (Cards) -->
+        <div class="directory-main">
+            <div class="directory-toolbar">
+                <div class="search-box">
+                    <input type="text" id="studentSearch" placeholder="Search by name, roll, program..." autocomplete="off">
+                </div>
+                <div class="bulk-actions">
+                    <label class="select-all-wrapper">
+                        <input type="checkbox" id="selectAllCheckbox">
+                        Select All
+                    </label>
+                    <button type="submit" form="bulkDeleteForm" id="bulkDeleteBtn" class="btn-bulk-delete" disabled onclick="return confirmBulkDelete()">
+                        🗑️ Delete Selected
+                    </button>
+                </div>
+            </div>
+
+            <div class="active-filters-bar" id="activeFiltersBar">
+                <!-- Chips injected via JS -->
+            </div>
+
+            <form method="POST" action="{% url 'bulk_delete_users' %}" id="bulkDeleteForm">
+                {% csrf_token %}
+                <div class="user-grid" id="userCGrid">
+                    {% for u in users %}
+                    <div class="user-card student-card" data-id="{{ u.id }}">
+                        <input type="checkbox" name="user_ids" value="{{ u.id }}" class="student-checkbox" onchange="updateBulkDeleteBtn()">
+                        
+                        <img src="{% if u.profile.image %}{{ u.profile.image.url }}{% else %}https://ui-avatars.com/api/?name={{ u.first_name|urlencode }}&background=ff8c00&color=fff{% endif %}" alt="{{ u.first_name }}">
+                        
+                        <h4>{{ u.first_name }}</h4>
+                        <p class="roll">[{{ u.profile.roll|default:"--" }}]</p>
+                        <p class="meta">{{ u.profile.program }} · {{ u.profile.department }}<br>Sem {{ u.profile.semester|default:"-" }} · Div {{ u.profile.division|default:"-" }}</p>
+                        
+                        <div class="btn-group">
+                            <a href="{% url 'edit_user' u.id %}" class="edit-link">Edit</a>
+                            <a href="{% url 'delete_user' u.id %}" class="delete-link" onclick="return confirm('Are you sure you want to delete this student?')">Delete</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+<script>
+    // ── DATA PREP ──
+    const STUDENTS = JSON.parse('{{ students_json|escapejs }}');
+    console.log('STUDENTS loaded:', STUDENTS.length, STUDENTS[0] || 'EMPTY');
+    
+    const container = document.getElementById('filterContainer');
+    const searchInput = document.getElementById('studentSearch');
+    const cardsGrid = document.getElementById('userCGrid');
+    const selectAllCb = document.getElementById('selectAllCheckbox');
+    
+    function normSem(val) {
+        if (!val) return '';
+        const m = String(val).match(/\d+/);
+        return m ? 'Sem ' + m[0] : val;
+    }
+
+    // Fix the display bug on cards immediately: "Sem Semester 6" -> "Sem 6"
+    document.querySelectorAll('.student-card .meta').forEach(el => {
+        el.innerHTML = el.innerHTML.replace(/Sem\s+(Semester\s*\d+|\d+)/i, (match, p1) => {
+            const m = p1.match(/\d+/);
+            return m ? 'Sem ' + m[0] : match;
+        });
+    });
+
+    // Normalize semester to find year (Sem 1-2=Yr1, 3-4=Yr2, etc)
+    function getYear(semStr) {
+        if (!semStr) return '';
+        const num = parseInt(String(semStr).replace(/\D/g, ''));
+        if (isNaN(num)) return '';
+        if (num <= 2) return "1st Year";
+        if (num <= 4) return "2nd Year";
+        if (num <= 6) return "3rd Year";
+        return "4th Year";
+    }
+
+    // Normalize DB program variants into a consistent display text
+    function normalizeProgram(val) {
+        if (!val) return '';
+        const v = val.trim().toLowerCase().replace(/\s+/g, '');
+        if (v === 'btech' || v === 'b.tech' || v === 'be') return 'B.Tech';
+        if (v === 'mtech' || v === 'm.tech' || v === 'me') return 'M.Tech';
+        if (v === 'msc' || v === 'm.sc' || v === 'mscit') return 'M.Sc';
+        if (v === 'phd') return 'Ph.D';
+        return val.trim();
+    }
+
+    // Enrich Data with comprehensive normalizations
+    function normalizeSem(val) {
+        if (!val) return '';
+        const m = String(val).match(/\d+/);
+        return m ? 'Semester ' + m[0] : val.trim();
+    }
+
+    function normalizeDivision(val) {
+        if (!val) return '';
+        return val.trim().toUpperCase();
+    }
+
+    function normalizeBranch(val) {
+        if (!val) return '';
+        const v = val.trim();
+        const map = {
+            'ict': 'ICT',
+            'ict-cs': 'ICT-CS', 
+            'ictcs': 'ICT-CS',
+            'mnc': 'MnC',
+            'evd': 'EVD',
+        };
+        return map[v.toLowerCase()] || v;
+    }
+
+    const students = STUDENTS.map(s => {
+        return {
+            ...s,
+            searchStr: `${s.name} ${s.roll} ${s.program} ${s.branch} ${s.semester}`.toLowerCase(),
+            originalProgram: s.program,
+            program: normalizeProgram(s.program),
+            branch: normalizeBranch(s.branch),
+            semester: normalizeSem(s.semester),
+            division: normalizeDivision(s.division),
+            year: getYear(s.semester)
+        };
+    });
+    let state = {
+        program: null,
+        branch: [],
+        year: null,
+        semester: null,
+        division: [],
+        query: ''
+    };
+
+    // ── FILTER RENDERING LOGIC ──
+    
+    function matchesUpstream(student, checkProg, checkBranch, checkYear, checkSem, checkDiv, checkQ) {
+        if (checkProg && state.program && student.program !== state.program) return false;
+        if (checkBranch && state.branch.length > 0 && !state.branch.includes(student.branch)) return false;
+        if (checkYear && state.year && student.year !== state.year) return false;
+        if (checkSem && state.semester && student.semester !== state.semester) return false;
+        if (checkDiv && state.division.length > 0 && !state.division.includes(student.division)) return false;
+        if (checkQ && state.query && !student.searchStr.includes(state.query)) return false;
+        return true;
+    }
+
+    function getCounts(key, filterFn) {
+        let counts = {};
+        students.forEach(s => {
+            if (filterFn(s)) {
+                let val = s[key];
+                if (val) counts[val] = (counts[val] || 0) + 1;
+            }
+        });
+        return Object.entries(counts).sort((a,b) => String(a[0]).localeCompare(String(b[0])));
+    }
+
+    function renderFilters() {
+        const scrollY = window.scrollY; // save position
+        let html = '';
+
+        // 1. PROGRAM (Single)
+        let progs = getCounts('program', s => matchesUpstream(s, false, false, false, false, false, true));
+        if (progs.length > 0) {
+            html += buildSection('PROGRAM', 'program', progs, state.program, 'radio');
+        }
+
+        // 2. BRANCH (Mutli) - Show if Program selected
+        if (state.program) {
+            let branches = getCounts('branch', s => matchesUpstream(s, true, false, false, false, false, true));
+            if (branches.length > 0) {
+                html += buildSection('BRANCH', 'branch', branches, state.branch, 'checkbox');
+            }
+        }
+
+        // 3. YEAR (Single) - Show if previous passes
+        if (state.program) {
+            let years = getCounts('year', s => matchesUpstream(s, true, true, false, false, false, true));
+            if (years.length > 0) {
+                html += buildSection('YEAR', 'year', years, state.year, 'radio');
+            }
+        }
+
+        // 4. SEMESTER (Single) - Show if Year selected
+        if (state.year) {
+            let sems = getCounts('semester', s => matchesUpstream(s, true, true, true, false, false, true));
+            if (sems.length > 0) {
+                html += buildSection('SEMESTER', 'semester', sems, state.semester, 'radio');
+            }
+        }
+
+        // 5. DIVISION (Multi) - Always available inside program filter
+        if (state.program) {
+            let divs = getCounts('division', s => matchesUpstream(s, true, true, true, true, false, true));
+            if (divs.length > 0) {
+                html += buildSection('DIVISION', 'division', divs, state.division, 'checkbox');
+            }
+        }
+
+        container.innerHTML = html;
+        updateView();
+        
+        window.scrollTo(0, scrollY); // restore position
+    }
+
+    function buildSection(title, stateKey, optionsList, activeVal, type) {
+        let section = `<div class="filter-section"><div class="filter-section-title">${title}</div><div class="filter-list">`;
+        optionsList.forEach(([val, count]) => {
+            let isChecked = false;
+            if (type === 'radio') isChecked = (activeVal === val);
+            if (type === 'checkbox') isChecked = activeVal.includes(val);
+            
+            section += `
+                <label class="filter-label">
+                    <input type="${type}" name="${stateKey}" value="${val}" ${isChecked ? 'checked' : ''} onchange="onFilterChange('${stateKey}', '${val}', ${type==='checkbox'})">
+                    <span class="filter-name">${val}</span>
+                    <span class="filter-count">(${count})</span>
+                </label>
+            `;
+        });
+        section += `</div></div>`;
+        return section;
+    }
+
+    // ── ACTIONS ──
+
+    window.onFilterChange = function(key, val, isMulti) {
+        if (isMulti) {
+            let arr = state[key];
+            if (arr.includes(val)) arr.splice(arr.indexOf(val), 1);
+            else arr.push(val);
+        } else {
+            // Uncheck if already checked
+            if (state[key] === val) {
+                state[key] = null;
+                // cascading clear
+                if(key === 'program') { state.branch = []; state.year = null; state.semester = null; state.division = []; }
+                if(key === 'year') { state.semester = null; }
+            } else {
+                state[key] = val;
+                // cascading reset
+                if(key === 'program') { state.branch = []; state.year = null; state.semester = null; state.division = []; }
+                if(key === 'year') { state.semester = null; }
+            }
+        }
+        renderFilters();
+    };
+
+    window.clearAllFilters = function() {
+        state.program = null; state.branch = []; state.year = null; state.semester = null; state.division = [];
+        state.query = '';
+        searchInput.value = '';
+        renderFilters();
+    };
+
+    window.removeFilter = function(key, val) {
+        if (Array.isArray(state[key])) {
+            state[key] = state[key].filter(v => v !== val);
+        } else {
+            onFilterChange(key, state[key], false); // toggles it off
+        }
+        renderFilters();
+    };
+
+    searchInput.addEventListener('input', e => {
+        state.query = e.target.value.toLowerCase();
+        renderFilters();
+    });
+
+    // ── DOM UPDATE ──
+
+    function updateView() {
+        const scrollY = window.scrollY; // save position
+        let visibleCount = 0;
+        let cardMap = {}; // mapping by id
+        
+        // Find visible IDs
+        students.forEach(s => {
+            if (matchesUpstream(s, true, true, true, true, true, true)) {
+                cardMap[s.id] = true;
+                visibleCount++;
+            }
+        });
+
+        // Toggle DOM nodes
+        const cards = document.querySelectorAll('.student-card');
+        cards.forEach(card => {
+            const id = parseInt(card.getAttribute('data-id'));
+            if (cardMap[id]) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+                card.querySelector('.student-checkbox').checked = false; // uncheck hidden
+            }
+        });
+
+        // Handle empty state
+        let emptyNode = document.getElementById('cEmptyState');
+        if (visibleCount === 0) {
+            if (!emptyNode) {
+                emptyNode = document.createElement('div');
+                emptyNode.id = 'cEmptyState';
+                emptyNode.className = 'empty-state';
+                emptyNode.innerHTML = `<h3>No students match your filters</h3><p>Try clearing some filters to see results.</p>`;
+                cardsGrid.appendChild(emptyNode);
+            }
+            emptyNode.style.display = 'block';
+        } else if (emptyNode) {
+            emptyNode.style.display = 'none';
+        }
+
+        renderChips(visibleCount);
+        updateSelectAllState();
+        updateBulkDeleteBtn();
+        
+        window.scrollTo(0, scrollY); // restore position
+    }
+
+    function renderChips(count) {
+        const bar = document.getElementById('activeFiltersBar');
+        let html = `<span class="showing-count">Showing ${count} students</span>`;
+        
+        // program
+        if (state.program) html += makeChip('program', state.program);
+        // branch
+        state.branch.forEach(b => html += makeChip('branch', b));
+        // year
+        if (state.year) html += makeChip('year', state.year);
+        // semester
+        if (state.semester) html += makeChip('semester', state.semester);
+        // division
+        state.division.forEach(d => html += makeChip('division', d));
+
+        bar.innerHTML = html;
+    }
+
+    function makeChip(key, val) {
+        return `<span class="filter-chip">${val} <button type="button" onclick="removeFilter('${key}', '${val}')">✖</button></span>`;
+    }
+
+    // ── BULK DELETE SYNC ──
+    selectAllCb.addEventListener('change', e => {
+        const isChecked = e.target.checked;
+        document.querySelectorAll('.student-card').forEach(card => {
+            if (card.style.display !== 'none') {
+                card.querySelector('.student-checkbox').checked = isChecked;
+            }
+        });
+        updateBulkDeleteBtn();
+    });
+
+    window.updateBulkDeleteBtn = function() {
+        const cbCount = document.querySelectorAll('.student-checkbox:checked').length;
+        const btn = document.getElementById('bulkDeleteBtn');
+        btn.disabled = cbCount === 0;
+        btn.innerHTML = cbCount > 0 ? `🗑️ Delete Selected (${cbCount})` : `🗑️ Delete Selected`;
+        updateSelectAllState();
+    };
+
+    function updateSelectAllState() {
+        const visibleCb = Array.from(document.querySelectorAll('.student-card')).filter(c => c.style.display !== 'none').map(c => c.querySelector('.student-checkbox'));
+        const allChecked = visibleCb.length > 0 && visibleCb.every(cb => cb.checked);
+        const someChecked = visibleCb.some(cb => cb.checked);
+        selectAllCb.checked = allChecked;
+        selectAllCb.indeterminate = !allChecked && someChecked;
+    }
+
+    // Init
+    renderFilters();
+</script>
 
 {% endblock %}

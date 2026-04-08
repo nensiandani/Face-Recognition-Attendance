@@ -1,0 +1,709 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Live Face Scan – LookIn AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      min-height: 100vh;
+      font-family: 'Inter', sans-serif;
+      background: #060a14;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+
+    /* ── Background grid ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,123,0,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,123,0,0.04) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page-wrap {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 30px 20px 60px;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 36px;
+      width: 100%;
+      max-width: 800px;
+    }
+    .logo-mark {
+      width: 46px; height: 46px;
+      background: linear-gradient(135deg, #ff7b00, #ff4500);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 20px rgba(255,123,0,0.5);
+      font-size: 22px;
+    }
+    .header-text h1 {
+      font-size: 22px;
+      font-weight: 900;
+      background: linear-gradient(90deg, #ffffff, #ff7b00);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .header-text p { font-size: 13px; color: #64748b; }
+
+    /* ── Session picker ── */
+    .session-picker {
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 28px;
+    }
+    .session-picker label {
+      display: block;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    #sessionSelect {
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 15px;
+      background: #0f172a;
+      border: 2px solid rgba(255,123,0,0.3);
+      border-radius: 12px;
+      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+    #sessionSelect:focus {
+      border-color: #ff7b00;
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(255,123,0,0.15);
+    }
+    #sessionSelect option {
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+
+    /* ── Main scanner layout ── */
+    .scanner-wrap {
+      width: 100%;
+      max-width: 800px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 720px) {
+      .scanner-wrap { grid-template-columns: 1fr; }
+    }
+
+    /* ── Camera card ── */
+    .camera-card {
+      background: #0d1526;
+      border: 2px solid rgba(255,123,0,0.2);
+      border-radius: 24px;
+      overflow: hidden;
+      position: relative;
+      padding-bottom: 24px;
+    }
+
+    .camera-viewport {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: #000;
+      overflow: hidden;
+    }
+
+    #videoEl {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scaleX(-1); /* Mirror */
+    }
+
+    /* Scanning overlay */
+    .scan-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    /* Corner brackets */
+    .corner {
+      position: absolute;
+      width: 40px; height: 40px;
+      border-color: #ff7b00;
+      border-style: solid;
+      opacity: 0.8;
+    }
+    .corner.tl { top: 16px; left: 16px; border-width: 3px 0 0 3px; border-radius: 6px 0 0 0; }
+    .corner.tr { top: 16px; right: 16px; border-width: 3px 3px 0 0; border-radius: 0 6px 0 0; }
+    .corner.bl { bottom: 16px; left: 16px; border-width: 0 0 3px 3px; border-radius: 0 0 0 6px; }
+    .corner.br { bottom: 16px; right: 16px; border-width: 0 3px 3px 0; border-radius: 0 0 6px 0; }
+
+    /* Laser scan line */
+    .laser-line {
+      position: absolute;
+      left: 10%; right: 10%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #ff7b00, #ffcc00, #ff7b00, transparent);
+      box-shadow: 0 0 12px 4px rgba(255,123,0,0.6);
+      animation: laserSweep 2.5s ease-in-out infinite;
+      border-radius: 2px;
+    }
+    @keyframes laserSweep {
+      0% { top: 15%; opacity: 1; }
+      45% { opacity: 1; }
+      50% { top: 85%; opacity: 0.7; }
+      95% { opacity: 1; }
+      100% { top: 15%; opacity: 1; }
+    }
+
+    /* Face detection box */
+    .face-box {
+      position: absolute;
+      border: 2px solid #ff7b00;
+      border-radius: 8px;
+      box-shadow: 0 0 20px rgba(255,123,0,0.5);
+      display: none;
+      animation: faceBoxPulse 1s ease infinite;
+      pointer-events: none;
+    }
+    @keyframes faceBoxPulse {
+      0%,100% { box-shadow: 0 0 10px rgba(255,123,0,0.4); }
+      50% { box-shadow: 0 0 25px rgba(255,123,0,0.8); }
+    }
+
+    /* Status indicator */
+    .cam-status-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 20px;
+    }
+    .status-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #64748b;
+      transition: 0.3s;
+    }
+    .status-dot.active { background: #22c55e; animation: pulse-dot 1.5s infinite; }
+    .status-dot.scanning { background: #ff7b00; animation: pulse-dot 0.8s infinite; }
+    .status-dot.error { background: #ef4444; }
+    @keyframes pulse-dot {
+      0%,100% { box-shadow: 0 0 0 0 currentColor; opacity: 1; }
+      50% { box-shadow: 0 0 0 6px transparent; }
+    }
+    #statusText {
+      font-size: 13px;
+      font-weight: 600;
+      color: #94a3b8;
+    }
+
+    /* Camera controls */
+    .cam-controls {
+      display: flex;
+      gap: 12px;
+      padding: 0 20px 8px;
+    }
+    .btn-scan {
+      flex: 1;
+      padding: 14px;
+      background: linear-gradient(135deg, #ff7b00, #ff4500);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      letter-spacing: 1px;
+      box-shadow: 0 6px 20px rgba(255,123,0,0.4);
+      transition: all 0.3s;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-scan:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,85,0,0.5); }
+    .btn-scan:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-scan.auto-on {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      box-shadow: 0 6px 20px rgba(22,163,74,0.4);
+      animation: breathe 2s ease infinite;
+    }
+    @keyframes breathe {
+      0%,100% { box-shadow: 0 6px 20px rgba(22,163,74,0.4); }
+      50% { box-shadow: 0 8px 30px rgba(22,163,74,0.7); }
+    }
+
+    /* ── Result panel ── */
+    .result-panel {
+      background: #0d1526;
+      border: 2px solid rgba(255,123,0,0.15);
+      border-radius: 24px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #475569;
+    }
+
+    /* Feedback card */
+    .feedback-card {
+      min-height: 180px;
+      border-radius: 18px;
+      border: 2px solid rgba(255,255,255,0.05);
+      background: rgba(255,255,255,0.02);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 24px;
+      text-align: center;
+      transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .feedback-card.matched {
+      border-color: #22c55e;
+      background: rgba(22,197,74,0.07);
+      animation: successPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .feedback-card.no-match {
+      border-color: #ef4444;
+      background: rgba(239,68,68,0.07);
+      animation: shake 0.5s ease;
+    }
+    .feedback-card.no-face {
+      border-color: #f59e0b;
+      background: rgba(245,158,11,0.07);
+    }
+    @keyframes successPop {
+      0% { transform: scale(0.85); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+
+    .feedback-icon { font-size: 44px; line-height: 1; }
+    .feedback-name { font-size: 20px; font-weight: 900; color: white; }
+    .feedback-roll { font-size: 13px; color: #94a3b8; font-weight: 600; }
+    .feedback-conf {
+      font-size: 12px;
+      background: rgba(255,123,0,0.15);
+      color: #ff7b00;
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-weight: 700;
+    }
+
+    .feedback-image {
+      width: 80px; height: 80px;
+      border-radius: 16px;
+      object-fit: cover;
+      border: 3px solid #22c55e;
+      box-shadow: 0 0 20px rgba(34,197,94,0.3);
+    }
+
+    /* ── Recent scans ── */
+    .scan-list { display: flex; flex-direction: column; gap: 8px; }
+    .scan-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      font-size: 13px;
+      animation: slideIn 0.4s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .scan-item-img {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      object-fit: cover;
+      border: 2px solid rgba(34,197,94,0.4);
+      background: #1e293b;
+      flex-shrink: 0;
+    }
+    .scan-item-info { flex: 1; min-width: 0; }
+    .scan-item-name { font-weight: 700; color: #e2e8f0; margin-bottom: 2px; }
+    .scan-item-meta { color: #64748b; font-size: 11px; }
+    .scan-check { color: #22c55e; font-size: 18px; }
+
+    .scan-count-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,123,0,0.1);
+      border: 1px solid rgba(255,123,0,0.3);
+      border-radius: 50px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #ff7b00;
+    }
+
+    /* Empty scan list */
+    .scan-empty {
+      text-align: center;
+      color: #334155;
+      font-size: 13px;
+      padding: 20px 0;
+    }
+
+    .no-session-msg {
+      text-align: center;
+      padding: 80px 20px;
+      color: #334155;
+      font-size: 16px;
+    }
+    .no-session-msg .big-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.4; }
+    @media (max-width: 768px) {
+      .header { flex-direction: column; text-align: center; gap: 10px; margin-bottom: 24px; }
+      .header-text h1 { font-size: 18px; }
+      #sessionSelect { padding: 12px 14px; font-size: 14px; }
+      .main-grid { grid-template-columns: 1fr !important; }
+      .video-wrap { height: 300px !important; }
+      .stat-pill { padding: 6px 12px; font-size: 12px; }
+    }
+  
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE – LIVE SCAN / KIOSK PAGES
+═══════════════════════════════════════════════════ */
+
+body, html {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+img { max-width: 100%; }
+
+@media (max-width: 768px) {
+    .scan-container,
+    .kiosk-container,
+    .camera-container {
+        padding: 12px !important;
+        border-radius: 16px !important;
+    }
+
+    .video-wrap,
+    #videoWrap,
+    .camera-feed {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 12px !important;
+    }
+
+    video,
+    canvas {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        border-radius: 10px !important;
+    }
+
+    .scan-controls,
+    .control-panel {
+        flex-direction: column !important;
+        gap: 10px !important;
+        padding: 12px !important;
+    }
+
+    .scan-btn,
+    .control-btn,
+    .action-btn {
+        width: 100% !important;
+        min-height: 48px !important;
+        justify-content: center !important;
+    }
+
+    .status-panel,
+    .scan-status {
+        padding: 14px !important;
+        border-radius: 12px !important;
+    }
+
+    .subject-select,
+    #subjectSelect {
+        width: 100% !important;
+        min-height: 48px !important;
+        font-size: 16px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .scan-title,
+    .kiosk-title {
+        font-size: 18px !important;
+    }
+
+    .log-panel,
+    .detection-log {
+        max-height: 150px !important;
+        font-size: 12px !important;
+    }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ════ MOBILE HEADER ════ -->
+<header class="mobile-header" style="display:none;">
+    <img src="{% static 'img/logo2.png' %}" alt="LookIn AI" class="mobile-logo">
+</header>
+<style>
+    @media (max-width: 992px) {
+        .mobile-header { 
+            display: flex !important; 
+            position: fixed; top: 0; left: 0; right: 0; 
+            height: 70px; background: rgba(8, 14, 30, 0.95); 
+            backdrop-filter: blur(10px); z-index: 1000; padding: 0 20px; 
+            align-items: center; justify-content: center;
+            border-bottom: 1px solid rgba(255,123,0,0.15);
+        }
+        .page-wrap { padding-top: 100px !important; }
+    }
+</style>
+
+<div class="page-wrap" style="justify-content: center; text-align: center; min-height: 100vh;">
+  <div class="logo-mark" style="margin: 0 auto 20px auto; width: 60px; height: 60px; font-size: 28px;">👁️</div>
+  <h1 style="font-size: 28px; color: white; margin-bottom: 15px; font-weight: 800;">Feature Disabled</h1>
+  <p style="color: #94a3b8; font-size: 16px; max-width: 400px; margin: 0 auto; line-height: 1.5;">
+    This feature is disabled.<br>
+    Attendance is marked by your instructor.
+  </p>
+  <a href="{% url 'profile' %}" style="display: inline-block; margin-top: 30px; padding: 12px 24px; background: linear-gradient(135deg, #ff7b00, #ff4500); color: white; text-decoration: none; border-radius: 12px; font-weight: bold; box-shadow: 0 4px 15px rgba(255,123,0,0.3);">Go Back</a>
+</div>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  let stream = null;
+  let autoScanInterval = null;
+  let isScanning = false;
+  let scannedUsers = new Set();
+  let autoScanActive = false;
+
+  const video = document.getElementById('videoEl');
+  const canvas = document.getElementById('canvasEl');
+  const statusDot = document.getElementById('statusDot');
+  const statusText = document.getElementById('statusText');
+  const autoScanBtn = document.getElementById('autoScanBtn');
+  const snapBtn = document.getElementById('snapBtn');
+  const feedbackCard = document.getElementById('feedbackCard');
+  const scanList = document.getElementById('scanList');
+  const totalCount = document.getElementById('totalCount');
+
+  // Pre-select if session was in URL
+  const sessionSelect = document.getElementById('sessionSelect');
+
+  // ── Start Camera ────────────────────────────────────────────────────────────
+  async function startCamera() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      });
+      video.srcObject = stream;
+      await video.play();
+
+      setStatus('active', '📷 Camera ready — select a session');
+      autoScanBtn.disabled = false;
+      snapBtn.disabled = false;
+    } catch (err) {
+      setStatus('error', '❌ Camera access denied — please allow camera');
+      console.error(err);
+    }
+  }
+
+  function setStatus(type, msg) {
+    statusDot.className = 'status-dot ' + type;
+    statusText.textContent = msg;
+  }
+
+  // ── Auto-scan toggle ────────────────────────────────────────────────────────
+  function toggleAutoScan() {
+    const sid = sessionSelect.value;
+    if (!sid) { alert('Please select a session first!'); return; }
+
+    if (autoScanActive) {
+      clearInterval(autoScanInterval);
+      autoScanInterval = null;
+      autoScanActive = false;
+      autoScanBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Start Auto Scan`;
+      autoScanBtn.classList.remove('auto-on');
+      setStatus('active', '⏸️ Auto-scan paused');
+    } else {
+      autoScanActive = true;
+      autoScanBtn.innerHTML = `⏹️ Stop Auto Scan`;
+      autoScanBtn.classList.add('auto-on');
+      setStatus('scanning', '🔍 Auto-scanning every 2 seconds…');
+      captureAndScan(); // immediate first scan
+      autoScanInterval = setInterval(captureAndScan, 2500);
+    }
+  }
+
+  // ── Capture frame & send ────────────────────────────────────────────────────
+  async function captureAndScan() {
+    const sid = sessionSelect.value;
+    if (!sid) { alert('Please select a session first!'); return; }
+    if (isScanning) return;
+    if (!stream) return;
+
+    isScanning = true;
+    if (!autoScanActive) setStatus('scanning', '🔍 Scanning face…');
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    // Mirror the canvas to match the mirrored video
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    const b64 = canvas.toDataURL('image/jpeg', 0.85);
+
+    try {
+      const resp = await fetch('/api/live-scan/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ frame: b64, session_id: parseInt(sid) })
+      });
+
+      const data = await resp.json();
+      handleResult(data);
+    } catch (err) {
+      console.error('Scan error:', err);
+      if (!autoScanActive) setStatus('error', '❌ Server error. Try again.');
+    } finally {
+      isScanning = false;
+      if (!autoScanActive) {
+        setTimeout(() => setStatus('active', '📷 Camera ready'), 2000);
+      }
+    }
+  }
+
+  // ── Handle API result ───────────────────────────────────────────────────────
+  function handleResult(data) {
+    feedbackCard.className = 'feedback-card';
+
+    if (data.status === 'match') {
+      if (data.already_marked) {
+        feedbackCard.className = 'feedback-card no-face';
+        feedbackCard.innerHTML = `
+          <div class="feedback-icon">✅</div>
+          <div class="feedback-name">${data.name}</div>
+          <div class="feedback-roll">Already marked for this session</div>
+        `;
+        if (!autoScanActive) setStatus('active', '✅ Already marked');
+        return;
+      }
+
+      feedbackCard.className = 'feedback-card matched';
+      feedbackCard.innerHTML = `
+        ${data.image_url ? `<img src="${data.image_url}" class="feedback-image">` : '<div class="feedback-icon">✅</div>'}
+        <div class="feedback-name">${data.name}</div>
+        <div class="feedback-roll">Roll: ${data.roll || '—'} &nbsp;·&nbsp; ${data.division || ''}</div>
+        <div class="feedback-conf">Match ${data.confidence}%</div>
+      `;
+      setStatus('active', `✅ ${data.name} marked present!`);
+
+      if (!scannedUsers.has(data.roll || data.name)) {
+        scannedUsers.add(data.roll || data.name);
+        addToScanList(data);
+        totalCount.textContent = scannedUsers.size;
+      }
+
+    } else if (data.status === 'no_match') {
+      feedbackCard.className = 'feedback-card no-match';
+      feedbackCard.innerHTML = `<div class="feedback-icon">❌</div><p style="color:#fca5a5;font-weight:700;font-size:15px;">Face not recognised</p><p style="color:#64748b;font-size:13px;">Make sure you're registered & have a clear photo in your profile.</p>`;
+      if (!autoScanActive) setStatus('error', '❌ No match found');
+
+    } else if (data.status === 'no_face') {
+      if (!autoScanActive) {
+        feedbackCard.className = 'feedback-card no-face';
+        feedbackCard.innerHTML = `<div class="feedback-icon">😐</div><p style="color:#fcd34d;font-weight:700;font-size:15px;">No face detected</p><p style="color:#64748b;font-size:13px;">Position your face clearly in the camera.</p>`;
+        setStatus('active', '⚠️ No face detected — adjust position');
+      }
+    } else if (data.status === 'error') {
+      if (!autoScanActive) setStatus('error', `❌ ${data.message}`);
+    }
+  }
+
+  // ── Add to scan list ────────────────────────────────────────────────────────
+  function addToScanList(data) {
+    const empty = scanList.querySelector('.scan-empty');
+    if (empty) empty.remove();
+
+    const item = document.createElement('div');
+    item.className = 'scan-item';
+    const now = new Date();
+    const time = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+    item.innerHTML = `
+      ${data.image_url
+        ? `<img src="${data.image_url}" class="scan-item-img">`
+        : `<div class="scan-item-img" style="display:flex;align-items:center;justify-content:center;font-size:18px;">👤</div>`}
+      <div class="scan-item-info">
+        <div class="scan-item-name">${data.name}</div>
+        <div class="scan-item-meta">Roll ${data.roll || '—'} · ${time}</div>
+      </div>
+      <span class="scan-check">✓</span>
+    `;
+    scanList.prepend(item);
+  }
+
+  // ── Session change ───────────────────────────────────────────────────────────
+  sessionSelect.addEventListener('change', () => {
+    if (autoScanActive) toggleAutoScan(); // stop if running
+    scannedUsers.clear();
+    totalCount.textContent = '0';
+    scanList.innerHTML = '<div class="scan-empty">No scans yet</div>';
+    feedbackCard.className = 'feedback-card';
+    feedbackCard.innerHTML = `<div class="big-icon" style="font-size:48px; opacity:0.3;">🎯</div><p style="color:#475569; font-size:14px;">Session changed — ready to scan</p>`;
+  });
+
+  // ── Init ────────────────────────────────────────────────────────────────────
+  startCamera();
+</script>
+</body>
+</html>

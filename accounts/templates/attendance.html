@@ -1,10 +1,11 @@
 {% load static %}
+<!-- Responsive Patched -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Attendance | LookIn AI</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
 {% include 'header.html' %}
 
@@ -506,6 +507,11 @@ body {
     min-width: 160px;
 }
 
+.filter-input option {
+    background-color: #0d1528;
+    color: #fff;
+}
+
 .filter-input:focus {
     border-color: rgba(255,123,0,0.5);
     background: rgba(255,123,0,0.04);
@@ -817,10 +823,429 @@ body {
     80% { opacity: 1; }
     100%{ opacity: 0; transform: translateX(80px); }
 }
+@media (max-width: 992px) {
+    :root { --sidebar-w: 0px !important; }
+    
+    .sidebar { display: none !important; }
+    .sidebar.active { display: flex !important; z-index: 11000 !important; width: 280px !important; }
+
+    .main { margin-left: 0 !important; padding: 100px 16px 40px !important; width:100% !important; min-width:0 !important; overflow-x: hidden !important; }
+    .page-title { font-size: clamp(20px, 6vw, 32px) !important; margin-bottom: 20px !important; word-break: break-word !important; }
+    
+    .stats-row { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+    .stat-card { padding: 15px !important; min-height: 90px !important; }
+    .stat-number { font-size: 18px !important; }
+    .stat-label { font-size: 10px !important; }
+    
+    .filter-form { padding: 12px !important; flex-direction: column !important; align-items: stretch !important; gap: 10px !important; }
+    .filter-group { flex: none !important; width: 100% !important; }
+    .filter-input { min-width: 100% !important; height: 45px !important; font-size: 14px !important; }
+    .filter-btn, .clear-btn { width: 100% !important; height: 45px !important; justify-content: center !important; }
+    
+    .main-card { padding: 15px !important; border-radius: 12px !important; }
+}
+
+@media (max-width: 480px) {
+    .stats-row { grid-template-columns: 1fr !important; }
+}
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE – SIDEBAR PAGES (profile/attendance/report)
+   Mobile-first breakpoints
+═══════════════════════════════════════════════════ */
+
+/* ── Bottom Tab Bar (hidden on desktop) ── */
+.bottom-tab-bar {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: #0f172a;
+    border-top: 2px solid #ff8c00;
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.bottom-tab-bar .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #5a6a8a;
+    text-decoration: none;
+    font-size: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    transition: all 0.3s;
+    min-width: 48px;
+    min-height: 48px;
+    gap: 3px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.bottom-tab-bar .tab-item svg {
+    width: 20px; height: 20px;
+    stroke: currentColor;
+}
+
+.bottom-tab-bar .tab-item:hover,
+.bottom-tab-bar .tab-item.active {
+    color: #ff8c00;
+}
+
+/* ── Tablet (max 768px) ── */
+@media (max-width: 768px) {
+    /* Hide sidebar, show bottom tab bar */
+    .sidebar,
+    nav.sidebar {
+        display: none !important;
+    }
+
+    .bottom-tab-bar {
+        display: flex;
+    }
+
+    /* Main content needs bottom padding for tab bar */
+    .main,
+    main.main,
+    .main-content {
+        padding-bottom: 70px !important;
+        margin-left: 0 !important;
+    }
+
+    /* Layout: sidebar + main → full width */
+    .layout,
+    .page-layout,
+    body > .layout {
+        flex-direction: column !important;
+        padding: 0 !important;
+    }
+
+    /* Containers */
+    .container,
+    .main-card,
+    .table-panel,
+    .progress-section,
+    .filter-form,
+    .charts-grid .chart-panel {
+        border-radius: 12px !important;
+        margin-left: 8px !important;
+        margin-right: 8px !important;
+    }
+
+    /* Stats grid: 2 columns */
+    .stats-grid,
+    .stat-cards,
+    .stats-row,
+    .overview-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+    }
+
+    /* Each stat card */
+    .stat-card,
+    .stat-box,
+    .overview-card {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    /* Hero section: column layout */
+    .hero-inner,
+    .hero-section .hero-inner {
+        flex-direction: column !important;
+        align-items: center !important;
+        padding: 24px 18px !important;
+        gap: 20px !important;
+    }
+
+    .photo-column {
+        padding: 0 !important;
+        text-align: center !important;
+    }
+
+    .info-column {
+        padding: 0 16px 16px !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    .meta-row,
+    .hero-stats {
+        justify-content: center !important;
+        flex-wrap: wrap !important;
+    }
+
+    .hero-name {
+        font-size: 32px !important;
+    }
+
+    /* Profile grid: 2 per row on tablet */
+    .profile-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        padding: 0 8px !important;
+    }
+
+    /* Charts: 1 per row on tablet */
+    .charts-grid {
+        grid-template-columns: 1fr !important;
+        padding: 0 8px !important;
+    }
+
+    .chart-panel.wide {
+        grid-column: 1 !important;
+    }
+
+    /* Table → card layout */
+    .table-wrap {
+        overflow-x: unset !important;
+    }
+
+    .att-table thead,
+    .data-table thead {
+        display: none !important;
+    }
+
+    .att-table,
+    .att-table tbody,
+    .data-table,
+    .data-table tbody {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .att-table tbody tr,
+    .data-table tbody tr {
+        display: block !important;
+        background: rgba(255,255,255,0.05) !important;
+        border: 1px solid rgba(255,255,255,0.08) !important;
+        border-radius: 10px !important;
+        margin-bottom: 8px !important;
+        padding: 10px 12px !important;
+        overflow: hidden !important;
+    }
+
+    .att-table tbody tr td,
+    .data-table tbody td {
+        display: block !important;
+        width: 100% !important;
+        padding: 3px 0 !important;
+        font-size: 13px !important;
+        border: none !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        white-space: normal !important;
+        box-shadow: none !important;
+        text-align: left !important;
+    }
+
+    .att-table tbody tr td::before,
+    .data-table tbody td::before {
+        content: attr(data-label);
+        font-size: 9px !important;
+        color: #ff8c00;
+        display: block;
+        font-family: 'Orbitron', sans-serif;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 1px !important;
+    }
+
+    .att-table tbody tr td:first-child,
+    .att-table tbody tr td:last-child {
+        border-radius: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    /* Filter form */
+    .filter-form {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
+        padding: 18px !important;
+    }
+
+    .filter-group {
+        width: 100% !important;
+    }
+
+    .filter-input {
+        width: 100% !important;
+        min-width: unset !important;
+        min-height: 48px !important;
+        font-size: 16px !important;
+        box-sizing: border-box !important;
+    }
+
+    .filter-btn,
+    .clear-btn {
+        width: 100% !important;
+        min-height: 48px !important;
+        justify-content: center !important;
+    }
+
+    /* Modal full-screen */
+    .modal-box,
+    .modal-content {
+        width: 95vw !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+        padding: 24px 18px !important;
+        border-radius: 16px !important;
+    }
+
+    /* Touch targets */
+    button, a, input, select {
+        touch-action: manipulation;
+    }
+
+    /* Prevent horizontal overflow */
+    body, html {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+    }
+}
+
+/* ── Mobile (max 480px) ── */
+@media (max-width: 480px) {
+    .main,
+    main.main {
+        padding: 10px 8px 70px !important;
+    }
+
+    .profile-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+
+    .info-card {
+        padding: 14px 12px !important;
+        border-radius: 12px !important;
+    }
+
+    .hero-name {
+        font-size: 26px !important;
+    }
+
+    .hero-roll {
+        font-size: 11px !important;
+    }
+
+    .stat-item {
+        padding: 10px 12px !important;
+    }
+
+    .stat-value {
+        font-size: 16px !important;
+    }
+
+    .edit-btn {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 14px !important;
+        min-height: 48px !important;
+    }
+
+    .photo-wrap {
+        width: 130px !important;
+        height: 130px !important;
+    }
+
+    .profile-photo {
+        width: 100px !important;
+        height: 100px !important;
+    }
+
+    /* Section counts hide on tiny screens */
+    .section-count {
+        display: none !important;
+    }
+
+    /* Card icon size */
+    .card-icon {
+        width: 30px !important;
+        height: 30px !important;
+    }
+
+    .card-label {
+        font-size: 8px !important;
+    }
+
+    .card-value {
+        font-size: 13px !important;
+    }
+}
+
+.bottom-tab-bar {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 60px;
+  background: #0a0f1e;
+  border-top: 1px solid #ff8c00;
+  z-index: 99999;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0;
+}
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #5a6a8a;
+  text-decoration: none;
+  font-size: 9px;
+  gap: 3px;
+  flex: 1;
+  min-height: 48px;
+  touch-action: manipulation;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.tab-item svg {
+  width: 22px; height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tab-item.active,
+.tab-item:hover { 
+  color: #ff8c00; 
+}
+@media (max-width: 900px) {
+  .bottom-tab-bar { display: flex !important; }
+  .sidebar { display: none !important; }
+  .main { 
+    margin-left: 0 !important; 
+    padding-bottom: 70px !important; 
+  }
+}
 </style>
 </head>
 
 <body>
+
+<!-- ════ MOBILE HEADER ════ -->
+
 
 <!-- ════ ANIMATED BACKGROUND ════ -->
 <div class="bg-canvas" id="bgCanvas"></div>
@@ -851,6 +1276,7 @@ body {
                 </div>
                 Report
             </a>
+
         </nav>
     </div>
 
@@ -864,6 +1290,9 @@ body {
             <div class="user-info">
                 <p class="user-name">{{ request.user.first_name|default:"Student" }}</p>
                 <p class="user-email">{{ request.user.email }}</p>
+                {% if profile and profile.roll %}
+                <p style="font-size:9px; color:#ff7b00; font-family:'Orbitron',monospace; letter-spacing:1px; margin-top:3px; opacity:0.8;">ID: {{ profile.roll }}</p>
+                {% endif %}
             </div>
         </div>
         <form action="{% url 'logout_user' %}" method="POST">
@@ -935,7 +1364,10 @@ body {
             </div>
             <div class="stat-label">Attendance %</div>
             <div class="stat-number" id="statPct">{{ attendance_pct|default:"0" }}%</div>
-            <div class="stat-sub">Overall percentage</div>
+            <div style="margin-top:8px; display:inline-flex; align-items:center; gap:5px; background:linear-gradient(135deg, rgba(255,123,0,0.15), rgba(255,123,0,0.05)); padding:5px 12px; border-radius:50px; border:1px solid rgba(255,123,0,0.4); box-shadow: 0 0 10px rgba(255,123,0,0.1);">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ff7b00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v-6M6 20V10M18 20V4"/></svg>
+                <span style="font-size:11px; font-weight:800; color:#ff7b00; text-transform:uppercase; letter-spacing:1px; font-family:'Orbitron', sans-serif;">Class Avg {{ class_avg_pct|default:"0" }}%</span>
+            </div>
         </div>
     </div>
 
@@ -985,9 +1417,29 @@ body {
 
         <!-- Filter Form -->
         <form method="GET" class="filter-form">
+            {% if enrolled_subjects %}
             <div class="filter-group">
-                <label class="filter-label">Date Filter</label>
-                <input type="date" name="date" value="{{ selected_date }}" class="filter-input">
+                <label class="filter-label">Subject</label>
+                <select name="subject" class="filter-input" style="cursor: pointer; appearance: auto;">
+                    <option value="">All Subjects</option>
+                    {% for subj in enrolled_subjects %}
+                        <option value="{{ subj.id }}" {% if selected_subject == subj.id %}selected{% endif %}>
+                            {{ subj.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endif %}
+            
+            <div class="filter-group" style="flex-direction:row; gap:14px; align-items:flex-end;">
+                <div style="flex:1;">
+                    <label class="filter-label">From Date</label>
+                    <input type="date" name="date_from" value="{{ default_from|date:'Y-m-d' }}" class="filter-input" style="width:100%;">
+                </div>
+                <div style="flex:1;">
+                    <label class="filter-label">To Date</label>
+                    <input type="date" name="date_to" value="{{ default_to|date:'Y-m-d' }}" class="filter-input" style="width:100%;">
+                </div>
             </div>
             <button type="submit" class="filter-btn">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1001,29 +1453,22 @@ body {
 
         <!-- Table -->
         <div class="table-wrap">
-            <table class="att-table">
+            {% for subject_name, records in grouped_records.items %}
+            <div style="margin-top: 24px; margin-bottom: 12px; font-family: 'Orbitron', sans-serif; font-size: 14px; color: var(--primary); letter-spacing: 2px;">
+                {{ subject_name }} <span style="color:var(--text-muted); font-size:10px;">[{{ records|length }} records]</span>
+            </div>
+            <table class="att-table" style="margin-bottom: 30px;">
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Subject</th>
-                        <th>Program</th>
-                        <th>Semester</th>
                         <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for a in attendance %}
+                    {% for a in records %}
                     <tr>
-                        <td>{{ a.session.date|date:"d M, Y" }}</td>
-                        <td>
-                            <div class="subject-cell">
-                                <div class="subject-dot"></div>
-                                <span class="subject-name">{{ a.session.subject }}</span>
-                            </div>
-                        </td>
-                        <td>{{ profile.program }}</td>
-                        <td>{{ profile.semester }}</td>
-                        <td>
+                        <td data-label="Date" style="border-radius: 14px 0 0 14px;">{{ a.session.date|date:"d M, Y" }}</td>
+                        <td data-label="Status" style="border-radius: 0 14px 14px 0;">
                             {% if a.status %}
                                 <span class="status-badge present">
                                     <span class="status-dot-sm"></span>
@@ -1037,23 +1482,44 @@ body {
                             {% endif %}
                         </td>
                     </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" style="border: none; background: transparent; padding: 0;">
-                            <div class="empty-state">
-                                <div class="empty-icon">
-                                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5a6a8a" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                </div>
-                                <div class="empty-title">No Records Found</div>
-                                <div class="empty-sub">No attendance history available for this period.</div>
-                            </div>
-                        </td>
-                    </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            {% empty %}
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#5a6a8a" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                </div>
+                <div class="empty-title">No Records Found</div>
+                <div class="empty-sub">No attendance history available for this period.</div>
+            </div>
+            {% endfor %}
         </div>
     </div>
+
+
+<!-- ══ BOTTOM TAB BAR (mobile only) ══ -->
+<nav class="bottom-tab-bar">
+    <a href="{% url 'profile' %}" class="tab-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+    </a>
+    <a href="{% url 'attendance' %}" class="tab-item {% if request.resolver_match.url_name == 'attendance' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>Attend</span>
+    </a>
+    <a href="{% url 'report' %}" class="tab-item {% if request.resolver_match.url_name == 'report' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>Report</span>
+    </a>
+    <form action="{% url 'logout_user' %}" method="POST" style="display:flex;flex:1;justify-content:center;">
+        {% csrf_token %}
+        <button type="submit" class="tab-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>Logout</span>
+        </button>
+    </form>
+</nav>
 
 </main>
 

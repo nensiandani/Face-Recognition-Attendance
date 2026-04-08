@@ -11,8 +11,8 @@ reportlab
 openpyxl
 cloudinary
 django-cloudinary-storage
-face-recognition
-dlib
+insightface
+onnxruntime
 django-allauth
 PyJWT
 cryptography

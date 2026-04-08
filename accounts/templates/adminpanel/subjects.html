@@ -3,18 +3,15 @@
 
 {% block content %}
 <style>
-    /* ========== MODERN LOOKIN THEME ========== */
     .page-title {
-        color: #ff7b00; 
-        font-weight: 800; 
-        margin-bottom: 25px; 
-        text-transform: uppercase; 
-        border-left: 6px solid #ff7b00; 
+        color: #ff7b00;
+        font-weight: 800;
+        margin-bottom: 25px;
+        text-transform: uppercase;
+        border-left: 6px solid #ff7b00;
         padding-left: 15px;
         font-size: 24px;
     }
-
-    /* Form Card with Grid */
     .form-card {
         background: #f8fafc;
         padding: 30px;
@@ -23,14 +20,12 @@
         margin-bottom: 35px;
         border: 1px solid #e2e8f0;
     }
-
     .form-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
         gap: 15px;
         align-items: end;
     }
-
     .form-grid select, .form-grid input {
         padding: 12px 15px;
         font-size: 14px;
@@ -42,13 +37,19 @@
         width: 100%;
         transition: 0.3s;
     }
-
     .form-grid select:focus, .form-grid input:focus {
         border-color: #ff7b00;
-        box-shadow: 0 0 8px rgba(255, 123, 0, 0.15);
+        box-shadow: 0 0 8px rgba(255,123,0,0.15);
     }
-
-    /* Submit Button */
+    label.field-label {
+        font-size: 11px;
+        color: #64748b;
+        margin-bottom: 5px;
+        display: block;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
     .submit-btn {
         padding: 12px 25px;
         background: #ff7b00;
@@ -60,14 +61,86 @@
         text-transform: uppercase;
         transition: 0.3s;
         height: 45px;
+        width: 100%;
     }
+    .submit-btn:hover { background: #e66f00; transform: translateY(-2px); }
 
-    .submit-btn:hover {
-        background: #e66f00;
-        transform: translateY(-2px);
+    /* ── Pair Rows (Elective) ─────────────────────────────────── */
+    #elective-pairs-wrapper {
+        grid-column: 1 / -1;
+        display: none;
     }
+    .pairs-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 10px;
+    }
+    .pair-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        overflow: hidden;
+        background: white;
+    }
+    .pair-table thead th {
+        background: #f1f5f9;
+        padding: 10px 14px;
+        text-align: left;
+        font-size: 11px;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .pair-table tbody td {
+        padding: 8px 10px;
+        border-top: 1px solid #f1f5f9;
+    }
+    .pair-table select {
+        padding: 9px 12px;
+        font-size: 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: #f8fafc;
+        color: #1e293b;
+        width: 100%;
+        outline: none;
+        transition: 0.2s;
+    }
+    .pair-table select:focus {
+        border-color: #ff7b00;
+        background: white;
+    }
+    .remove-pair-btn {
+        background: #fee2e2;
+        color: #dc2626;
+        border: none;
+        border-radius: 7px;
+        padding: 7px 13px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .remove-pair-btn:hover { background: #dc2626; color: white; }
+    .add-pair-btn {
+        margin-top: 10px;
+        padding: 9px 18px;
+        background: #eff6ff;
+        border: 1px dashed #93c5fd;
+        color: #2563eb;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .add-pair-btn:hover { background: #dbeafe; border-style: solid; }
 
-    /* Table Card Style */
+    /* ── Table Card ─────────────────────────────────────────────── */
     .table-card {
         background: #fff;
         padding: 20px;
@@ -76,173 +149,344 @@
         border: 1px solid #f1f5f9;
         overflow-x: auto;
     }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    thead tr {
-        background: #f8fafc;
-        border-bottom: 2px solid #e2e8f0;
-    }
-
-    th {
-        padding: 15px;
-        text-align: left;
-        color: #475569;
-        font-weight: 700;
-        font-size: 11px;
-        text-transform: uppercase;
-    }
-
-    td {
-        padding: 15px;
-        border-bottom: 1px solid #f1f5f9;
-        color: #1e293b;
-        font-size: 13px;
-    }
-
-    tr:hover {
-        background: #fcfcfc;
-    }
-
-    /* Action Buttons */
-    .action-group {
-        display: flex;
-        gap: 8px;
-    }
-
-    .edit-link {
-        background: #3498db;
-        color: white;
-        padding: 6px 12px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 11px;
-        font-weight: 600;
-    }
-
-    .delete-link {
-        background: #e74c3c;
-        color: white;
-        padding: 6px 12px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 11px;
-        font-weight: 600;
-    }
-
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
+    th { padding: 15px; text-align: left; color: #475569; font-weight: 700; font-size: 11px; text-transform: uppercase; }
+    td { padding: 13px 15px; border-bottom: 1px solid #f1f5f9; color: #1e293b; font-size: 13px; }
+    tr:hover { background: #fcfcfc; }
+    .action-group { display: flex; gap: 8px; }
+    .edit-link { background: #3498db; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 11px; font-weight: 600; }
+    .delete-link { background: #e74c3c; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 11px; font-weight: 600; }
     .edit-link:hover { background: #2980b9; }
     .delete-link:hover { background: #c0392b; }
-
+    .type-badge {
+        font-size: 10px;
+        padding: 3px 7px;
+        border-radius: 4px;
+        font-weight: 700;
+    }
+    .badge-core { background: #e0f2fe; color: #0369a1; }
+    .badge-elective { background: #fff7ed; color: #c2410c; }
+    .pair-line { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; font-size: 12px; }
+    .pair-line .prog-name { color: #2563eb; font-weight: 700; }
+    .pair-line .arrow { color: #94a3b8; }
+    .pair-line .sem-name { color: #ff7b00; font-weight: 700; background: #fff7ed; padding: 2px 8px; border-radius: 10px; }
 </style>
 
 <h2 class="page-title">Manage Subjects</h2>
 
 <div class="form-card">
-    <form method="POST" action="{% if edit_subject %}{% url 'edit_subject' edit_subject.id %}{% else %}{% url 'subjects' %}{% endif %}" class="form-grid">
+    <form method="POST"
+          id="subjectForm"
+          action="{% if edit_subject %}{% url 'edit_subject' edit_subject.id %}{% else %}{% url 'subjects' %}{% endif %}">
         {% csrf_token %}
 
-        <div>
-            <label style="font-size: 11px; color: #64748b; margin-bottom: 5px; display: block;">Faculty</label>
-            <select name="faculty" required>
-                <option value="" disabled selected>Select Faculty</option>
-                {% for f in faculties %}
-                    <option value="{{ f.id }}" {% if edit_subject and edit_subject.faculty.id == f.id %}selected{% endif %}>{{ f.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+        <!-- Hidden field carries JSON pairs for elective -->
+        <input type="hidden" name="pairs_json" id="pairsJson" value="">
 
-        <div>
-            <label style="font-size: 11px; color: #64748b; margin-bottom: 5px; display: block;">Department</label>
-            <select name="department" required>
-                <option value="" disabled selected>Select Dept</option>
-                {% for d in departments %}
-                    <option value="{{ d.id }}" {% if edit_subject and edit_subject.department.id == d.id %}selected{% endif %}>{{ d.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+        <div class="form-grid">
 
-        <div>
-            <label style="font-size: 11px; color: #64748b; margin-bottom: 5px; display: block;">Program</label>
-            <select name="program" required>
-                <option value="" disabled selected>Select Program</option>
-                {% for p in programs %}
-                    <option value="{{ p.id }}" {% if edit_subject and edit_subject.program.id == p.id %}selected{% endif %}>{{ p.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+            <!-- Subject Type -->
+            <div>
+                <label class="field-label">Subject Type</label>
+                <select name="subject_type" id="subjectTypeSelect" onchange="toggleSubjectFields()" required>
+                    <option value="core" {% if edit_subject and edit_subject.subject_type == 'core' %}selected{% endif %}>Core</option>
+                    <option value="elective" {% if edit_subject and edit_subject.subject_type == 'elective' %}selected{% endif %}>Elective</option>
+                </select>
+            </div>
 
-        <div>
-            <label style="font-size: 11px; color: #64748b; margin-bottom: 5px; display: block;">Semester</label>
-            <select name="semester" required>
-                <option value="" disabled selected>Select Sem</option>
-                {% for s in semesters %}
-                    <option value="{{ s.id }}" {% if edit_subject and edit_subject.semester.id == s.id %}selected{% endif %}>{{ s.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+            <!-- Faculty -->
+            <div>
+                <label class="field-label">Faculty</label>
+                <select name="faculty" required>
+                    <option value="" disabled selected>Select Faculty</option>
+                    {% for f in faculties %}
+                        <option value="{{ f.id }}" {% if edit_subject and edit_subject.faculty.id == f.id %}selected{% endif %}>{{ f.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <div>
-            <label style="font-size: 11px; color: #64748b; margin-bottom: 5px; display: block;">Division</label>
-            <select name="division" required>
-                <option value="" disabled selected>Select Div</option>
-                {% for d in divisions %}
-                    <option value="{{ d.id }}" {% if edit_subject and edit_subject.division.id == d.id %}selected{% endif %}>{{ d.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+            <!-- Department -->
+            <div>
+                <label class="field-label">Department</label>
+                <select name="department" required>
+                    <option value="" disabled selected>Select Dept</option>
+                    {% for d in departments %}
+                        <option value="{{ d.id }}" {% if edit_subject and edit_subject.department.id == d.id %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <div>
-            <label style="font-size: 11px; color: #64748b; margin-bottom: 5px; display: block;">Subject Name</label>
-            <input type="text" name="subject_name" placeholder="e.g. Machine Learning" value="{% if edit_subject %}{{ edit_subject.name }}{% endif %}" required>
-        </div>
+            <!-- CORE ONLY: Program -->
+            <div id="coreProgramGroup">
+                <label class="field-label">Program</label>
+                <select name="program" id="coreProgram">
+                    <option value="" disabled selected>Select Program</option>
+                    {% for p in programs %}
+                        <option value="{{ p.id }}"
+                            {% if edit_subject and edit_subject.subject_type == 'core' and edit_subject.program and edit_subject.program.id == p.id %}selected{% endif %}>
+                            {{ p.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <button type="submit" class="submit-btn">
-            {% if edit_subject %}Update{% else %}Add Subject{% endif %}
-        </button>
+            <!-- CORE ONLY: Semester -->
+            <div id="coreSemesterGroup">
+                <label class="field-label">Semester (Fixed)</label>
+                <select name="semester" id="coreSemester">
+                    <option value="" disabled selected>Select Sem</option>
+                    {% for s in semesters %}
+                        <option value="{{ s.id }}"
+                            {% if edit_subject and edit_subject.semester and edit_subject.semester.id == s.id %}selected{% endif %}>
+                            {{ s.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- CORE ONLY: Divisions -->
+            <div id="coreDivisionGroup">
+                <label class="field-label">Divisions (Ctrl+Click)</label>
+                <select name="divisions" multiple style="height:72px;">
+                    {% for d in divisions %}
+                        <option value="{{ d.id }}" {% if edit_subject and d in edit_subject.divisions.all %}selected{% endif %}>{{ d.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- ELECTIVE ONLY: Program-Semester pairs widget -->
+            <div id="elective-pairs-wrapper">
+                <p class="pairs-label">Program → Semester Pairs</p>
+                <table class="pair-table">
+                    <thead>
+                        <tr>
+                            <th style="width:42%">Program</th>
+                            <th style="width:42%">Semester</th>
+                            <th style="width:16%">Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pairsTbody">
+                        <!-- rows injected by JS -->
+                    </tbody>
+                </table>
+                <button type="button" class="add-pair-btn" onclick="addPairRow()">+ Add Program–Semester Pair</button>
+            </div>
+
+            <!-- Subject Name -->
+            <div>
+                <label class="field-label">Subject Name</label>
+                <input type="text" name="subject_name"
+                       placeholder="e.g. Machine Learning"
+                       value="{% if edit_subject %}{{ edit_subject.name }}{% endif %}"
+                       required>
+            </div>
+
+            <!-- Course Code -->
+            <div>
+                <label class="field-label">Course Code</label>
+                <input type="text" name="course_code"
+                       placeholder="e.g. CS301"
+                       value="{% if edit_subject %}{{ edit_subject.course_code|default_if_none:'' }}{% endif %}">
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="submit-btn" style="grid-column: 1 / -1;">
+                {% if edit_subject %}Update Subject{% else %}Add Subject{% endif %}
+            </button>
+        </div>
     </form>
 </div>
 
+<!-- Subject List Table -->
 <div class="table-card">
-    <table>
+    <div style="margin-bottom: 15px; position: relative;">
+        <input type="text" id="subjectSearch"
+               placeholder="Search subject by name or course code..."
+               autocomplete="off" style="width: 100%; padding: 12px 16px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none;">
+    </div>
+    <table id="subjectTable">
         <thead>
             <tr>
-                <th>ID</th>
-                <th>Faculty</th>
-                <th>Dept</th>
-                <th>Program</th>
-                <th>Sem</th>
-                <th>Div</th>
-                <th>Subject</th>
-                <th style="text-align: center;">Actions</th>
+                <th>Type</th>
+                <th>Course Code</th>
+                <th>Subject Name</th>
+                <th>Program → Sem</th>
+                <th>Div(s)</th>
+                <th style="text-align:center;">Actions</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="subjectTbody">
             {% for s in subjects %}
-            <tr>
-                <td><strong>#{{ s.id|add:-1 }}</strong></td>
-                <td>{{ s.faculty.name }}</td>
-                <td>{{ s.department.name }}</td>
-                <td>{{ s.program.name }}</td>
-                <td>{{ s.semester.name }}</td>
-                <td>{{ s.division.name }}</td>
-                <td><span style="color: #ff7b00; font-weight: 700;">{{ s.name }}</span></td>
+            <tr class="subject-row">
                 <td>
-                    <div class="action-group" style="justify-content: center;">
+                    <span class="type-badge {% if s.subject_type == 'core' %}badge-core{% else %}badge-elective{% endif %}">
+                        {{ s.subject_type|upper }}
+                    </span>
+                </td>
+                <td class="searchable-code" style="font-weight:700; color:#475569;">{{ s.course_code|default:"—" }}</td>
+                <td class="searchable-name"><span style="color:#ff7b00; font-weight:700;">{{ s.name }}</span></td>
+                <td>
+                    {% if s.subject_type == 'core' %}
+                        <div class="pair-line">
+                            <span class="prog-name">{{ s.program.name|default:"—" }}</span>
+                            <span class="arrow">→</span>
+                            <span class="sem-name">Sem {{ s.semester.name|default:"—" }}</span>
+                        </div>
+                    {% else %}
+                        {% for pair in s.program_semester_pairs.all %}
+                            <div class="pair-line">
+                                <span class="prog-name">{{ pair.program.name }}</span>
+                                <span class="arrow">→</span>
+                                <span class="sem-name">Sem {{ pair.semester.name }}</span>
+                            </div>
+                        {% empty %}
+                            <span style="color:#94a3b8; font-size:11px;">No pairs set</span>
+                        {% endfor %}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if s.subject_type == 'core' %}
+                        {% for div in s.divisions.all %}{{ div.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    {% else %}
+                        <span style="color:#94a3b8; font-size:11px;">N/A</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="action-group" style="justify-content:center;">
                         <a href="{% url 'edit_subject' s.id %}" class="edit-link">Edit</a>
-                        <a href="{% url 'delete_subject' s.id %}" class="delete-link" onclick="return confirm('Subject delete karvu che?')">Delete</a>
+                        <a href="{% url 'delete_subject' s.id %}" class="delete-link"
+                           onclick="return confirm('Delete this subject?')">Delete</a>
                     </div>
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="8" style="text-align: center; padding: 30px; color: #94a3b8;">No Subjects Found.</td>
+                <td colspan="6" style="text-align:center; padding:30px; color:#94a3b8;" class="empty-msg">No Subjects Found.</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 
+<!-- ── Options data for JS dropdowns ─────────────────────────── -->
+<script>
+// Serialise programs and semesters from Django template into JS arrays
+const ALL_PROGRAMS = [
+    {% for p in programs %}
+    { id: {{ p.id }}, name: "{{ p.name|escapejs }}" },
+    {% endfor %}
+];
+const ALL_SEMESTERS = [
+    {% for s in semesters %}
+    { id: {{ s.id }}, name: "{{ s.name|escapejs }}" },
+    {% endfor %}
+];
+
+// Existing pairs (for edit mode)
+const EDIT_PAIRS = [
+    {% if edit_subject and edit_subject.subject_type == 'elective' %}
+        {% for pair in edit_subject.program_semester_pairs.all %}
+        { prog: {{ pair.program.id }}, sem: {{ pair.semester.id }} },
+        {% endfor %}
+    {% endif %}
+];
+
+/* ── Build select HTML ─────────────────────────── */
+function buildProgramSelect(selectedId) {
+    let html = `<select class="pair-prog" required>
+        <option value="" disabled ${selectedId ? '' : 'selected'}>Select Program</option>`;
+    ALL_PROGRAMS.forEach(p => {
+        html += `<option value="${p.id}" ${p.id == selectedId ? 'selected' : ''}>${p.name}</option>`;
+    });
+    return html + '</select>';
+}
+function buildSemesterSelect(selectedId) {
+    let html = `<select class="pair-sem" required>
+        <option value="" disabled ${selectedId ? '' : 'selected'}>Select Semester</option>`;
+    ALL_SEMESTERS.forEach(s => {
+        html += `<option value="${s.id}" ${s.id == selectedId ? 'selected' : ''}>Sem ${s.name}</option>`;
+    });
+    return html + '</select>';
+}
+
+/* ── Add a pair row ────────────────────────────── */
+function addPairRow(progId, semId) {
+    const tbody = document.getElementById('pairsTbody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td>${buildProgramSelect(progId || '')}</td>
+        <td>${buildSemesterSelect(semId || '')}</td>
+        <td><button type="button" class="remove-pair-btn" onclick="this.closest('tr').remove()">🗑</button></td>
+    `;
+    tbody.appendChild(tr);
+}
+
+/* ── Collect pairs → JSON before submit ─────────── */
+document.getElementById('subjectForm').addEventListener('submit', function(e) {
+    const typeVal = document.getElementById('subjectTypeSelect').value;
+    if (typeVal === 'elective') {
+        const pairs = [];
+        document.querySelectorAll('#pairsTbody tr').forEach(row => {
+            const prog = row.querySelector('.pair-prog').value;
+            const sem  = row.querySelector('.pair-sem').value;
+            if (prog && sem) pairs.push({ program_id: parseInt(prog), semester_id: parseInt(sem) });
+        });
+        document.getElementById('pairsJson').value = JSON.stringify(pairs);
+    }
+});
+
+/* ── Toggle core/elective fields ─────────────── */
+function toggleSubjectFields() {
+    const t = document.getElementById('subjectTypeSelect').value;
+    const isCore = t === 'core';
+
+    document.getElementById('coreProgramGroup').style.display  = isCore ? 'block' : 'none';
+    document.getElementById('coreSemesterGroup').style.display = isCore ? 'block' : 'none';
+    document.getElementById('coreDivisionGroup').style.display = isCore ? 'block' : 'none';
+    document.getElementById('elective-pairs-wrapper').style.display = isCore ? 'none' : 'block';
+
+    document.getElementById('coreProgram').required  = isCore;
+    document.getElementById('coreSemester').required = isCore;
+}
+
+/* ── On page load ────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', function() {
+    toggleSubjectFields();
+
+    // If editing an elective, pre-fill existing pairs
+    if (EDIT_PAIRS.length > 0) {
+        EDIT_PAIRS.forEach(p => addPairRow(p.prog, p.sem));
+    } else {
+        // Add one blank row if elective mode
+        const t = document.getElementById('subjectTypeSelect').value;
+        if (t === 'elective') addPairRow();
+    }
+});
+
+/* ── Subject Search ── */
+document.getElementById('subjectSearch').addEventListener('keyup', function () {
+    const query = this.value.trim().toLowerCase();
+    const rows = document.querySelectorAll('tr.subject-row');
+    let visibleCount = 0;
+
+    rows.forEach(function (row) {
+        const name = row.querySelector('.searchable-name').textContent.toLowerCase();
+        const code = row.querySelector('.searchable-code').textContent.toLowerCase();
+        const match = name.includes(query) || code.includes(query);
+        row.style.display = match ? '' : 'none';
+        if (match) visibleCount++;
+    });
+
+    let noResultsRow = document.getElementById('noResultsRowSubject');
+    if (noResultsRow) noResultsRow.remove();
+
+    if (visibleCount === 0 && rows.length > 0) {
+        noResultsRow = document.createElement('tr');
+        noResultsRow.id = 'noResultsRowSubject';
+        noResultsRow.innerHTML = '<td colspan="6" style="text-align:center; padding:30px; color:#94a3b8;">No subjects match "<strong>' + query + '</strong>"</td>';
+        document.getElementById('subjectTbody').appendChild(noResultsRow);
+    }
+});
+</script>
 {% endblock %}

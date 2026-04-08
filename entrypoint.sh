@@ -8,19 +8,9 @@ python manage.py migrate --no-input
 echo "Collecting static files..."
 python manage.py collectstatic --no-input
 
-# 3. Setup Site only
-echo "Setting up Site..."
-python manage.py shell << 'EOF'
-import os
-from django.contrib.sites.models import Site
-
-domain = os.environ.get('SITE_DOMAIN', 'localhost:8000')
-Site.objects.update_or_create(
-    id=1,
-    defaults={'domain': domain, 'name': domain}
-)
-print(f"Site set to: {domain}")
-EOF
+# 3. Setup Google OAuth credentials in DB (fixes Error 400: missing client_id)
+echo "Setting up Google OAuth..."
+python manage.py setup_google_auth
 
 # 4. Start Gunicorn server
 echo "Starting Gunicorn server..."

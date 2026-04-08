@@ -1,0 +1,577 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+  :root {
+    --primary: #10b981;
+    --primary-glow: rgba(16, 185, 129, 0.35);
+    --primary-light: #f0fdf4;
+    --slate: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --bg: #f8fafc;
+    --white: #ffffff;
+  }
+
+  .page-title {
+    color: var(--primary);
+    font-weight: 900;
+    font-size: 28px;
+    letter-spacing: 1px;
+    border-left: 6px solid var(--primary);
+    padding-left: 15px;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 30px;
+    padding-left: 21px;
+  }
+
+  .glass-card {
+    background: rgba(255,255,255,0.97);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.06);
+    border: 1px solid rgba(226,232,240,0.8);
+    max-width: 600px;
+    margin-bottom: 30px;
+  }
+
+  .form-group { margin-bottom: 20px; }
+  .form-group label {
+    font-size: 13px;
+    font-weight: 800;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+    color: #1e293b;
+    font-weight: 500;
+    transition: 0.3s;
+    box-sizing: border-box;
+  }
+  .form-group input:focus {
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 3px var(--primary-glow);
+    outline: none;
+  }
+
+  .btn-submit {
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    box-shadow: 0 6px 20px var(--primary-glow);
+    transition: all 0.3s;
+    text-transform: uppercase;
+    width: 100%;
+  }
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(16,185,129,0.4);
+  }
+
+  .summary-card {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    color: #166534;
+  }
+
+  /* ── Select2 Custom Styles (student field) ── */
+  .select2-container--default .select2-selection--single {
+    height: 48px !important;
+    border: 2px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    background: #f8fafc !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: normal !important;
+    color: #1e293b !important;
+    padding-left: 14px !important;
+    width: 100% !important;
+  }
+  .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 48px !important;
+    right: 8px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+  }
+  .select2-container--default.select2-container--open .select2-selection--single {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px var(--primary-glow) !important;
+  }
+
+  /* ══════════════════════════════════════════
+     CUSTOM SEARCHABLE DROPDOWN — green theme
+  ══════════════════════════════════════════ */
+  .sd-wrapper {
+    position: relative;
+    width: 100%;
+  }
+  .sd-trigger {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 16px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: border-color 0.25s, box-shadow 0.25s;
+    min-height: 48px;
+    box-sizing: border-box;
+  }
+  .sd-trigger:focus-within,
+  .sd-wrapper.open .sd-trigger {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+    background: white;
+  }
+  .sd-trigger-icon { font-size: 16px; flex-shrink: 0; }
+  .sd-trigger-text {
+    flex: 1;
+    font-size: 14px;
+    color: var(--slate);
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sd-trigger-text.placeholder { color: var(--muted); }
+  .sd-chevron {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    color: var(--muted);
+    transition: transform 0.25s;
+  }
+  .sd-wrapper.open .sd-chevron { transform: rotate(180deg); }
+
+  .sd-panel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0; right: 0;
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    z-index: 500;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: sdSlideIn 0.18s ease;
+  }
+  .sd-wrapper.open .sd-panel { display: flex; }
+
+  @keyframes sdSlideIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .sd-search-wrap {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fafbfc;
+  }
+  .sd-search-icon { font-size: 15px; color: var(--muted); }
+  .sd-search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: transparent;
+    color: var(--slate);
+  }
+  .sd-search-input::placeholder { color: #94a3b8; }
+  .sd-clear-btn {
+    background: none; border: none; cursor: pointer; font-size: 14px;
+    color: var(--muted); padding: 0 2px; display: none;
+  }
+  .sd-clear-btn.visible { display: block; }
+
+  .sd-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 6px 0;
+  }
+  .sd-list::-webkit-scrollbar { width: 5px; }
+  .sd-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+  /* Pinned "All Subjects" row */
+  .sd-all-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 16px;
+    cursor: pointer;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #065f46;
+    background: #ecfdf5;
+    border-bottom: 1px solid #d1fae5;
+    transition: background 0.15s;
+  }
+  .sd-all-row:hover { background: #d1fae5; }
+  .sd-all-row.selected { background: #bbf7d0; font-weight: 800; }
+  .sd-all-sub { font-size: 11px; color: #059669; font-weight: 400; margin-left: 4px; }
+
+  .sd-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 2px 0;
+  }
+
+  .sd-group-label {
+    padding: 8px 16px 4px;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--muted);
+    background: #f8fafc;
+    border-top: 1px solid var(--border);
+    margin-top: 2px;
+  }
+  .sd-group-label:first-child { border-top: none; margin-top: 0; }
+
+  .sd-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 13.5px;
+    color: var(--slate);
+    transition: background 0.15s;
+  }
+  .sd-option:hover { background: #f0fdf4; }
+  .sd-option.selected { background: #dcfce7; color: #065f46; font-weight: 700; }
+
+  .sd-option-code {
+    background: #f1f5f9;
+    color: var(--slate);
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 7px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    font-family: monospace;
+    letter-spacing: 0.03em;
+  }
+  .sd-option.selected .sd-option-code { background: rgba(16,185,129,0.15); color: #065f46; }
+  .sd-option-name { flex: 1; }
+  .sd-option-meta { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+
+  .sd-empty {
+    padding: 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .sd-empty span { display: block; font-size: 28px; margin-bottom: 6px; }
+</style>
+
+<h2 class="page-title">🩺 Grant Medical Leave</h2>
+<p class="subtitle">Assign proxy attendance for a student who was officially on medical or authorized leave.</p>
+
+<div class="glass-card">
+  {% if messages %}
+    <div style="margin-bottom:20px;">
+      {% for message in messages %}
+        <div style="padding: 12px 16px; border-radius:8px; margin-bottom:10px; font-weight:600; font-size:14px;
+          {% if message.tags == 'success' %}background:#dcfce7; color:#166534; border:1px solid #bbf7d0;{% else %}background:#fee2e2; color:#b91c1c; border:1px solid #fecaca;{% endif %}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="POST">
+    {% csrf_token %}
+
+    <!-- 1. Student -->
+    <div class="form-group">
+      <label>1. Select Student</label>
+      <select name="student_id" id="studentSearch" required>
+        <option value="" disabled selected>-- Choose a registered student --</option>
+        {% for student in students %}
+          <option value="{{ student.id }}">
+            {{ student.first_name }} {{ student.last_name }}
+            {% if student.profile.roll %}({{ student.profile.roll }}){% else %}({{ student.email }}){% endif %}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- 2 & 3. Dates -->
+    <div style="display:flex; gap:16px;">
+      <div class="form-group" style="flex:1;">
+        <label>2. Start Date</label>
+        <input type="date" name="start_date" max="{% now 'Y-m-d' %}" required>
+      </div>
+      <div class="form-group" style="flex:1;">
+        <label>3. End Date</label>
+        <input type="date" name="end_date" max="{% now 'Y-m-d' %}" required>
+      </div>
+    </div>
+
+    <!-- 4. Target Subject — searchable dropdown -->
+    <div class="form-group">
+      <label>4. Target Subject</label>
+
+      <!-- Hidden native select for form submission -->
+      <select name="subject_id" id="subjectSelect" style="display:none;" aria-hidden="true">
+        <option value="all">All Subjects</option>
+        {% for subject in subjects %}
+          <option value="{{ subject.id }}"
+            data-code="{{ subject.code }}"
+            data-name="{{ subject.name }}"
+            data-meta="{% if subject.prog_name %}{{ subject.prog_name }}{% if subject.sem_name %} · Sem {{ subject.sem_name }}{% endif %}{% endif %}"
+            data-type="{{ subject.type }}">{{ subject.name }}</option>
+        {% endfor %}
+      </select>
+
+      <!-- Custom searchable dropdown -->
+      <div class="sd-wrapper" id="sdWrapper">
+        <div class="sd-trigger" id="sdTrigger" role="combobox" aria-haspopup="listbox" aria-expanded="false" tabindex="0">
+          <span class="sd-trigger-icon">🌟</span>
+          <span class="sd-trigger-text" id="sdTriggerText">All Subjects — Apply to all lectures in date range</span>
+          <svg class="sd-chevron" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="sd-panel" id="sdPanel" role="listbox">
+          <div class="sd-search-wrap">
+            <span class="sd-search-icon">🔍</span>
+            <input type="text" class="sd-search-input" id="sdSearchInput"
+              placeholder="Search by name or code..."
+              autocomplete="off" spellcheck="false">
+            <button type="button" class="sd-clear-btn" id="sdClearBtn" title="Clear">✕</button>
+          </div>
+          <div class="sd-list" id="sdList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <b>How it works:</b>
+      The system will find all <i>past</i> sessions within this date range for the selected subjects. Any "Absent" marks for this student will be instantly overwritten to "Present (Proxy)".
+    </div>
+
+    <button type="submit" class="btn-submit">✅ Grant Proxy Attendance</button>
+  </form>
+</div>
+
+<!-- Select2 for student search -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+/* ── Select2 for student field ── */
+$(document).ready(function() {
+  $('#studentSearch').select2({
+    placeholder: "-- Search by Name or Roll No --",
+    allowClear: true,
+    width: '100%'
+  });
+});
+
+/* ══════════════════════════════════════════════
+   SUBJECT SEARCHABLE DROPDOWN
+══════════════════════════════════════════════ */
+(function() {
+  const wrapper    = document.getElementById('sdWrapper');
+  const trigger    = document.getElementById('sdTrigger');
+  const trigIcon   = trigger.querySelector('.sd-trigger-icon');
+  const trigText   = document.getElementById('sdTriggerText');
+  const searchInp  = document.getElementById('sdSearchInput');
+  const clearBtn   = document.getElementById('sdClearBtn');
+  const list       = document.getElementById('sdList');
+  const hiddenSel  = document.getElementById('subjectSelect');
+
+  // Build subject data from hidden select options
+  const subjects = Array.from(
+    hiddenSel.querySelectorAll('option:not([value="all"])')
+  ).map(opt => ({
+    value: opt.value,
+    code:  opt.getAttribute('data-code') || '',
+    name:  opt.getAttribute('data-name') || opt.textContent.trim(),
+    meta:  opt.getAttribute('data-meta') || '',
+    type:  opt.getAttribute('data-type') || '',
+  }));
+
+  let selectedValue = 'all';
+
+  // ── Open / Close ──
+  function openDropdown() {
+    wrapper.classList.add('open');
+    trigger.setAttribute('aria-expanded', 'true');
+    searchInp.value = '';
+    clearBtn.classList.remove('visible');
+    renderList('');
+    setTimeout(() => searchInp.focus(), 50);
+  }
+
+  function closeDropdown() {
+    wrapper.classList.remove('open');
+    trigger.setAttribute('aria-expanded', 'false');
+  }
+
+  // ── Render list ──
+  function renderList(query) {
+    const q = query.trim().toLowerCase();
+
+    // Always-visible pinned "All Subjects" row
+    const allSel = selectedValue === 'all' ? ' selected' : '';
+    let html = `
+      <div class="sd-all-row${allSel}" data-value="all"
+           data-label="All Subjects — Apply to all lectures in date range"
+           data-icon="🌟">
+        <span>🌟</span>
+        <span>All Subjects<span class="sd-all-sub">— Apply to all lectures in date range</span></span>
+      </div>`;
+
+    // Filter subjects
+    const matches = subjects.filter(item => {
+      if (!q) return true;
+      return item.name.toLowerCase().includes(q) ||
+             item.code.toLowerCase().includes(q);
+    });
+
+    if (matches.length === 0 && q) {
+      html += `<div class="sd-divider"></div>
+               <div class="sd-empty"><span>🔍</span>No subjects found for "${escHtml(query)}"</div>`;
+    } else if (matches.length > 0) {
+      const core     = matches.filter(i => i.type === 'core');
+      const elective = matches.filter(i => i.type === 'elective');
+      const other    = matches.filter(i => i.type !== 'core' && i.type !== 'elective');
+
+      [
+        { label: '📖 Core Subjects',     items: core },
+        { label: '⭐ Elective Subjects',  items: elective },
+        { label: '📚 Other Subjects',     items: other },
+      ].forEach(group => {
+        if (!group.items.length) return;
+        html += `<div class="sd-group-label">${group.label}</div>`;
+        group.items.forEach(item => {
+          const sel      = item.value === selectedValue ? ' selected' : '';
+          const codeChip = item.code
+            ? `<span class="sd-option-code">${escHtml(item.code)}</span>`
+            : '';
+          const meta = item.meta
+            ? `<span class="sd-option-meta">${escHtml(item.meta)}</span>`
+            : '';
+          const icon = item.type === 'elective' ? '⭐' : '📖';
+          html += `
+            <div class="sd-option${sel}" role="option"
+                 data-value="${item.value}"
+                 data-label="${escHtml(item.code ? '[' + item.code + '] ' + item.name : item.name)}"
+                 data-icon="${icon}">
+              ${codeChip}
+              <span class="sd-option-name">${highlight(item.name, q)}</span>
+              ${meta}
+            </div>`;
+        });
+      });
+    }
+
+    list.innerHTML = html;
+
+    // Attach click handlers to every row
+    list.querySelectorAll('.sd-all-row, .sd-option').forEach(el => {
+      el.addEventListener('click', () =>
+        selectOption(el.dataset.value, el.dataset.label, el.dataset.icon || '📚')
+      );
+    });
+  }
+
+  // ── Select an option ──
+  function selectOption(value, label, icon) {
+    selectedValue      = value;
+    trigText.textContent = label;
+    trigText.classList.remove('placeholder');
+    trigIcon.textContent = icon;
+    hiddenSel.value    = value;
+    closeDropdown();
+  }
+
+  // ── Highlight matched text ──
+  function highlight(text, q) {
+    if (!q) return escHtml(text);
+    const idx = text.toLowerCase().indexOf(q);
+    if (idx === -1) return escHtml(text);
+    return (
+      escHtml(text.slice(0, idx)) +
+      `<mark style="background:rgba(16,185,129,0.25);border-radius:3px;padding:0 1px;">${escHtml(text.slice(idx, idx + q.length))}</mark>` +
+      escHtml(text.slice(idx + q.length))
+    );
+  }
+
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  // ── Events ──
+  trigger.addEventListener('click', () =>
+    wrapper.classList.contains('open') ? closeDropdown() : openDropdown()
+  );
+
+  trigger.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDropdown(); }
+    if (e.key === 'Escape') closeDropdown();
+  });
+
+  searchInp.addEventListener('input', () => {
+    const q = searchInp.value;
+    clearBtn.classList.toggle('visible', q.length > 0);
+    renderList(q);
+  });
+
+  clearBtn.addEventListener('click', () => {
+    searchInp.value = '';
+    clearBtn.classList.remove('visible');
+    renderList('');
+    searchInp.focus();
+  });
+
+  // Close on outside click
+  document.addEventListener('click', e => {
+    if (!wrapper.contains(e.target)) closeDropdown();
+  });
+
+  // Initial render
+  renderList('');
+})();
+</script>
+{% endblock %}

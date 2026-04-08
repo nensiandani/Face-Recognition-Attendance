@@ -6,6 +6,7 @@ import sys
 
 def main():
     """Run administrative tasks."""
+    os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"  # Prevent DLL crashes on Windows with AI models
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'visionai.settings')
     try:
         from django.core.management import execute_from_command_line

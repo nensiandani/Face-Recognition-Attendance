@@ -1,0 +1,898 @@
+{% extends 'adminpanel/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+/* ══════════════════════════════════════════
+   SIMPLIFIED ENROLLMENT PAGE
+══════════════════════════════════════════ */
+:root {
+  --orange: #ff8c00;
+  --orange-light: #fff7ed;
+  --slate: #1e293b;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --bg: #f8fafc;
+  --white: #ffffff;
+  --radius: 12px;
+  --card-shadow: 0 4px 20px rgba(0,0,0,0.07);
+}
+
+body { background: var(--bg); font-family: 'Inter', sans-serif; }
+
+.enroll-page-title {
+  color: var(--orange);
+  font-weight: 900;
+  font-size: 26px;
+  border-left: 6px solid var(--orange);
+  padding-left: 16px;
+  margin-bottom: 24px;
+}
+
+/* ── Subject Selector ── */
+.subject-selector-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  box-shadow: var(--card-shadow);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.subject-selector-card label {
+  font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase;
+}
+
+/* ── Custom Searchable Dropdown ── */
+.sd-wrapper {
+  flex: 1;
+  min-width: 280px;
+  position: relative;
+}
+.sd-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--white);
+  cursor: pointer;
+  transition: border-color 0.25s, box-shadow 0.25s;
+  min-height: 46px;
+}
+.sd-trigger:focus-within,
+.sd-wrapper.open .sd-trigger {
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px rgba(255,140,0,0.15);
+}
+.sd-trigger-icon { font-size: 16px; color: var(--muted); flex-shrink: 0; }
+.sd-trigger-text { flex: 1; font-size: 14px; color: var(--slate); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sd-trigger-text.placeholder { color: var(--muted); }
+.sd-chevron {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
+  transition: transform 0.25s;
+}
+.sd-wrapper.open .sd-chevron { transform: rotate(180deg); }
+
+.sd-panel {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+  z-index: 500;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  animation: sdSlideIn 0.18s ease;
+}
+.sd-wrapper.open .sd-panel { display: flex; }
+
+@keyframes sdSlideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.sd-search-wrap {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fafbfc;
+}
+.sd-search-icon { font-size: 15px; color: var(--muted); }
+.sd-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+  color: var(--slate);
+}
+.sd-search-input::placeholder { color: #94a3b8; }
+.sd-clear-btn {
+  background: none; border: none; cursor: pointer; font-size: 14px;
+  color: var(--muted); padding: 0 2px; display: none;
+}
+.sd-clear-btn.visible { display: block; }
+
+.sd-list {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 6px 0;
+}
+.sd-list::-webkit-scrollbar { width: 5px; }
+.sd-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+.sd-group-label {
+  padding: 8px 16px 4px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--muted);
+  background: #f8fafc;
+  border-top: 1px solid var(--border);
+  margin-top: 2px;
+}
+.sd-group-label:first-child { border-top: none; margin-top: 0; }
+
+.sd-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 13.5px;
+  color: var(--slate);
+  transition: background 0.15s;
+  border-radius: 0;
+}
+.sd-option:hover { background: var(--orange-light); }
+.sd-option.selected { background: #fff3e0; color: var(--orange); font-weight: 700; }
+.sd-option-code {
+  background: #f1f5f9;
+  color: var(--slate);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  font-family: monospace;
+  letter-spacing: 0.03em;
+}
+.sd-option.selected .sd-option-code { background: rgba(255,140,0,0.15); color: var(--orange); }
+.sd-option-name { flex: 1; }
+.sd-option-meta { font-size: 11px; color: var(--muted); flex-shrink: 0; }
+
+.sd-empty {
+  padding: 24px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+.sd-empty span { display: block; font-size: 28px; margin-bottom: 6px; }
+
+/* ── Panels ── */
+.panel {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+.panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 22px; border-bottom: 1px solid var(--border); background: #f8fafc;
+}
+.panel-title { font-size: 16px; font-weight: 800; color: var(--slate); display: flex; align-items: center; gap: 10px; }
+.count-chip {
+  background: var(--orange-light); color: var(--orange);
+  border: 1px solid #fed7aa; border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 700;
+}
+
+/* ── Tools / Search ── */
+.panel-tools {
+  display: flex; align-items: center; gap: 16px; padding: 14px 22px; border-bottom: 1px solid var(--border);
+}
+.search-input {
+  flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; outline: none;
+}
+.search-input:focus { border-color: var(--orange); }
+
+/* ── Buttons ── */
+.btn {
+  padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; border: none; transition: 0.2s; white-space: nowrap;
+}
+.btn-orange { background: var(--orange); color: white; }
+.btn-orange:hover { background: #e66f00; }
+.btn-orange:disabled { background: #cbd5e1; cursor: not-allowed; }
+.btn-danger { background: #fee2e2; color: #dc2626; }
+.btn-danger:hover { background: #fca5a5; }
+
+/* ── Table ── */
+.data-table { width: 100%; border-collapse: collapse; text-align: left; }
+.data-table th, .data-table td { padding: 12px 22px; border-bottom: 1px solid var(--border); font-size: 14px; }
+.data-table th { background: white; font-weight: 700; color: var(--muted); text-transform: uppercase; font-size: 12px; }
+.data-table tr:hover { background: #f8fafc; }
+.cb-cell { width: 40px; text-align: center; }
+.cb-cell input { width: 16px; height: 16px; accent-color: var(--orange); cursor: pointer; }
+
+/* ── Empty State ── */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+.empty-state h3 { font-size: 16px; color: var(--slate); margin-bottom: 8px; }
+
+/* ── CSV Modal CSS ── */
+.csv-upload-btn {
+  display: inline-flex; align-items: center; gap: 8px; padding: 11px 20px; background: linear-gradient(135deg, #ff8c00, #ff6600);
+  color: white; border: none; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.25s;
+}
+.csv-upload-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+.csv-modal-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.65); backdrop-filter: blur(6px); z-index: 9000;
+  display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; transition: 0.3s;
+}
+.csv-modal-overlay.open { opacity: 1; visibility: visible; }
+.csv-modal {
+  background: white; border-radius: 16px; width: 100%; max-width: 780px; max-height: 90vh; overflow-y: auto;
+  transform: translateY(20px); transition: 0.3s;
+}
+.csv-modal-overlay.open .csv-modal { transform: translateY(0); }
+.csv-modal-header { display: flex; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border); }
+.csv-modal-body { padding: 24px; }
+.csv-dropzone {
+  border: 2px dashed #cbd5e1; border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; background: #f8fafc;
+  position: relative;
+}
+.csv-dropzone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.csv-dropzone.has-file { border-color: #22c55e; background: #f0fdf4; }
+.csv-sample-btn { margin-top: 14px; padding: 8px 16px; border: 1px solid var(--border); border-radius: 8px; background: white; cursor: pointer; }
+.csv-modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; }
+.csv-preview-section { display: none; margin-top: 20px; }
+.csv-preview-section.visible { display: block; }
+
+/* ── Toast ── */
+.toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+.toast { background: #1e293b; color: white; padding: 14px 20px; border-radius: 10px; font-size: 14px; opacity: 0; transition: 0.3s; transform: translateY(10px); }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.success { background: #16a34a; }
+.toast.error { background: #dc2626; }
+</style>
+
+<div style="padding: 24px; max-width: 1200px; margin: 0 auto; width: 100%;">
+  <h2 class="enroll-page-title">Manage Subject Enrollment</h2>
+
+  <div class="subject-selector-card">
+    <label>Select Subject</label>
+
+    <!-- Hidden native select (keeps value for JS logic) -->
+    <select id="subjectSelect" style="display:none;" aria-hidden="true">
+      <option value="">— Select a Subject to Manage —</option>
+      <optgroup label="Core Subjects" data-group="core">
+        {% for sub in subjects %}
+          {% if sub.subject_type == 'core' %}
+            <option value="{{ sub.id }}"
+              data-code="{{ sub.course_code|default:'' }}"
+              data-name="{{ sub.name }}"
+              data-meta="{{ sub.program.name }} · Sem {{ sub.semester.name }}"
+              data-type="core">{{ sub.name }}</option>
+          {% endif %}
+        {% endfor %}
+      </optgroup>
+      <optgroup label="Elective Subjects" data-group="elective">
+        {% for sub in subjects %}
+          {% if sub.subject_type == 'elective' %}
+            <option value="{{ sub.id }}"
+              data-code="{{ sub.course_code|default:'' }}"
+              data-name="{{ sub.name }}"
+              data-meta=""
+              data-type="elective">{{ sub.name }}</option>
+          {% endif %}
+        {% endfor %}
+      </optgroup>
+    </select>
+
+    <!-- Custom Searchable Dropdown -->
+    <div class="sd-wrapper" id="sdWrapper">
+      <div class="sd-trigger" id="sdTrigger" role="combobox" aria-haspopup="listbox" aria-expanded="false" tabindex="0">
+        <span class="sd-trigger-icon">📚</span>
+        <span class="sd-trigger-text placeholder" id="sdTriggerText">— Select a Subject to Manage —</span>
+        <svg class="sd-chevron" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg>
+      </div>
+      <div class="sd-panel" id="sdPanel" role="listbox">
+        <div class="sd-search-wrap">
+          <span class="sd-search-icon">🔍</span>
+          <input type="text" class="sd-search-input" id="sdSearchInput"
+            placeholder="Search by name or code..."
+            autocomplete="off" spellcheck="false">
+          <button class="sd-clear-btn" id="sdClearBtn" title="Clear search">✕</button>
+        </div>
+        <div class="sd-list" id="sdList"></div>
+      </div>
+    </div>
+
+    <button id="csvUploadBtn" class="csv-upload-btn" onclick="openCSVModal()" disabled>📂 Upload CSV</button>
+  </div>
+
+  <div id="initialEmpty" class="empty-state">
+    <div style="font-size: 48px; opacity: 0.5;">📚</div>
+    <h3>Select a Subject to Begin</h3>
+    <p>Choose a subject from the dropdown to see eligible and enrolled students.</p>
+  </div>
+
+  <div id="enrollLayout" style="display:none; flex-direction: column; gap: 24px;">
+    
+    <!-- SECTION 1: Available Students -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Available Eligible Students</div>
+        <span class="count-chip" id="availableCount">0 available</span>
+      </div>
+      <div class="panel-tools">
+        <input type="text" id="searchAvailable" class="search-input" placeholder="Search by name, roll, email..." autocomplete="off">
+        <button class="btn btn-orange" id="btnEnrollSelected" onclick="enrollMulti()" disabled>✅ Enroll Selected</button>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="cb-cell"><input type="checkbox" id="selectAllCb" onclick="toggleSelectAll()"></th>
+            <th>Name</th>
+            <th>Roll</th>
+            <th>Program · Sem · Div</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="availableTbody">
+          <!-- JS rows -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- SECTION 2: Enrolled Students -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title" style="color: #15803d;">Enrolled Students</div>
+        <span class="count-chip" id="enrolledCount" style="background:#f0fdf4; color:#15803d; border-color:#bbf7d0;">0 enrolled</span>
+      </div>
+      <div class="panel-tools">
+        <input type="text" id="searchEnrolled" class="search-input" placeholder="Search enrolled students..." autocomplete="off">
+        <button class="btn btn-danger" id="btnRemoveSelected" onclick="removeSelectedStudents()" disabled>🗑 Remove Selected</button>
+        <button class="btn btn-danger" onclick="removeAllEnrolled()">🗑 Remove All</button>
+      </div>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th class="cb-cell"><input type="checkbox" id="selectAllEnrolledCb" onclick="toggleSelectAllEnrolled()"></th>
+            <th>Name</th>
+            <th>Roll</th>
+            <th>Program · Sem · Div</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="enrolledTbody">
+          <!-- JS rows -->
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- CSV Bulk Enroll Modal -->
+<div class="csv-modal-overlay" id="csvModalOverlay" role="dialog">
+  <div class="csv-modal" id="csvModal">
+    <div class="csv-modal-header">
+      <div style="font-size:18px; font-weight:900;">📂 Bulk Enroll via CSV</div>
+      <button class="btn" style="background:#f1f5f9;" onclick="closeCSVModal()">✕</button>
+    </div>
+    <div class="csv-modal-body">
+      <div class="csv-dropzone" id="csvDropzone">
+        <input type="file" id="csvFileInput" accept=".csv,text/csv">
+        <div style="font-size:40px; margin-bottom:10px;" id="csvDropIcon">📄</div>
+        <div style="font-weight:700;" id="csvDropText">Drag &amp; drop your CSV here</div>
+        <div style="font-size:12px; color:var(--muted);" id="csvDropSub">Required column: roll_number</div>
+      </div>
+      <button class="csv-sample-btn" onclick="downloadSampleCSV()">📥 Download Sample CSV</button>
+      
+      <div id="csvLoading" style="display:none; text-align:center; padding:20px; color:var(--muted);">Processing CSV...</div>
+
+      <div class="csv-preview-section" id="csvPreviewSection">
+        <div style="font-size:13px; font-weight:800; margin-bottom:10px; text-transform:uppercase;">Preview Preview</div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Status</th><th>Name</th><th>Roll</th><th>Program</th><th>Semester</th><th>Reason</th>
+            </tr>
+          </thead>
+          <tbody id="csvPreviewTbody"></tbody>
+        </table>
+        <div style="background:var(--bg); border:1px solid var(--border); padding:10px; border-radius:8px; margin-top:10px; font-size:13px; font-weight:700;">
+          <span id="csvSumValid" style="color:#16a34a; margin-right:15px;"></span>
+          <span id="csvSumWarn" style="color:#d97706; margin-right:15px;"></span>
+          <span id="csvSumError" style="color:#dc2626;"></span>
+        </div>
+      </div>
+    </div>
+    <div class="csv-modal-footer">
+      <button class="btn" style="background:white; border:1px solid var(--border);" onclick="closeCSVModal()">Cancel</button>
+      <button class="btn btn-orange" id="csvConfirmBtn" onclick="confirmBulkEnroll()" disabled>✅ Confirm Enroll</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+// ── State ──
+let CURRENT_SUBJECT_ID = null;
+let AVAILABLE = [];
+let ENROLLED = [];
+const csrfToken = '{{ csrf_token }}';
+
+// ── Hidden select change handler (single source of truth) ──
+const subjectSelect = document.getElementById('subjectSelect');
+subjectSelect.addEventListener('change', function() {
+  const sid = this.value;
+  CURRENT_SUBJECT_ID = sid;
+  document.getElementById('csvUploadBtn').disabled = !sid;
+
+  if (sid) {
+    document.getElementById('initialEmpty').style.display = 'none';
+    loadData(sid);
+  } else {
+    document.getElementById('initialEmpty').style.display = 'block';
+    document.getElementById('enrollLayout').style.display = 'none';
+  }
+});
+
+// ══════════════════════════════════════════════
+// SEARCHABLE DROPDOWN
+// ══════════════════════════════════════════════
+(function() {
+  const wrapper    = document.getElementById('sdWrapper');
+  const trigger    = document.getElementById('sdTrigger');
+  const trigText   = document.getElementById('sdTriggerText');
+  const panel      = document.getElementById('sdPanel');
+  const searchInp  = document.getElementById('sdSearchInput');
+  const clearBtn   = document.getElementById('sdClearBtn');
+  const list       = document.getElementById('sdList');
+
+  // Build data from hidden select options
+  const GROUPS = [];
+  Array.from(subjectSelect.querySelectorAll('optgroup')).forEach(og => {
+    const group = {
+      label: og.label,
+      type:  og.getAttribute('data-group') || 'core',
+      items: []
+    };
+    Array.from(og.querySelectorAll('option')).forEach(opt => {
+      group.items.push({
+        value: opt.value,
+        code:  opt.getAttribute('data-code') || '',
+        name:  opt.getAttribute('data-name') || opt.textContent.trim(),
+        meta:  opt.getAttribute('data-meta') || '',
+        type:  opt.getAttribute('data-type') || 'core'
+      });
+    });
+    GROUPS.push(group);
+  });
+
+  let selectedValue = '';
+
+  function openDropdown() {
+    wrapper.classList.add('open');
+    trigger.setAttribute('aria-expanded', 'true');
+    searchInp.value = '';
+    clearBtn.classList.remove('visible');
+    renderList('');
+    setTimeout(() => searchInp.focus(), 50);
+  }
+
+  function closeDropdown() {
+    wrapper.classList.remove('open');
+    trigger.setAttribute('aria-expanded', 'false');
+  }
+
+  function renderList(query) {
+    const q = query.trim().toLowerCase();
+    let html = '';
+    let totalMatches = 0;
+
+    GROUPS.forEach(group => {
+      const matches = group.items.filter(item => {
+        if (!q) return true;
+        return item.name.toLowerCase().includes(q) ||
+               item.code.toLowerCase().includes(q);
+      });
+
+      if (matches.length === 0) return;
+      totalMatches += matches.length;
+
+      const icon = group.type === 'elective' ? '⭐ ' : '📖 ';
+      html += `<div class="sd-group-label">${icon}${group.label}</div>`;
+
+      matches.forEach(item => {
+        const sel = item.value === selectedValue ? ' selected' : '';
+        const codeChip = item.code
+          ? `<span class="sd-option-code">${item.code}</span>`
+          : '';
+        const meta = item.meta
+          ? `<span class="sd-option-meta">${escHtml(item.meta)}</span>`
+          : '';
+        html += `
+          <div class="sd-option${sel}" role="option"
+               data-value="${item.value}"
+               data-label="${escHtml(item.code ? '[' + item.code + '] ' + item.name : item.name)}">
+            ${codeChip}
+            <span class="sd-option-name">${highlight(item.name, q)}</span>
+            ${meta}
+          </div>`;
+      });
+    });
+
+    if (totalMatches === 0) {
+      html = `<div class="sd-empty"><span>🔍</span>No subjects found for "${escHtml(query)}"</div>`;
+    }
+
+    list.innerHTML = html;
+
+    // Attach click handlers
+    list.querySelectorAll('.sd-option').forEach(el => {
+      el.addEventListener('click', () => selectOption(el.dataset.value, el.dataset.label));
+    });
+  }
+
+  function selectOption(value, label) {
+    selectedValue = value;
+    trigText.textContent = label;
+    trigText.classList.remove('placeholder');
+
+    // Sync hidden select and fire change
+    subjectSelect.value = value;
+    subjectSelect.dispatchEvent(new Event('change'));
+
+    closeDropdown();
+  }
+
+  function highlight(text, q) {
+    if (!q) return escHtml(text);
+    const idx = text.toLowerCase().indexOf(q);
+    if (idx === -1) return escHtml(text);
+    return escHtml(text.slice(0, idx)) +
+      `<mark style="background:rgba(255,140,0,0.25);border-radius:3px;padding:0 1px;">${escHtml(text.slice(idx, idx + q.length))}</mark>` +
+      escHtml(text.slice(idx + q.length));
+  }
+
+  function escHtml(s) {
+    return String(s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Events ──
+  trigger.addEventListener('click', () => {
+    wrapper.classList.contains('open') ? closeDropdown() : openDropdown();
+  });
+
+  trigger.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDropdown(); }
+    if (e.key === 'Escape') closeDropdown();
+  });
+
+  searchInp.addEventListener('input', () => {
+    const q = searchInp.value;
+    clearBtn.classList.toggle('visible', q.length > 0);
+    renderList(q);
+  });
+
+  clearBtn.addEventListener('click', () => {
+    searchInp.value = '';
+    clearBtn.classList.remove('visible');
+    renderList('');
+    searchInp.focus();
+  });
+
+  // Close on outside click
+  document.addEventListener('click', e => {
+    if (!wrapper.contains(e.target)) closeDropdown();
+  });
+
+  // Initial render with all options
+  renderList('');
+})();
+
+// ── Fetch Data ──
+async function loadData(sid) {
+  try {
+    const r = await fetch(`/api/eligible-students/${sid}/`);
+    const data = await r.json();
+    AVAILABLE = data.students || [];
+    ENROLLED = data.enrolled || [];
+    document.getElementById('enrollLayout').style.display = 'flex';
+    renderAvailable();
+    renderEnrolled();
+  } catch(e) { console.error('Error fetching data', e); }
+}
+
+// ── Search Filters ──
+document.getElementById('searchAvailable').addEventListener('input', renderAvailable);
+document.getElementById('searchEnrolled').addEventListener('input', renderEnrolled);
+
+function safe(str) { return str ? String(str).toLowerCase() : ''; }
+
+// ── Renderer: Available ──
+function renderAvailable() {
+  const q = document.getElementById('searchAvailable').value.toLowerCase();
+  const tbody = document.getElementById('availableTbody');
+  const filtered = AVAILABLE.filter(s => 
+    safe(s.name).includes(q) || safe(s.roll).includes(q) || safe(s.email).includes(q)
+  );
+
+  document.getElementById('availableCount').textContent = `Showing ${filtered.length} students`;
+  document.getElementById('selectAllCb').checked = false;
+  
+  if (filtered.length === 0) {
+    let msg = 'No students match your search';
+    if (!CURRENT_SUBJECT_ID) msg = 'Select a subject above';
+    else if (AVAILABLE.length === 0 && q === '') msg = 'All eligible students are already enrolled! 🎉';
+
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:#64748b;">${msg}</td></tr>`;
+    updateActionBtn();
+    return;
+  }
+
+  let html = '';
+  filtered.forEach(s => {
+    html += `
+      <tr>
+        <td class="cb-cell"><input type="checkbox" class="row-cb" value="${s.id}" onclick="updateActionBtn()"></td>
+        <td style="font-weight:600; color:var(--slate);">${s.name}</td>
+        <td>${s.roll || '—'}</td>
+        <td style="font-size:12px; color:var(--muted);">${s.program} · Sem ${s.semester} · ${s.division || 'No Div'}</td>
+        <td><button class="btn btn-orange" style="padding:4px 8px; font-size:11px;" onclick="quickEnroll(${s.id})">➕ Quick Add</button></td>
+      </tr>
+    `;
+  });
+  tbody.innerHTML = html;
+  updateActionBtn();
+}
+
+// ── Renderer: Enrolled ──
+function renderEnrolled() {
+  const q = document.getElementById('searchEnrolled').value.toLowerCase();
+  const tbody = document.getElementById('enrolledTbody');
+  const filtered = ENROLLED.filter(s => 
+    safe(s.name).includes(q) || safe(s.roll).includes(q)
+  );
+
+  document.getElementById('enrolledCount').textContent = `${filtered.length} enrolled`;
+  document.getElementById('selectAllEnrolledCb').checked = false;
+
+  if (filtered.length === 0) {
+    let msg = 'No enrolled students match your search';
+    if (!CURRENT_SUBJECT_ID) msg = 'Select a subject above';
+    else if (ENROLLED.length === 0 && q === '') msg = 'No students are currently enrolled';
+
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px; color:#64748b;">${msg}</td></tr>`;
+    updateRemoveBtn();
+    return;
+  }
+
+  let html = '';
+  filtered.forEach(s => {
+    html += `
+      <tr>
+        <td class="cb-cell"><input type="checkbox" class="enrolled-row-cb" value="${s.enrollment_id}" onclick="updateRemoveBtn()"></td>
+        <td style="font-weight:600; color:#15803d;">${s.name}</td>
+        <td>${s.roll || '—'}</td>
+        <td style="font-size:12px; color:var(--muted);">${s.program} · Sem ${s.semester} · ${s.division || 'No Div'}</td>
+        <td><button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="removeEnrollment(${s.enrollment_id})">🗑 Remove</button></td>
+      </tr>
+    `;
+  });
+  tbody.innerHTML = html;
+  updateRemoveBtn();
+}
+
+function toggleSelectAllEnrolled() {
+  const isChecked = document.getElementById('selectAllEnrolledCb').checked;
+  document.querySelectorAll('.enrolled-row-cb').forEach(cb => cb.checked = isChecked);
+  updateRemoveBtn();
+}
+
+function updateRemoveBtn() {
+  const cbs = document.querySelectorAll('.enrolled-row-cb:checked');
+  const btn = document.getElementById('btnRemoveSelected');
+  if(!btn) return;
+  btn.disabled = cbs.length === 0;
+  btn.textContent = cbs.length > 0 ? `🗑 Remove ${cbs.length} Selected` : `🗑 Remove Selected`;
+}
+
+// ── Multi Selection ──
+function toggleSelectAll() {
+  const isChecked = document.getElementById('selectAllCb').checked;
+  document.querySelectorAll('.row-cb').forEach(cb => cb.checked = isChecked);
+  updateActionBtn();
+}
+
+function updateActionBtn() {
+  const cbs = document.querySelectorAll('.row-cb:checked');
+  const btn = document.getElementById('btnEnrollSelected');
+  btn.disabled = cbs.length === 0;
+  btn.textContent = cbs.length > 0 ? `✅ Enroll ${cbs.length} Selected` : `✅ Enroll Selected`;
+}
+
+// ── Actions ──
+async function quickEnroll(studentId) {
+  enrollAPI([studentId]);
+}
+
+async function enrollMulti() {
+  const ids = Array.from(document.querySelectorAll('.row-cb:checked')).map(cb => parseInt(cb.value));
+  if(ids.length > 0) enrollAPI(ids);
+}
+
+async function enrollAPI(studentIds) {
+  if(!CURRENT_SUBJECT_ID) return;
+  try {
+    const res = await fetch(`/api/bulk-enroll-confirm/${CURRENT_SUBJECT_ID}/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRFToken": csrfToken },
+      body: JSON.stringify({ student_ids: studentIds })
+    });
+    const data = await res.json();
+    if(data.status==='ok') {
+      showToast(`${data.enrolled} students enrolled`, 'success');
+      loadData(CURRENT_SUBJECT_ID);
+    } else { showToast(data.error, 'error'); }
+  } catch(e) { showToast('Error enrolling details.', 'error'); }
+}
+
+async function removeEnrollment(enrollmentId) {
+  console.log('Removing enrollment_id:', enrollmentId);
+  if(!confirm("Remove student from subject?")) return;
+  try {
+    const fd = new FormData(); fd.append('csrfmiddlewaretoken', csrfToken);
+    const r = await fetch(`/api/remove-enrollment/${enrollmentId}/`, { method:'POST', body:fd });
+    if(r.ok) { showToast('Removed student', 'success'); loadData(CURRENT_SUBJECT_ID); }
+    else { showToast('Failed to remove student', 'error'); }
+  } catch(e) { console.error('Error removing', e); showToast('Error', 'error'); }
+}
+
+async function removeSelectedStudents() {
+  const ids = Array.from(document.querySelectorAll('.enrolled-row-cb:checked')).map(cb => parseInt(cb.value));
+  if(ids.length === 0) return;
+  if(!confirm(`Remove ${ids.length} selected students?`)) return;
+  
+  document.getElementById('btnRemoveSelected').disabled = true;
+  document.getElementById('btnRemoveSelected').textContent = 'Removing...';
+  
+  let successCount = 0;
+  for(const id of ids) {
+    console.log('Removing enrollment_id:', id);
+    try {
+      const fd = new FormData(); fd.append('csrfmiddlewaretoken', csrfToken);
+      const r = await fetch(`/api/remove-enrollment/${id}/`, { method:'POST', body:fd });
+      if(r.ok) successCount++;
+    } catch(e) { console.error('Error removing', id, e); }
+  }
+  
+  showToast(`Removed ${successCount} out of ${ids.length} students`, 'info');
+  loadData(CURRENT_SUBJECT_ID);
+}
+
+async function removeAllEnrolled() {
+  if(!CURRENT_SUBJECT_ID || ENROLLED.length === 0) return;
+  if(!confirm("Are you sure you want to remove ALL students from this subject?")) return;
+  // This uses a custom loop, or if the backend supports removeAll. 
+  // For safety and UI we remove them one by one or create a new bulk deletion endpoint if needed.
+  // Django also accepts a form to remove_all.
+  try {
+    const fd = new FormData(); 
+    fd.append('csrfmiddlewaretoken', csrfToken);
+    fd.append('subject_id', CURRENT_SUBJECT_ID);
+    const r = await fetch(`/subject-enrollment/remove-all/`, { method:'POST', body:fd });
+    showToast('Removed all students', 'success');
+    loadData(CURRENT_SUBJECT_ID);
+  } catch(e) {}
+}
+
+// ── Toast ──
+function showToast(msg, type='info') {
+  const container = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = msg;
+  container.appendChild(t);
+  setTimeout(() => t.classList.add('show'), 10);
+  setTimeout(() => { t.classList.remove('show'); setTimeout(()=>t.remove(), 300); }, 3000);
+}
+
+// ── CSV logic ──
+let CSV_APPROVED_OBJS = [];
+function openCSVModal() {
+  document.getElementById('csvModalOverlay').classList.add('open');
+  resetCSVModal();
+}
+function closeCSVModal() {
+  document.getElementById('csvModalOverlay').classList.remove('open');
+}
+function resetCSVModal() {
+  document.getElementById('csvFileInput').value = '';
+  document.getElementById('csvPreviewSection').classList.remove('visible');
+  document.getElementById('csvConfirmBtn').disabled = true;
+  document.getElementById('csvDropIcon').textContent = '📄';
+  document.getElementById('csvDropText').textContent = 'Drag & drop your CSV here';
+  document.getElementById('csvDropSub').textContent = 'Required column: roll_number';
+  document.getElementById('csvDropzone').classList.remove('has-file');
+}
+const csvDZ = document.getElementById('csvDropzone');
+csvDZ.addEventListener('dragover', e=>{ e.preventDefault(); });
+csvDZ.addEventListener('drop', e=>{ e.preventDefault(); handleCSV(e.dataTransfer.files[0]); });
+document.getElementById('csvFileInput').addEventListener('change', e=>handleCSV(e.target.files[0]));
+
+function handleCSV(file) {
+  if(!file || !file.name.endsWith('.csv')) { showToast('Please upload a .csv file', 'error'); return; }
+  document.getElementById('csvDropIcon').textContent = '✅';
+  document.getElementById('csvDropText').textContent = file.name;
+  document.getElementById('csvDropzone').classList.add('has-file');
+  document.getElementById('csvLoading').style.display = 'block';
+
+  const fd = new FormData(); fd.append('csv_file', file); fd.append('csrfmiddlewaretoken', csrfToken);
+  fetch(`/api/bulk-enroll-preview/${CURRENT_SUBJECT_ID}/`, { method:'POST', body:fd })
+  .then(r=>r.json()).then(d=>{
+    document.getElementById('csvLoading').style.display = 'none';
+    renderCSVPreview(d);
+  });
+}
+
+function renderCSVPreview(d) {
+  let html = '';
+  CSV_APPROVED_OBJS = d.valid || [];
+  
+  (d.valid||[]).forEach(r => html+=`<tr><td>✅</td><td>${r.name}</td><td>${r.roll}</td><td>${r.program}</td><td>${r.semester}</td><td style="color:green;">Ready</td></tr>`);
+  (d.warnings||[]).forEach(r => html+=`<tr><td>⚠️</td><td>${r.name}</td><td>${r.roll}</td><td>${r.program}</td><td>${r.semester}</td><td>${r.reason}</td></tr>`);
+  (d.errors||[]).forEach(r => html+=`<tr><td>❌</td><td>—</td><td>${r.raw}</td><td>—</td><td>—</td><td style="color:red;">${r.reason}</td></tr>`);
+  
+  if(!html) html='<tr><td colspan="6" style="text-align:center;">No valid rows found</td></tr>';
+  document.getElementById('csvPreviewTbody').innerHTML = html;
+  
+  const v = (d.summary||{}).valid||0;
+  document.getElementById('csvSumValid').textContent = `✅ ${v} ready`;
+  document.getElementById('csvSumWarn').textContent = `⚠️ ${(d.summary||{}).warnings||0} skipped`;
+  document.getElementById('csvSumError').textContent = `❌ ${(d.summary||{}).errors||0} errors`;
+  
+  document.getElementById('csvPreviewSection').classList.add('visible');
+  document.getElementById('csvConfirmBtn').disabled = (v === 0);
+}
+
+function confirmBulkEnroll() {
+  if(CSV_APPROVED_OBJS.length===0) return;
+  document.getElementById('csvConfirmBtn').disabled = true;
+  document.getElementById('csvConfirmBtn').textContent = '⏳ Enrolling...';
+  
+  enrollAPI(CSV_APPROVED_OBJS.map(x=>x.student_id)).then(() => {
+    closeCSVModal();
+  });
+}
+
+function downloadSampleCSV() {
+  const content = "# Bulk Enrollment CSV\n# Required column: roll_number\nroll_number\n202301467\n202301468\n";
+  const b = new Blob([content], {type:'text/csv'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'sample.csv'; a.click();
+}
+</script>
+{% endblock %}

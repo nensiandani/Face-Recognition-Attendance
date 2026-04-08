@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Kiosk Mode - LookIn AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #000005;
+            --panel: #05050f;
+            --primary: #ff6b00;
+            --primary-glow: rgba(255, 107, 0, 0.15);
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --danger: #ff3355;
+            --text: #e8e8ff;
+            --text-muted: #5a5a7a;
+            --border-glass: rgba(255, 107, 0, 0.2);
+            --bg-glass: rgba(5, 5, 15, 0.7);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Exo 2', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow: hidden;
+            display: flex;
+            height: 100vh;
+            width: 100vw;
+            user-select: none;
+        }
+
+        h1, h2, h3, .brand-font {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* ── CAMERA LAYER ── */
+        .camera-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            background: #000;
+        }
+
+        #videoEl {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+            opacity: 0.9;
+        }
+
+        .vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, transparent 40%, #000005 150%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        /* ── HUD SCAN OVERLAYS ── */
+        .hud-container {
+            position: absolute;
+            inset: 0;
+            z-index: 4;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* The JS dynamically updates `scan-guide` wrapper */
+        #scanGuide {
+            position: relative;
+            width: 340px;
+            height: 460px;
+            transition: all 0.4s ease;
+        }
+
+        /* Face Oval */
+        .face-oval {
+            position: absolute;
+            inset: 15px;
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 0 40px inset transparent;
+            transition: all 0.4s ease;
+        }
+
+        /* Brackets */
+        .bracket {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--primary);
+            transition: 0.3s;
+            animation: pulse-bracket 2s infinite alternate;
+        }
+
+        .bracket.tl { top: 0; left: 0; border-right: none; border-bottom: none; }
+        .bracket.tr { top: 0; right: 0; border-left: none; border-bottom: none; }
+        .bracket.bl { bottom: 0; left: 0; border-right: none; border-top: none; }
+        .bracket.br { bottom: 0; right: 0; border-left: none; border-top: none; }
+
+        @keyframes pulse-bracket {
+            0% { opacity: 0.5; filter: drop-shadow(0 0 5px var(--primary)); }
+            100% { opacity: 1; filter: drop-shadow(0 0 15px var(--primary)); }
+        }
+
+        /* Sweep Line */
+        .scan-line {
+            position: absolute;
+            top: 0; left: -10%; right: -10%;
+            height: 2px;
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary), 0 -15px 30px var(--primary-glow);
+            animation: scan-sweep 3s linear infinite;
+            display: none;
+        }
+
+        @keyframes scan-sweep {
+            0% { transform: translateY(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(460px); opacity: 0; }
+        }
+
+        /* JS States for scanGuide */
+        #scanGuide:not(.active):not(.error):not(.warning) .scan-line {
+            display: block;
+        }
+        
+        #scanGuide.active .bracket { border-color: var(--success); filter: drop-shadow(0 0 10px var(--success)); animation: none; }
+        #scanGuide.active .face-oval { border-color: var(--success); box-shadow: 0 0 60px rgba(0,255,136,0.1) inset; background: rgba(0,255,136,0.05); }
+
+        #scanGuide.error .bracket { border-color: var(--danger); filter: drop-shadow(0 0 10px var(--danger)); animation: none; }
+        #scanGuide.error .face-oval { border-color: var(--danger); box-shadow: 0 0 60px rgba(255,51,85,0.1) inset; background: rgba(255,51,85,0.05); }
+
+        #scanGuide.warning .bracket { border-color: var(--warning); filter: drop-shadow(0 0 10px var(--warning)); animation: none; }
+        #scanGuide.warning .face-oval { border-color: var(--warning); box-shadow: 0 0 60px rgba(255,170,0,0.1) inset; background: rgba(255,170,0,0.05); }
+
+
+        /* ── TOP BAR (GLASSMORPHISM) ── */
+        .top-bar {
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 64px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            z-index: 10;
+        }
+
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .top-logo-box {
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+        .top-logo-text {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            font-size: 20px;
+            letter-spacing: 2px;
+            color: #fff;
+        }
+
+        .top-center {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 4px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+            color: #fff;
+        }
+        .top-right span { color: var(--primary); font-weight: 600; margin: 0 6px; }
+
+        /* Multi-purpose pills */
+        .pills {
+            position: absolute;
+            top: 84px; right: 32px;
+            z-index: 10;
+        }
+
+        .spoof-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 51, 85, 0.3);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+        .spoof-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--danger);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--danger);
+            animation: spoof-blink 1.5s infinite;
+        }
+        @keyframes spoof-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+
+        /* ── BOTTOM STATUS PANEL ── */
+        .bottom-panel {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 420px;
+            background: rgba(5,5,15,0.85);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 24px 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 10;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 0 inset transparent;
+        }
+
+        .panel-icon-wrap {
+            position: relative;
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Default Status Icon HTML injection */
+        .panel-icon {
+            font-size: 32px;
+            color: var(--primary);
+            z-index: 2;
+        }
+
+        /* CSS rings for "READY" */
+        .status-ring {
+            position: absolute;
+            inset: -4px;
+            border-radius: 50%;
+            border: 2px dashed rgba(255, 107, 0, 0.4);
+            animation: rotate-ring 6s linear infinite;
+        }
+        .status-ring-inner {
+            position: absolute;
+            inset: 4px;
+            border-radius: 50%;
+            border: 2px dashed rgba(255, 107, 0, 0.2);
+            animation: rotate-ring 4s linear infinite reverse;
+        }
+        @keyframes rotate-ring { 100% { transform: rotate(360deg); } }
+
+        .panel-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 1.5px;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .panel-sub {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .student-img-container {
+            position: absolute;
+            top: -24px;
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: 2px solid var(--success);
+            box-shadow: 0 0 20px rgba(0,255,136,0.3);
+            overflow: hidden;
+            background: #000;
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            z-index: 5;
+        }
+        .student-img-container.show {
+            display: block;
+            animation: spring-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes spring-up {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .student-img-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* PANEL STATES */
+        .bottom-panel.success {
+            border-color: rgba(0, 255, 136, 0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 30px rgba(0,255,136,0.1) inset;
+        }
+        .bottom-panel.success .panel-title { color: var(--success); text-shadow: 0 0 10px rgba(0,255,136,0.4); }
+        .bottom-panel.success .panel-sub { color: #fff; font-size: 17px; font-weight: 500; }
+        .bottom-panel.success .status-ring, .bottom-panel.success .status-ring-inner { display: none; }
+
+        .bottom-panel.error {
+            border-color: rgba(255, 51, 85, 0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 30px rgba(255,51,85,0.1) inset;
+        }
+        .bottom-panel.error .panel-title { color: var(--danger); text-shadow: 0 0 10px rgba(255,51,85,0.4); }
+        .bottom-panel.error .panel-sub { color: #fff; }
+        .bottom-panel.error .status-ring, .bottom-panel.error .status-ring-inner { display: none; }
+
+        .bottom-panel.warning {
+            border-color: rgba(255, 170, 0, 0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 30px rgba(255,170,0,0.1) inset;
+        }
+        .bottom-panel.warning .panel-title { color: var(--warning); text-shadow: 0 0 10px rgba(255,170,0,0.4); }
+        .bottom-panel.warning .panel-sub { color: #fff; }
+        .bottom-panel.warning .status-ring, .bottom-panel.warning .status-ring-inner { display: none; }
+
+        .bottom-panel.division_error {
+            border-color: rgba(255, 107, 0, 0.6);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 30px rgba(255,107,0,0.1) inset;
+        }
+        .bottom-panel.division_error .panel-title { color: var(--primary); text-shadow: 0 0 10px rgba(255,107,0,0.4); }
+        .bottom-panel.division_error .panel-sub { color: #fff; }
+        .bottom-panel.division_error .status-ring, .bottom-panel.division_error .status-ring-inner { display: none; }
+
+        .bottom-panel.not_enrolled {
+            border-color: rgba(255, 51, 85, 0.4);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 30px rgba(255,51,85,0.1) inset;
+        }
+        .bottom-panel.not_enrolled .panel-title { color: var(--danger); text-shadow: 0 0 10px rgba(255,51,85,0.4); }
+        .bottom-panel.not_enrolled .panel-sub { color: #fff; }
+        .bottom-panel.not_enrolled .status-ring, .bottom-panel.not_enrolled .status-ring-inner { display: none; }
+
+        .bottom-panel.analyzing .panel-icon { display: none; }
+        .bottom-panel.analyzing .dot-loader { display: flex; }
+        .bottom-panel.analyzing .status-ring { animation-duration: 2s; border-color: rgba(255, 107, 0, 0.8); }
+
+        /* Analyzing Dots Loader */
+        .dot-loader {
+            display: none;
+            gap: 6px;
+            z-index: 3;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: dot-pulse 1.4s infinite ease-in-out both;
+        }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes dot-pulse {
+            0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+            40% { transform: scale(1); opacity: 1; box-shadow: 0 0 8px var(--primary); }
+        }
+
+        /* Success SVG Checkmark Animation */
+        .success-checkmark {
+            width: 48px;
+            height: 48px;
+            display: none;
+            z-index: 3;
+        }
+        .bottom-panel.success .success-checkmark { display: block; }
+        .bottom-panel.success .default-icon { display: none; }
+
+        .check-circle {
+            stroke-dasharray: 166;
+            stroke-dashoffset: 166;
+            stroke-width: 2;
+            stroke-miterlimit: 10;
+            stroke: var(--success);
+            fill: none;
+            animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+        }
+        .check-path {
+            transform-origin: 50% 50%;
+            stroke-dasharray: 48;
+            stroke-dashoffset: 48;
+            stroke-width: 4;
+            stroke: var(--success);
+            fill: none;
+            animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.5s forwards;
+        }
+        @keyframes stroke { 100% { stroke-dashoffset: 0; } }
+
+        /* Fullscreen Button */
+        .btn-fullscreen {
+            position: absolute;
+            bottom: 30px;
+            right: 32px;
+            width: 44px;
+            height: 44px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            z-index: 10;
+        }
+        .btn-fullscreen:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.3); }
+
+        #canvasEl, #progressWrap { display: none; }
+
+        /* Basic Mobile Responsive */
+        @media (max-width: 600px) {
+            .top-bar { flex-direction: column; height: auto; padding: 15px; justify-content: center; gap: 8px; }
+            .bottom-panel { width: 90%; bottom: 20px; padding: 20px; }
+            #scanGuide { transform: scale(0.85); }
+        }
+    </style>
+</head>
+<body>
+
+{% if error %}
+    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; z-index: 100;">
+        <h1 style="color:var(--danger); font-family:'Orbitron',sans-serif; font-size:48px; letter-spacing:2px;">SYSTEM ERROR</h1>
+        <p style="font-size:18px; color:var(--text-muted); margin-top:20px;">{{ error }}</p>
+    </div>
+{% else %}
+
+    <!-- Background Camera Layers -->
+    <div class="camera-layer">
+        <video id="videoEl" autoplay playsinline muted></video>
+    </div>
+    <div class="vignette"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- Top Status Bar -->
+    <div class="top-bar">
+        <div class="top-left">
+            <div class="top-logo-box"></div>
+            <div class="top-logo-text">LOOKIN AI</div>
+        </div>
+        <div class="top-center">Biometric Attendance System</div>
+        <div class="top-right">
+            {{ session.subject.name|default:"General" }} 
+            <span>/</span> SL: {{ session.lecture_slot }} 
+            <span>/</span> DV: {{ session.division }}
+        </div>
+    </div>
+
+    <!-- Floating Pills -->
+    <div class="pills">
+        <div class="spoof-badge">
+            <div class="spoof-dot"></div>
+            ANTI-SPOOFING ACTIVE
+        </div>
+    </div>
+
+    <!-- HUD Targeting Center -->
+    <div class="hud-container">
+        <div id="scanGuide">
+            <!-- Center Face Outline -->
+            <div class="face-oval"></div>
+            
+            <!-- Brackets -->
+            <div class="bracket tl"></div>
+            <div class="bracket tr"></div>
+            <div class="bracket bl"></div>
+            <div class="bracket br"></div>
+            
+            <!-- Laser Scan Line -->
+            <div class="scan-line"></div>
+        </div>
+    </div>
+
+    <!-- Hidden Elements for Logic -->
+    <canvas id="canvasEl"></canvas>
+    <div id="progressWrap"><div id="progressBar"></div></div>
+
+    <!-- Bottom Action Panel -->
+    <div class="bottom-panel" id="feedbackCard">
+        
+        <div class="student-img-container" id="studentImgWrap">
+            <img src="" id="fbImage">
+        </div>
+
+        <div class="panel-icon-wrap">
+            <div class="status-ring"></div>
+            <div class="status-ring-inner"></div>
+            
+            <div class="panel-icon default-icon" id="fbIcon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M5 3a2 2 0 0 0-2 2"></path><path d="M19 3a2 2 0 0 1 2 2"></path><path d="M21 19a2 2 0 0 1-2 2"></path><path d="M5 21a2 2 0 0 1-2-2"></path><path d="M9 9h.01"></path><path d="M15 9h.01"></path><path d="M12 15h.01"></path>
+                </svg>
+            </div>
+            
+            <!-- Success Checkmark SVG (Draws via CSS) -->
+            <svg class="success-checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="check-circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="check-path" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+
+            <!-- Loading Dots -->
+            <div class="dot-loader">
+                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+        </div>
+
+        <div class="panel-title" id="fbTitle">READY TO SCAN</div>
+        <div class="panel-sub" id="fbSub">Position your face within the frame</div>
+    </div>
+
+    <button class="btn-fullscreen" onclick="toggleFullscreen()" title="Fullscreen">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+        </svg>
+    </button>
+
+<script>
+    // Config
+    const KIOSK_TOKEN = "{{ kiosk_token }}";
+    const LIVENESS_FRAMES = 5;       
+    const FRAME_DELAY_MS = 300;      
+    const COOLDOWN_MS = 4000;      
+
+    let stream = null;
+    let isScanning = false;
+    let capturedFrames = [];
+    let currentCooldown = COOLDOWN_MS;
+
+    // DOM Elements
+    const video = document.getElementById('videoEl');
+    const canvas = document.getElementById('canvasEl');
+    const guide = document.getElementById('scanGuide');
+    const fbCard = document.getElementById('feedbackCard');
+    const fbIcon = document.getElementById('fbIcon');
+    const fbImage = document.getElementById('fbImage');
+    const fbTitle = document.getElementById('fbTitle');
+    const fbSub = document.getElementById('fbSub');
+    const studentImgWrap = document.getElementById('studentImgWrap');
+
+    async function initCamera() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } },
+                audio: false
+            });
+            video.srcObject = stream;
+            await video.play();
+            
+            setTimeout(scanLoop, 1000);
+        } catch (err) {
+            setFeedback('error', 'CAMERA ERROR', 'Please allow camera permissions.');
+            console.error(err);
+        }
+    }
+
+    async function scanLoop() {
+        if (isScanning) return;
+        
+        isScanning = true;
+        capturedFrames = [];
+        currentCooldown = COOLDOWN_MS; 
+        
+        resetFeedback();
+        
+        for (let i = 0; i < LIVENESS_FRAMES; i++) {
+            captureFrame();
+            await sleep(FRAME_DELAY_MS);
+        }
+        
+        fbCard.className = 'bottom-panel analyzing';
+        fbTitle.textContent = "ANALYZING BIOMETRICS...";
+        fbSub.textContent = "Verifying liveness & searching records";
+        
+        try {
+            const resp = await fetch('/api/kiosk-scan/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    kiosk_token: KIOSK_TOKEN,
+                    frames: capturedFrames
+                })
+            });
+            
+            const data = await resp.json();
+            handleResult(data);
+            
+        } catch (err) {
+            console.error(err);
+            setFeedback('error', 'CONNECTION FAILED', 'Retrying secure link...');
+            await sleep(COOLDOWN_MS);
+        }
+        
+        isScanning = false;
+        setTimeout(scanLoop, currentCooldown);
+    }
+
+    function captureFrame() {
+        if(!video.videoWidth) return;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        const b64 = canvas.toDataURL('image/jpeg', 0.80);
+        capturedFrames.push(b64);
+    }
+
+    function handleResult(data) {
+        if (data.detail === 'wrong_division') {
+            setFeedback('division_error', 'WRONG DIVISION', data.message, null);
+            guide.className = 'warning';
+        } else if (data.detail === 'not_enrolled') {
+            setFeedback('not_enrolled', 'NOT ENROLLED', "You are not registered for this subject", null);
+            guide.className = 'error';
+        } else if (data.status === 'match') {
+            if (data.already_marked) {
+                setFeedback('warning', 'ALREADY VERIFIED', data.name, null, "Attendance previously recorded");
+                guide.className = 'warning';
+            } else {
+                setFeedback('success', 'ACCESS GRANTED', data.name, data.image_url, "Attendance Marked");
+                guide.className = 'active'; 
+            }
+        } else if (data.status === 'no_match') {
+            setFeedback('error', 'ACCESS DENIED', 'Face not recognized');
+            guide.className = 'error';
+        } else if (data.status === 'no_face') {
+            resetFeedback();
+            currentCooldown = 1500; 
+        } else if (data.status === 'spoof') {
+            setFeedback('error', 'ACCESS DENIED', 'Anti-spoofing alert triggered: ' + data.message);
+            guide.className = 'error';
+        } else {
+            setFeedback('error', 'SYSTEM FAULT', data.message || 'Unknown matrix error.');
+            guide.className = 'error';
+        }
+    }
+
+    function resetFeedback() {
+        fbCard.className = 'bottom-panel';
+        studentImgWrap.className = 'student-img-container'; 
+        fbIcon.style.display = 'block';
+        fbIcon.innerHTML = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3a2 2 0 0 0-2 2"></path><path d="M19 3a2 2 0 0 1 2 2"></path><path d="M21 19a2 2 0 0 1-2 2"></path><path d="M5 21a2 2 0 0 1-2-2"></path><path d="M9 9h.01"></path><path d="M15 9h.01"></path><path d="M12 15h.01"></path></svg>`;
+        fbTitle.textContent = 'READY TO SCAN';
+        fbSub.textContent = 'Position your face within the frame';
+        guide.className = '';
+    }
+
+    function setFeedback(type, title, name, imgUrl = null, extraMsg = null) {
+        fbCard.className = `bottom-panel ${type}`;
+        fbTitle.textContent = title;
+        
+        let subText = name;
+        if (extraMsg) { subText += `<br><span style="font-size:12px;opacity:0.7">${extraMsg}</span>`; }
+        fbSub.innerHTML = subText;
+        
+        if (imgUrl) {
+            fbIcon.style.display = 'none';
+            fbImage.src = imgUrl;
+            studentImgWrap.className = 'student-img-container show';
+        } else {
+            studentImgWrap.className = 'student-img-container';
+            fbIcon.style.display = 'block';
+            if (type === 'error' || type === 'not_enrolled') fbIcon.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`;
+            if (type === 'warning' || type === 'division_error') fbIcon.innerHTML = `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>`;
+        }
+    }
+
+    function sleep(ms) {
+        return new Promise(r => setTimeout(r, ms));
+    }
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(`Error: ${err.message}`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    initCamera();
+
+</script>
+{% endif %}
+</body>
+</html>

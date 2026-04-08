@@ -1,6 +1,40 @@
+# Database
+db.sqlite3
+
+# Environment
+.env
+
+# Virtual environment
 venv/
 .venv/
 env/
+
+# Python cache
 __pycache__/
 *.pyc
-.env
+*.pyo
+
+# Media uploads
+media/
+profiles/
+
+# ML model weights
+*.pt
+
+# Static collected files
+staticfiles/
+
+# Coverage
+.early.coverage
+.coverage
+
+# Debug/temp files
+test_speed.py
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

@@ -58,14 +58,98 @@
         color: #1e293b;
         font-size: 14px;
         transition: 0.2s ease;
+        vertical-align: top;
     }
 
     tr:hover td {
-        background: #fffaf5; /* Light orange tint on hover */
+        background: #fffaf5;
         color: #0f172a;
     }
 
-    /* Styled Badges & Texts */
+    /* Filter Bar */
+    .filter-card {
+        background: white;
+        padding: 20px 25px;
+        border-radius: 20px;
+        box-shadow: var(--shadow-soft);
+        border: 1px solid #f1f5f9;
+        margin-bottom: 25px;
+    }
+    .filter-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 15px;
+        align-items: end;
+    }
+    .form-group label {
+        font-size: 11px;
+        font-weight: 800;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: block;
+        margin-bottom: 6px;
+    }
+    .form-group select, .form-group input {
+        width: 100%;
+        padding: 10px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        background: #f8fafc;
+        color: #1e293b;
+        transition: 0.3s;
+        box-sizing: border-box;
+    }
+    .form-group select:focus, .form-group input:focus {
+        border-color: var(--primary);
+        background: white;
+        box-shadow: 0 0 0 3px var(--primary-glow);
+        outline: none;
+    }
+    .btn-primary {
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #ff7b00, #ff4500);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 13px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-transform: uppercase;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px var(--primary-glow);
+    }
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255,85,0,0.4);
+    }
+    .btn-clear {
+        padding: 10px 20px;
+        background: #f1f5f9;
+        color: #64748b;
+        border: none;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 13px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-transform: uppercase;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    .btn-clear:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
+
+    /* Table Badges & Styling */
     .date-badge {
         background: #f1f5f9;
         padding: 6px 12px;
@@ -76,44 +160,220 @@
         display: inline-block;
         border: 1px solid #e2e8f0;
     }
-
-    .subject-text {
-        color: var(--primary);
+    .fac-name {
         font-weight: 800;
+        color: #1e293b;
+        margin-bottom: 4px;
+        display: block;
+    }
+    .fac-code {
+        font-size: 11px;
+        color: #64748b;
+        font-family: monospace;
+        background: #f1f5f9;
+        padding: 2px 6px;
+        border-radius: 4px;
     }
 
-    /* Sleek Animated Download Button */
-    .download-btn {
+    /* Smart Subject Cell */
+    .subj-box {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px 14px;
+        background: #f8fafc;
+        min-width: 250px;
+    }
+    .subj-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+    }
+    .subj-pill {
+        font-size: 10px;
+        font-weight: 800;
+        padding: 3px 8px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .subj-pill.core { background: #eff6ff; color: #3b82f6; border: 1px solid #bfdbfe; }
+    .subj-pill.elective { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
+    .subj-pill.legacy { background: #f1f5f9; color: #64748b; border: 1px solid #cbd5e1; }
+    
+    .course-code {
+        font-family: monospace;
+        font-size: 11px;
+        color: #64748b;
+        background: #e2e8f0;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 700;
+    }
+    .subj-title {
+        font-weight: 800;
+        font-size: 14px;
+        color: #0f172a;
+    }
+    .subj-meta {
+        font-size: 12px;
+        color: #475569;
+        font-weight: 600;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+    .subj-meta-row {
+        background: white;
+        padding: 4px 8px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        display: inline-block;
+    }
+
+    /* Action Buttons */
+    .dl-btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .dl-btn {
         background: #1e293b;
         color: white;
-        padding: 8px 16px;
+        padding: 6px 12px;
         border-radius: 8px;
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 700;
         text-decoration: none;
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: all 0.2s;
         box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        white-space: nowrap;
+        width: fit-content;
     }
-
-    .download-btn:hover {
+    .dl-btn:hover {
         background: linear-gradient(135deg, #ff7b00 0%, #ff5500 100%);
-        transform: translateY(-3px);
+        transform: translateY(-2px);
         box-shadow: 0 6px 15px var(--primary-glow);
     }
-    
-    .download-icon {
-        width: 14px;
-        height: 14px;
+    .dl-icon {
+        width: 12px;
+        height: 12px;
         stroke: currentColor;
         stroke-width: 2.5;
         fill: none;
     }
+
+    /* Searchable dropdown CSS */
+    .hidden-select { display: none; }
+    .sd-wrapper { flex: 1; min-width: 220px; position: relative; }
+    .sd-trigger { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border: 2px solid #e2e8f0; border-radius: 10px; background: #f8fafc; cursor: pointer; transition: 0.3s; min-height: 42px; box-sizing: border-box; }
+    .sd-trigger:focus-within, .sd-wrapper.open .sd-trigger { border-color: var(--primary); background: white; box-shadow: 0 0 0 3px var(--primary-glow); }
+    .sd-trigger-icon { font-size: 14px; color: #94a3b8; flex-shrink: 0; }
+    .sd-trigger-text { flex: 1; font-size: 13px; color: #1e293b; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sd-trigger-text.placeholder { color: #94a3b8; font-weight: 500; }
+    .sd-chevron { flex-shrink: 0; width: 16px; height: 16px; color: #94a3b8; transition: transform 0.25s; }
+    .sd-wrapper.open .sd-chevron { transform: rotate(180deg); }
+
+    .sd-panel { position: absolute; top: calc(100% + 6px); left: 0; right: 0; background: white; border: 1.5px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); z-index: 500; display: none; flex-direction: column; overflow: hidden; animation: sdSlideIn 0.18s ease; }
+    .sd-wrapper.open .sd-panel { display: flex; }
+    @keyframes sdSlideIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .sd-search-wrap { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; background: #f8fafc; }
+    .sd-search-icon { font-size: 14px; color: #94a3b8; }
+    .sd-search-input { flex: 1; border: none; outline: none; font-size: 13px; background: transparent; color: #1e293b; font-weight: 500; }
+    .sd-search-input::placeholder { color: #94a3b8; font-weight: 500;}
+    .sd-clear-btn { background: none; border: none; cursor: pointer; font-size: 14px; color: #94a3b8; padding: 0 2px; display: none; }
+    .sd-clear-btn.visible { display: block; }
+
+    .sd-list { max-height: 250px; overflow-y: auto; padding: 6px 0; }
+    .sd-list::-webkit-scrollbar { width: 5px; }
+    .sd-list::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+    .sd-group-label { padding: 8px 16px 4px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em; color: #64748b; background: #f8fafc; border-top: 1px solid #e2e8f0; margin-top: 2px; }
+    .sd-group-label:first-child { border-top: none; margin-top: 0; }
+
+    .sd-option { display: flex; align-items: center; gap: 10px; padding: 8px 14px; cursor: pointer; font-size: 13px; color: #1e293b; transition: background 0.15s; font-weight: 500; }
+    .sd-option:hover { background: #fff7ed; }
+    .sd-option.selected { background: #fff3e0; color: var(--primary); font-weight: 700; }
+    .sd-option-code { background: #f1f5f9; color: #1e293b; font-size: 11px; font-weight: 800; padding: 2px 7px; border-radius: 6px; flex-shrink: 0; font-family: monospace; letter-spacing: 0.03em; }
+    .sd-option.selected .sd-option-code { background: rgba(255,123,0,0.15); color: var(--primary); }
+    .sd-option-name { flex: 1; }
+    .sd-empty { padding: 20px; text-align: center; font-size: 12px; color: #64748b; font-weight: 500; }
+
 </style>
 
 <h2 class="page-title">📅 Attendance History</h2>
+
+<div class="filter-card">
+    <form method="GET" class="filter-grid" id="historyFilterForm">
+        <div class="form-group" style="grid-column: span 2;">
+            <label>Subject</label>
+            <select name="subject" id="subjectRealSelect" class="hidden-select" aria-hidden="true">
+                <optgroup label="General">
+                    <option value="" data-code="" data-name="All Subjects" {% if not request.GET.subject %}selected{% endif %}>All Subjects</option>
+                </optgroup>
+                <optgroup label="Core">
+                    {% for sub in subjects %}
+                    {% if sub.subject_type == 'core' %}
+                    <option value="{{ sub.id }}" data-code="{{ sub.course_code|default:'' }}" data-name="{{ sub.name }}" {% if request.GET.subject == sub.id|stringformat:"s" %}selected{% endif %}>{{ sub.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </optgroup>
+                <optgroup label="Electives">
+                    {% for sub in subjects %}
+                    {% if sub.subject_type == 'elective' %}
+                    <option value="{{ sub.id }}" data-code="{{ sub.course_code|default:'' }}" data-name="{{ sub.name }}" {% if request.GET.subject == sub.id|stringformat:"s" %}selected{% endif %}>{{ sub.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </optgroup>
+            </select>
+            <div class="sd-wrapper" id="sdWrapper">
+              <div class="sd-trigger" id="sdTrigger" tabindex="0">
+                <span class="sd-trigger-icon">📚</span>
+                <span class="sd-trigger-text placeholder" id="sdTriggerText">All Subjects</span>
+                <svg class="sd-chevron" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                </svg>
+              </div>
+              <div class="sd-panel" id="sdPanel">
+                <div class="sd-search-wrap">
+                  <span class="sd-search-icon">🔍</span>
+                  <input type="text" class="sd-search-input" id="sdSearchInput" placeholder="Search by name or code..." autocomplete="off">
+                  <button type="button" class="sd-clear-btn" id="sdClearBtn">✕</button>
+                </div>
+                <div class="sd-list" id="sdList"></div>
+              </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Date From</label>
+            <input type="date" name="date_from" id="dateFrom" max="{{ today_date }}" value="{{ request.GET.date_from }}">
+        </div>
+        <div class="form-group">
+            <label>Date To</label>
+            <input type="date" name="date_to" id="dateTo" max="{{ today_date }}" value="{{ request.GET.date_to }}">
+        </div>
+        
+        <div class="filter-actions" style="grid-column: 1 / -1; display:flex; gap:10px; margin-top:10px;">
+            <button type="submit" class="btn-primary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                Apply Filters
+            </button>
+            <a href="{% url 'attendance_history' %}" class="btn-clear">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                Clear
+            </a>
+            <div style="margin-left: auto; align-self: center; font-weight: 800; color: #64748b; font-size: 14px;">
+                {{ sessions|length }} record{{ sessions|length|pluralize }} found
+            </div>
+        </div>
+    </form>
+</div>
 
 <div class="table-card">
     <table>
@@ -121,44 +381,222 @@
             <tr>
                 <th>Date & Time</th>
                 <th>Faculty</th>
-                <th>Department</th>
-                <th>Program</th>
-                <th>Semester</th>
-                <th>Division</th>
                 <th>Subject</th>
-                <th style="text-align: center;">Action</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             {% for s in sessions %}
             <tr>
-                <td><span class="date-badge">{{ s.date }}</span></td>
-                <td>{{ s.faculty }}</td>
-                <td>{{ s.department }}</td>
-                <td>{{ s.program }}</td>
-                <td>{{ s.semester }}</td>
-                <td><strong style="color: #64748b;">{{ s.division }}</strong></td>
-                <td class="subject-text">{{ s.subject }}</td>
-                <td style="text-align: center;">
-                    <a href="{% url 'download_attendance' s.id %}" class="download-btn">
-                        <svg class="download-icon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                        Download
-                    </a>
+                <td><span class="date-badge">{{ s.date|date:"d M Y, H:i" }}</span></td>
+                <td>
+                    <span class="fac-name">{{ s.faculty }}</span>
+                    {% if s.faculty_code %}
+                    <span class="fac-code">[{{ s.faculty_code }}]</span>
+                    {% endif %}
+                </td>
+                
+                <td>
+                    <div class="subj-box">
+                    {% if s.subject_display == 'core' %}
+                        <div class="subj-header">
+                            <span class="subj-pill core">CORE</span>
+                            {% if s.subject.course_code %}<span class="course-code">[{{ s.subject.course_code }}]</span>{% endif %}
+                            <span class="subj-title">{{ s.subject.name }}</span>
+                        </div>
+                        <div class="subj-meta">
+                            <span class="subj-meta-row">
+                                {{ s.subject.program.name }} · Sem {{ s.subject.semester.name }}
+                                {% if s.subject_divs %}
+                                · Div {{ s.subject_divs|join:", " }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    {% elif s.subject_display == 'elective' %}
+                        <div class="subj-header">
+                            <span class="subj-pill elective">ELECTIVE</span>
+                            {% if s.subject.course_code %}<span class="course-code">[{{ s.subject.course_code }}]</span>{% endif %}
+                            <span class="subj-title">{{ s.subject.name }}</span>
+                        </div>
+                        <div class="subj-meta">
+                            {% for pair in s.subject_pairs %}
+                            <span class="subj-meta-row">{{ pair.program.name }} · Sem {{ pair.semester.name }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="subj-header">
+                            <span class="subj-pill legacy">LEGACY</span>
+                            <span class="subj-title">No subject linked</span>
+                        </div>
+                        <div class="subj-meta">
+                            <span class="subj-meta-row">
+                                {{ s.program }} · Sem {{ s.semester }} · Div {{ s.division }}
+                                <br><small style="color:#94a3b8; font-weight:500;">(stored from session data)</small>
+                            </span>
+                        </div>
+                    {% endif %}
+                    </div>
+                </td>
+                
+                <td>
+                    <div class="dl-btn-group">
+                        <a href="{% url 'download_attendance' s.id %}?prog=all" class="dl-btn" style="background:#0f172a;">
+                            <svg class="dl-icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            ↓ Download Attendance
+                        </a>
+                    </div>
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="8" style="text-align: center; padding: 40px; color: #94a3b8; font-weight: 600;">
-                    No Attendance History Found. Mark some attendance first! 
+                <td colspan="4" style="text-align: center; padding: 40px; color: #94a3b8; font-weight: 600;">
+                    No Attendance History Found. Use filters or mark attendance! 
                 </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
+
+<script>
+(function() {
+  const sel = document.getElementById('subjectRealSelect');
+  const wrapper = document.getElementById('sdWrapper');
+  const trigger = document.getElementById('sdTrigger');
+  const trigText = document.getElementById('sdTriggerText');
+  const panel = document.getElementById('sdPanel');
+  const searchInp = document.getElementById('sdSearchInput');
+  const clearBtn = document.getElementById('sdClearBtn');
+  const list = document.getElementById('sdList');
+
+  if (!wrapper) return;
+
+  const GROUPS = [];
+
+  Array.from(sel.querySelectorAll('optgroup')).forEach(og => {
+    const group = { label: og.label, items: [] };
+    Array.from(og.querySelectorAll('option')).forEach(opt => {
+      group.items.push({
+        value: opt.value,
+        code: opt.getAttribute('data-code') || '',
+        name: opt.getAttribute('data-name') || opt.textContent.trim(),
+      });
+    });
+    if(group.items.length > 0) GROUPS.push(group);
+  });
+
+  let selectedValue = sel.value;
+
+  function openDropdown() {
+    wrapper.classList.add('open');
+    searchInp.value = '';
+    clearBtn.classList.remove('visible');
+    renderList('');
+    setTimeout(() => searchInp.focus(), 50);
+  }
+
+  function closeDropdown() {
+    wrapper.classList.remove('open');
+  }
+
+  function renderList(query) {
+    const q = query.trim().toLowerCase();
+    let html = '';
+    let totalMatches = 0;
+
+    GROUPS.forEach(group => {
+      const matches = group.items.filter(item => {
+        if (!q) return true;
+        return item.name.toLowerCase().includes(q) || item.code.toLowerCase().includes(q);
+      });
+
+      if (matches.length === 0) return;
+      totalMatches += matches.length;
+
+      if(group.label !== "General") {
+          html += `<div class="sd-group-label">${group.label}</div>`;
+      }
+
+      matches.forEach(item => {
+        const isSel = item.value === selectedValue ? ' selected' : '';
+        const codeChip = item.code ? `<span class="sd-option-code">${item.code}</span>` : '';
+        html += `
+          <div class="sd-option${isSel}" data-value="${item.value}" data-label="${escHtml(item.code ? '['+item.code+'] '+item.name : item.name)}">
+            ${codeChip}
+            <span class="sd-option-name">${highlight(item.name, q)}</span>
+          </div>`;
+      });
+    });
+
+    if (totalMatches === 0) {
+      html = `<div class="sd-empty">No subjects found</div>`;
+    }
+    list.innerHTML = html;
+
+    list.querySelectorAll('.sd-option').forEach(el => {
+      el.addEventListener('click', () => {
+        selectedValue = el.dataset.value;
+        const lbl = el.dataset.label;
+        trigText.textContent = lbl === 'All Subjects' ? 'All Subjects' : lbl;
+        trigText.classList.toggle('placeholder', lbl === 'All Subjects');
+        sel.value = selectedValue;
+        closeDropdown();
+      });
+    });
+  }
+
+  function highlight(text, q) {
+    if (!q) return escHtml(text);
+    const idx = text.toLowerCase().indexOf(q);
+    if (idx === -1) return escHtml(text);
+    return escHtml(text.slice(0, idx)) +
+      `<mark style="background:var(--primary-glow); border-radius:3px; padding:0 1px;">${escHtml(text.slice(idx, idx+q.length))}</mark>` +
+      escHtml(text.slice(idx+q.length));
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  trigger.addEventListener('click', () => wrapper.classList.contains('open') ? closeDropdown() : openDropdown());
+  searchInp.addEventListener('input', () => {
+    const q = searchInp.value;
+    clearBtn.classList.toggle('visible', q.length > 0);
+    renderList(q);
+  });
+  clearBtn.addEventListener('click', e => {
+    e.preventDefault();
+    searchInp.value = '';
+    clearBtn.classList.remove('visible');
+    renderList('');
+    searchInp.focus();
+  });
+  document.addEventListener('click', e => {
+    if (!wrapper.contains(e.target)) closeDropdown();
+  });
+
+  const initOpt = sel.querySelector('option:checked');
+  if(initOpt && initOpt.value) {
+    const c = initOpt.getAttribute('data-code');
+    const n = initOpt.getAttribute('data-name') || initOpt.textContent.trim();
+    trigText.textContent = c ? `[${c}] ${n}` : n;
+    trigText.classList.remove('placeholder');
+  }
+
+  // Date Filter Validation
+  const dateFrom = document.getElementById('dateFrom');
+  const dateTo = document.getElementById('dateTo');
+  if (dateFrom && dateTo) {
+    const today = "{{ today_date }}";
+    dateFrom.max = today;
+    dateTo.max = today;
+    
+    dateFrom.addEventListener('change', () => {
+      dateTo.min = dateFrom.value;
+    });
+  }
+
+})();
+</script>
 
 {% endblock %}

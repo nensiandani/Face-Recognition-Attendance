@@ -883,25 +883,202 @@ body {
 .status-pill.danger { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: var(--red); }
 
 /* ══════════════════════════════════════════
+   FILTER FORM
+══════════════════════════════════════════ */
+.filter-form {
+    display: flex; align-items: flex-end; gap: 14px;
+    background: linear-gradient(145deg, rgba(8,14,30,0.9), rgba(5,10,22,0.95));
+    padding: 24px 28px; border-radius: 20px;
+    margin-bottom: 28px;
+    border: 1px solid rgba(255,255,255,0.05);
+    position: relative; z-index: 5;
+    flex-wrap: wrap;
+    animation: cardIn 0.6s cubic-bezier(0.23,1,0.32,1) 0.1s both;
+}
+
+.filter-group { display: flex; flex-direction: column; gap: 8px; }
+
+.filter-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 8px; color: var(--primary);
+    letter-spacing: 3px; text-transform: uppercase;
+}
+
+.filter-input {
+    padding: 11px 16px;
+    border-radius: 11px;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: rgba(0,0,0,0.25);
+    color: #fff; outline: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px; font-weight: 500;
+    transition: all 0.3s;
+    min-width: 220px;
+}
+
+.filter-input option {
+    background-color: #0d1528;
+    color: #fff;
+}
+
+.filter-input:focus {
+    border-color: rgba(255,123,0,0.5);
+    background: rgba(255,123,0,0.04);
+    box-shadow: 0 0 0 3px rgba(255,123,0,0.1);
+}
+
+.filter-btn {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #ff7b00, #ff4400);
+    border: none; border-radius: 12px;
+    color: #fff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer; transition: all 0.3s;
+    box-shadow: 0 6px 20px rgba(255,123,0,0.3);
+    display: flex; align-items: center; gap: 8px;
+    position: relative; overflow: hidden;
+    align-self: flex-end;
+}
+
+.filter-btn::before {
+    content: '';
+    position: absolute; top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.4s;
+}
+.filter-btn:hover::before { left: 120%; }
+.filter-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(255,123,0,0.5); }
+
+.clear-btn {
+    padding: 12px 20px;
+    background: transparent;
+    border: 1px solid rgba(239,68,68,0.25);
+    border-radius: 12px;
+    color: #ef4444;
+    text-decoration: none;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px; font-weight: 700;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+    display: flex; align-items: center; gap: 8px;
+    align-self: flex-end;
+}
+.clear-btn:hover { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.5); transform: translateY(-2px); }
+
+/* ══════════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════════ */
-@media (max-width: 1200px) {
-    .stats-row { grid-template-columns: repeat(2, 1fr); }
-    .charts-grid { grid-template-columns: 1fr; }
-    .chart-panel.wide { grid-column: 1; }
+@media (max-width: 992px) {
+    :root { --sidebar-w: 0px !important; }
+    
+    .sidebar { display: none !important; }
+    .sidebar.active { display: flex !important; z-index: 11000 !important; width: 280px !important; }
+
+    .main { 
+        margin-left: 0 !important; 
+        padding: 16px 16px 40px !important; 
+        margin-top: 0 !important;
+        width: 100% !important; min-width: 0 !important; overflow-x: hidden !important; }
+    .page-title { font-size: clamp(20px, 6vw, 32px) !important; margin-bottom: 20px !important; word-break: break-word !important; }
+
+    .stats-row { grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+    .stat-card { padding: 15px !important; }
+    .stat-val { font-size: 18px !important; }
+    
+    .filter-form { padding: 12px !important; flex-direction: column !important; align-items: stretch !important; gap: 10px !important; }
+    .filter-input { min-width: 100% !important; height: 45px !important; }
+    .filter-btn, .clear-btn { width: 100% !important; height: 45px !important; justify-content: center !important; }
+    
+    .charts-grid { grid-template-columns: 1fr !important; gap: 16px !important; }
+    .chart-panel.wide { grid-column: auto !important; min-height: 280px !important; }
 }
 
 @media (max-width: 900px) {
-    :root { --sidebar-w: 0px; }
-    .sidebar { transform: translateX(-100%); }
-    .main { margin-left: 0; padding: 20px; }
-    .stats-row { grid-template-columns: repeat(2, 1fr); }
-    .page-title { font-size: 32px; }
+  /* Stats grid: 2 columns */
+  .stats-grid,
+  .stat-cards,
+  .stats-row,
+  .overview-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+  
+  /* Each stat card */
+  .stat-card,
+  .stat-box,
+  .overview-card {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+}
+.bottom-tab-bar {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 60px;
+  background: #0a0f1e;
+  border-top: 1px solid #ff8c00;
+  z-index: 99999;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0;
+}
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #5a6a8a;
+  text-decoration: none;
+  font-size: 9px;
+  gap: 3px;
+  flex: 1;
+  min-height: 48px;
+  touch-action: manipulation;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.tab-item svg {
+  width: 22px; height: 22px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tab-item.active,
+.tab-item:hover { 
+  color: #ff8c00; 
+}
+@media (max-width: 900px) {
+  .bottom-tab-bar { display: flex !important; }
+  .sidebar { display: none !important; }
+    .main,
+    main.main,
+    .main-content {
+        padding-bottom: 70px !important;
+        margin-left: 0 !important;
+        padding-top: 16px !important;
+        margin-top: 0 !important;
+    }
 }
 </style>
 </head>
 
 <body>
+
+<!-- ════ MOBILE HEADER ════ -->
+
 
 <!-- ════ ANIMATED BACKGROUND ════ -->
 <div class="bg-canvas" id="bgCanvas"></div>
@@ -933,6 +1110,7 @@ body {
                 </div>
                 Report
             </a>
+
         </nav>
     </div>
 
@@ -941,11 +1119,14 @@ body {
             {% if profile and profile.image %}
                 <img class="user-avatar" src="{{ profile.image.url }}" alt="User">
             {% else %}
-                <img class="user-avatar" src="{% static 'img/user.png' %}" alt="User">
+                <img class="user-avatar" src="https://ui-avatars.com/api/?name={{ request.user.first_name|default:'User'|urlencode }}&background=ff7b00&color=fff" alt="User">
             {% endif %}
             <div class="user-info">
                 <p class="user-name">{{ request.user.first_name|default:"Student" }}</p>
                 <p class="user-email">{{ request.user.email }}</p>
+                {% if profile and profile.roll %}
+                <p style="font-size:9px; color:#ff7b00; font-family:'Orbitron',monospace; letter-spacing:1px; margin-top:3px; opacity:0.8;">ID: {{ profile.roll }}</p>
+                {% endif %}
             </div>
         </div>
         <form action="{% url 'logout_user' %}" method="POST">
@@ -966,6 +1147,30 @@ body {
         <div class="page-label">LookIn AI — Analytics Engine v2.0</div>
         <h1 class="page-title">Attendance Report</h1>
     </div>
+
+    <form method="GET" class="filter-form">
+        <div class="filter-group">
+            <span class="filter-label">Subject Filter</span>
+            <select name="subject" class="filter-input">
+                <option value="">All Subjects</option>
+                {% for sub in enrolled_subjects %}
+                    <option value="{{ sub.id }}" {% if selected_subject == sub.id %}selected{% endif %}>{{ sub.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="filter-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Generate
+        </button>
+
+        {% if selected_subject != '' %}
+        <a href="{% url 'report' %}" class="clear-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+            Clear
+        </a>
+        {% endif %}
+    </form>
 
     <!-- ══ STAT CARDS ══ -->
     <div class="stats-row">
@@ -1019,7 +1224,7 @@ body {
             <span class="progress-pct" id="progressPct" style="color:#ff7b00">{{ attendance_pct|default:"0" }}%</span>
         </div>
         <div class="progress-track">
-            <div class="progress-fill" id="progressFill" style="width: {{ attendance_pct|default:'0' }}%"></div>
+            <div class="progress-fill" id="progressFill" data-pct="{{ attendance_pct|default:0 }}"></div>
         </div>
         <div class="progress-status" id="progressStatus">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -1073,16 +1278,17 @@ body {
 
     <!-- ══ SUBJECT TABLE ══ -->
     <div class="section-header">
-        <span class="section-title">Subject Breakdown</span>
+        <span class="section-title">{% if table_type == "SUBJECT" %}Subject Breakdown{% else %}Session Breakdown{% endif %}</span>
         <div class="section-line"></div>
-        <span class="section-count">{{ subject_count|default:"0" }} SUBJECTS</span>
+        <span class="section-count">{{ table_data|length }} {% if table_type == 'SUBJECT' %}SUBJECTS{% else %}SESSIONS{% endif %}</span>
     </div>
 
     <div class="table-panel">
+        <div style="overflow-x:auto; -webkit-overflow-scrolling:touch;">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Subject</th>
+                    <th>{% if table_type == "SUBJECT" %}Subject{% else %}Session Details{% endif %}</th>
                     <th>Present</th>
                     <th>Absent</th>
                     <th>Total</th>
@@ -1091,22 +1297,22 @@ body {
                 </tr>
             </thead>
             <tbody>
-                {% for row in subject_data %}
+                {% for row in table_data %}
                 <tr>
-                    <td><span class="subject-badge">{{ row.subject }}</span></td>
-                    <td style="color:#10b981; font-family:'Orbitron',monospace; font-size:13px;">{{ row.present }}</td>
-                    <td style="color:#ef4444; font-family:'Orbitron',monospace; font-size:13px;">{{ row.absent }}</td>
-                    <td style="color:#94a3b8; font-family:'Orbitron',monospace; font-size:13px;">{{ row.total }}</td>
-                    <td>
+                    <td data-label="{% if table_type == 'SUBJECT' %}Subject{% else %}Session{% endif %}"><span class="subject-badge">{{ row.name }}</span></td>
+                    <td data-label="Present" style="color:#10b981; font-family:'Orbitron',monospace; font-size:13px;">{{ row.present }}</td>
+                    <td data-label="Absent" style="color:#ef4444; font-family:'Orbitron',monospace; font-size:13px;">{{ row.absent }}</td>
+                    <td data-label="Total" style="color:#94a3b8; font-family:'Orbitron',monospace; font-size:13px;">{{ row.total }}</td>
+                    <td data-label="Percent">
                         <div class="mini-bar-wrap">
                             <div class="mini-bar-track">
                                 <div class="mini-bar-fill {% if row.pct >= 75 %}safe{% elif row.pct >= 60 %}warn{% else %}danger{% endif %}"
-                                     style="width: {{ row.pct }}%"></div>
+                                     data-pct="{{ row.pct }}"></div>
                             </div>
                             <span class="pct-badge {% if row.pct >= 75 %}safe{% elif row.pct >= 60 %}warn{% else %}danger{% endif %}">{{ row.pct }}%</span>
                         </div>
                     </td>
-                    <td>
+                    <td data-label="Status">
                         <span class="status-pill {% if row.pct >= 75 %}safe{% elif row.pct >= 60 %}warn{% else %}danger{% endif %}">
                             {% if row.pct >= 75 %}SAFE{% elif row.pct >= 60 %}WARNING{% else %}CRITICAL{% endif %}
                         </span>
@@ -1121,6 +1327,7 @@ body {
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     </div>
 
 </main>
@@ -1148,23 +1355,24 @@ body {
     }
 })();
 
-/* ════ DATA ════ */
-const present = {{ present_count|default:"0" }};
-const absent  = {{ absent_count|default:"0" }};
-const total   = {{ total_count|default:"0" }};
-const pct     = {{ attendance_pct|default:"0" }};
-
-/* ════ PROGRESS STATUS ════ */
+// Update progress fill safely
 (function() {
-    const fill   = document.getElementById('progressFill');
+    const fill = document.getElementById('progressFill');
+    if (fill) {
+        const pctVal = fill.getAttribute('data-pct') || 0;
+        fill.style.width = pctVal + '%';
+    }
     const status = document.getElementById('progressStatus');
     const pctEl  = document.getElementById('progressPct');
+    const pct    = parseFloat("{{ attendance_pct|default:0 }}");
 
     if (pct >= 75) {
-        fill.classList.add('progress-safe');
-        status.className = 'progress-status safe';
-        status.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Attendance is satisfactory. Keep it up!`;
-        pctEl.style.color = '#10b981';
+        if (fill) fill.classList.add('progress-safe');
+        if (status) {
+            status.className = 'progress-status safe';
+            status.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Attendance is satisfactory. Keep it up!`;
+        }
+        if (pctEl) pctEl.style.color = '#10b981';
     } else if (pct >= 60) {
         fill.classList.add('progress-warn');
         status.className = 'progress-status warn';
@@ -1181,6 +1389,11 @@ const pct     = {{ attendance_pct|default:"0" }};
 /* ════ CHART DEFAULTS ════ */
 Chart.defaults.color = '#5a6a8a';
 Chart.defaults.font.family = '"Rajdhani", sans-serif';
+
+/* ════ CHART DATA VARIABLES ════ */
+const present = {{ present_count|default:0 }};
+const absent = {{ absent_count|default:0 }};
+const total = {{ total_count|default:0 }};
 
 /* ════ DONUT CHART ════ */
 (function() {
@@ -1340,9 +1553,8 @@ Chart.defaults.font.family = '"Rajdhani", sans-serif';
     gradLine.addColorStop(0, 'rgba(255,123,0,0.3)');
     gradLine.addColorStop(1, 'rgba(255,123,0,0)');
 
-    // Generate dummy trend data (replace with Django template data if available)
-    const labels = {{ trend_labels|default:"['W1','W2','W3','W4','W5','W6','W7','W8']"|safe }};
-    const trendData = {{ trend_data|default:"[0,0,0,0,0,0,0,0]"|safe }};
+    let labels = {{ trend_labels|default:"['W1','W2','W3','W4','W5','W6','W7','W8']"|safe }};
+    let trendData = {{ trend_data|default:"[0,0,0,0,0,0,0,0]"|safe }};
 
     new Chart(ctx, {
         type: 'line',
@@ -1415,6 +1627,42 @@ document.querySelectorAll('.chart-panel, .stat-card, .table-panel').forEach(card
     });
 });
 </script>
+
+<script id="trend-data" type="application/json">{{ trend_data|default:"[0,0,0,0,0,0,0,0]"|safe }}</script>
+<script id="trend-labels" type="application/json">{{ trend_labels|default:"['W1','W2','W3','W4','W5','W6','W7','W8']"|safe }}</script>
+
+<script>
+// Final layout fix for mini-bars
+(function(){
+    document.querySelectorAll('.mini-bar-fill').forEach(fill => {
+        const pct = fill.getAttribute('data-pct');
+        if (pct) fill.style.width = pct + '%';
+    });
+})();
+</script>
+
+<!-- ══ BOTTOM TAB BAR (mobile only) ══ -->
+<nav class="bottom-tab-bar">
+    <a href="{% url 'profile' %}" class="tab-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+    </a>
+    <a href="{% url 'attendance' %}" class="tab-item {% if request.resolver_match.url_name == 'attendance' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>Attend</span>
+    </a>
+    <a href="{% url 'report' %}" class="tab-item {% if request.resolver_match.url_name == 'report' %}active{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>Report</span>
+    </a>
+    <form action="{% url 'logout_user' %}" method="POST" style="display:flex;flex:1;justify-content:center;margin:0;">
+        {% csrf_token %}
+        <button type="submit" class="tab-item" style="background:transparent;border:none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>Logout</span>
+        </button>
+    </form>
+</nav>
 
 </body>
 </html>

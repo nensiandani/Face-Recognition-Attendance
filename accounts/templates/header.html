@@ -1,32 +1,122 @@
 <style>
-    /* કેમેરા અને ઈમેજ સ્ક્રીનની બહાર ના જાય એના માટે */
+    /* ══════ GLOBAL RESPONSIVE BASE ══════ */
     video, img, canvas {
         max-width: 100% !important;
         height: auto !important;
     }
 
-    /* મોબાઈલની નાની સ્ક્રીન માટે સેટિંગ્સ */
-    @media (max-width: 600px) {
-        .container {
-            padding: 15px;
-            width: 100%;
-        }
+    :root {
+        --mobile-header-h: 70px;
+    }
+
+    /* ══════ MOBILE HEADER (Hidden on Desktop) ══════ */
+    .mobile-header {
+        display: none;
+        position: fixed; top: 0; left: 0; right: 0;
+        height: var(--mobile-header-h);
+        background: rgba(8, 14, 30, 0.85);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(255,123,0,0.15);
+        z-index: 1000;
+        padding: 0 20px;
+        align-items: center; justify-content: space-between;
+    }
+
+    .mobile-logo {
+        height: 32px; filter: drop-shadow(0 0 10px rgba(255,123,0,0.3));
+    }
+
+    /* ══════ HAMBURGER ICON ══════ */
+    .hamburger {
+        width: 30px; height: 20px;
+        position: relative; cursor: pointer;
+        display: flex; flex-direction: column; justify-content: space-between;
+        z-index: 1100;
+    }
+
+    .hamburger span {
+        display: block; width: 100%; height: 2px;
+        background: var(--primary);
+        border-radius: 2px; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 0 8px rgba(255,123,0,0.4);
+    }
+
+    .hamburger.active span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+    .hamburger.active span:nth-child(2) { opacity: 0; transform: translateX(-20px); }
+    .hamburger.active span:nth-child(3) { transform: translateY(-9px) rotate(-45deg); }
+
+    /* ══════ RESPONSIVE BREAKPOINTS ══════ */
+    @media (max-width: 992px) {
+        :root { --sidebar-w: 0px !important; }
         
-        /* ટેબલ મોટું હોય તો સ્ક્રોલ થાય, કપાય નહિ */
-        table {
-            display: block;
-            overflow-x: auto;
-            white-space: nowrap;
-            width: 100%; /* 💡 ટેબલ આખી સ્ક્રીનમાં સેટ થાય */
+        .mobile-header { display: flex !important; z-index: 10000 !important; }
+
+        .sidebar {
+            position: fixed !important;
+            left: 0 !important; top: 0 !important;
+            width: 280px !important;
+            height: 100vh !important;
+            z-index: 11000 !important;
+            display: none !important; /* NUCLEAR HIDE: Prevents all layout pushing */
+            flex-direction: column;
+            box-shadow: 20px 0 60px rgba(0,0,0,0.8) !important;
         }
-        
-        /* બટનો આખી સ્ક્રીનમાં સેટ થાય */
-        .btn {
-            width: 100%;
-            margin-bottom: 10px;
-            display: block;
-            text-align: center;
-            box-sizing: border-box;
+
+        /* Show only when active */
+        .sidebar.active { 
+            display: flex !important;
+            animation: slideIn 0.3s ease-out !important;
         }
+
+        @keyframes slideIn {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(0); }
+        }
+
+        .main {
+            margin-left: 0 !important;
+            padding: calc(var(--mobile-header-h) + 20px) 16px 40px !important;
+            width: 100% !important;
+            min-width: 0 !important;
+            overflow-x: hidden !important;
+        }
+
+        /* Backdrop overlay for sidebar */
+        .sidebar-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 10500;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .sidebar-overlay.active { display: block; opacity: 1; }
     }
 </style>
+
+<script>
+    function toggleSidebar() {
+        const sidebar = document.querySelector('.sidebar');
+        const hamburger = document.querySelector('.hamburger');
+        const overlay = document.querySelector('.sidebar-overlay');
+        
+        if (sidebar && hamburger) {
+            sidebar.classList.toggle('active');
+            hamburger.classList.toggle('active');
+            if (overlay) overlay.classList.toggle('active');
+            
+            // Prevent body scroll when menu open
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        }
+    }
+
+    // Close sidebar on overlay click (with safety check)
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!document.querySelector('.sidebar-overlay')) {
+            const overlay = document.createElement('div');
+            overlay.className = 'sidebar-overlay';
+            overlay.onclick = toggleSidebar;
+            document.body.appendChild(overlay);
+        }
+    });
+</script>

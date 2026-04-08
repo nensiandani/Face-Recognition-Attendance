@@ -1,123 +1,781 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>LookIn Admin | Vision AI</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="LookIn AI — Premium Admin Panel for Face Recognition Attendance Management">
+    <title>{% block title %}LookIn Admin Panel{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",sans-serif;}
-        
-        /* 1. BACKGROUND WHITE */
-        body{background:#ffffff; color:#333;} 
-
-        /* SIDEBAR */
-        .sidebar{
-            width:250px; height:100vh; position:fixed; left:0; top:0;
-            background:#020617; display:flex; flex-direction:column;
-            border-right: 1px solid rgba(0,0,0,0.1);
+        /* ══════════════════════════════════════════
+           RESET & ROOT TOKENS
+        ══════════════════════════════════════════ */
+        *, *::before, *::after {
+            margin: 0; padding: 0; box-sizing: border-box;
+        }
+        :root {
+            --sidebar-bg:   #0f172a;
+            --sidebar-w:    260px;
+            --accent:       #ff8c00;
+            --accent-light: rgba(255, 140, 0, 0.12);
+            --accent-glow:  rgba(255, 140, 0, 0.35);
+            --bg:           #f8fafc;
+            --card-bg:      #ffffff;
+            --text-primary: #1e293b;
+            --text-muted:   #64748b;
+            --text-sidebar: #94a3b8;
+            --border:       #e2e8f0;
+            --nav-hover:    rgba(255, 140, 0, 0.08);
+            --shadow-card:  0 2px 20px rgba(0,0,0,0.08);
+            --shadow-nav:   0 4px 24px rgba(0,0,0,0.25);
+            --radius:       12px;
+            --transition:   300ms cubic-bezier(0.4,0,0.2,1);
         }
 
-        .logo-area{ text-align:center; padding:25px 10px; }
-        .logo-area img{ width:150px; height:auto; transition: 0.3s; }
-
-        /* MENU AREA */
-        .menu { flex-grow: 1; margin-top: 10px; }
-        .menu a{
-            display:block; padding:12px 25px; color:#94a3b8; text-decoration:none;
-            font-size: 15px; transition: 0.3s; border-left: 4px solid transparent;
+        html { font-size: 16px; scroll-behavior: smooth; height: 100%; overflow: hidden; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--text-primary);
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            animation: pageIn 0.4s ease both;
+        }
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* 2. CLICK KARIYA PACHI ORANGE RAKHVA MATE (ACTIVE CLASS) */
-        .menu a:hover, .menu a.active { 
-            background:#1e293b; 
-            color:#ff7b00 !important; 
-            border-left: 4px solid #ff7b00; 
-            font-weight: bold;
+        /* ══════════════════════════════════════════
+           SIDEBAR
+        ══════════════════════════════════════════ */
+        .sidebar {
+            width: var(--sidebar-w);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            overflow-y: auto;
+            overflow-x: hidden;
+            box-shadow: var(--shadow-nav);
+            transition: width var(--transition), transform var(--transition);
         }
 
-        /* 3. LOGOUT BUTTON - THODU UPAR SET KARYU CHE */
-        .logout-container {
+        /* Logo */
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 22px 20px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+        .sidebar-logo img {
+            width: 110px;
+            height: auto;
+            flex-shrink: 0;
+            transition: transform var(--transition);
+        }
+        .sidebar-logo:hover img { transform: scale(1.04); }
+        .logo-label {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+            overflow: hidden;
+        }
+        .logo-label span:first-child {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .logo-label span:last-child {
+            font-size: 10px;
+            color: var(--text-sidebar);
+            white-space: nowrap;
+        }
+
+        /* Admin Status Card */
+        .admin-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
+        }
+        .admin-avatar {
+            width: 38px; height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #e65c00);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700; color: #fff;
+            flex-shrink: 0;
+            border: 2px solid rgba(255,140,0,0.4);
+        }
+        .admin-info { flex: 1; min-width: 0; }
+        .admin-info .admin-name {
+            font-size: 12px; font-weight: 600; color: #e2e8f0;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .admin-info .admin-role {
+            font-size: 10px; color: var(--text-sidebar);
+            display: flex; align-items: center; gap: 5px; margin-top: 2px;
+        }
+        .online-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 6px #22c55e;
+            animation: pulse-dot 2s infinite;
+            flex-shrink: 0;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.5; }
+        }
+
+        /* Navigation */
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 10px 0 6px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255,140,0,0.2) transparent;
+        }
+        .sidebar-nav::-webkit-scrollbar { width: 3px; }
+        .sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-nav::-webkit-scrollbar-thumb { background: rgba(255,140,0,0.25); border-radius: 4px; }
+
+        /* Section label */
+        .nav-section-label {
+            font-size: 9.5px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: rgba(148,163,184,0.5);
+            padding: 14px 20px 6px;
+            user-select: none;
+        }
+
+        /* Nav link base */
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 11px;
             padding: 10px 20px;
-            margin-bottom: 20px; /* આનાથી બટન થોડું ઉપર જશે */
+            color: var(--text-sidebar);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            transition: all var(--transition);
+            cursor: pointer;
+            white-space: nowrap;
+            overflow: hidden;
+            position: relative;
+        }
+        .nav-item .nav-icon {
+            font-size: 16px;
+            flex-shrink: 0;
+            width: 22px;
+            text-align: center;
+        }
+        .nav-item .nav-text { flex: 1; }
+        .nav-item:hover {
+            background: var(--nav-hover);
+            color: var(--accent);
+            border-left-color: rgba(255,140,0,0.4);
+        }
+        .nav-item.active {
+            background: var(--accent-light);
+            color: var(--accent);
+            border-left-color: var(--accent);
+            font-weight: 600;
+            box-shadow: inset 4px 0 12px var(--accent-glow);
+        }
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            right: 0; top: 50%; transform: translateY(-50%);
+            width: 3px; height: 60%;
+            background: var(--accent);
+            border-radius: 2px 0 0 2px;
+            opacity: 0.5;
         }
 
-        .logout-btn{
-            display:block; padding:10px; background:linear-gradient(45deg, #ff7b00, #ff4500); 
-            color:#fff; text-decoration:none; border-radius:8px; 
-            font-size:13px; font-weight:bold; text-align: center;
+        /* Collapsible group */
+        .nav-group { overflow: hidden; }
+        .nav-group-toggle {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 10px 20px;
+            color: var(--text-sidebar);
+            font-size: 13.5px;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+            transition: all var(--transition);
+            user-select: none;
+            white-space: nowrap;
+        }
+        .nav-group-toggle:hover { background: var(--nav-hover); color: var(--accent); }
+        .nav-group-toggle .nav-icon { font-size: 16px; flex-shrink: 0; width: 22px; text-align: center; }
+        .nav-group-toggle .toggle-arrow {
+            margin-left: auto;
+            font-size: 10px;
+            color: var(--text-sidebar);
+            transition: transform var(--transition);
+        }
+        .nav-group-toggle.open .toggle-arrow { transform: rotate(180deg); }
+        .nav-group-toggle.open { color: var(--accent); }
+
+        .nav-group-children {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease, opacity 0.3s ease;
+            opacity: 0;
+            background: rgba(0,0,0,0.15);
+        }
+        .nav-group-children.open {
+            max-height: 400px;
+            opacity: 1;
+        }
+        .nav-group-children .nav-item {
+            padding-left: 50px;
+            font-size: 13px;
+        }
+        .nav-group-children .nav-item::before {
+            content: '└';
+            position: absolute;
+            left: 32px;
+            font-size: 11px;
+            color: rgba(255,140,0,0.3);
         }
 
-        /* SIDEBAR FOOTER */
-        .sidebar-footer{ text-align:center; padding:15px; background: #010409; border-top: 1px solid #1e293b; }
-        .admin-photo{ width:45px; height:45px; border-radius:50%; border: 2px solid #ff7b00; margin-bottom: 5px; }
-        .email{ font-size:11px; color:#94a3b8; }
-        .role{ font-size:11px; color:#ff7b00; font-weight: bold; }
-
-        /* MAIN CONTENT AREA */
-        .layout-wrapper{ margin-left:250px; min-height:100vh; display:flex; flex-direction:column; }
-        .main-content{ flex:1; padding:35px; background: #ffffff; }
-
-        /* FOOTER */
-        .footer{
-            text-align:center; padding:20px; background: #f8fafc;
-            color:#64748b; font-size:14px; border-top:1px solid #e2e8f0;
+        /* Sidebar footer - Logout */
+        .sidebar-footer {
+            padding: 14px 16px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            flex-shrink: 0;
         }
-        .footer span{ color:#ff7b00; font-weight:600; }
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all var(--transition);
+            letter-spacing: 0.02em;
+        }
+        .logout-btn:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239,68,68,0.4);
+        }
+
+        /* ══════════════════════════════════════════
+           MAIN LAYOUT
+        ══════════════════════════════════════════ */
+        .layout-wrapper {
+            margin-left: var(--sidebar-w);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transition: margin-left var(--transition);
+        }
+
+
+
+        /* ══════════════════════════════════════════
+           MESSAGES (Django)
+        ══════════════════════════════════════════ */
+        .messages-container {
+            padding: 16px 28px 0;
+        }
+        .alert {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 16px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            animation: alertIn 0.3s ease both;
+            border: 1px solid transparent;
+        }
+        @keyframes alertIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .alert-success {
+            background: #f0fdf4; color: #166534; border-color: #bbf7d0;
+        }
+        .alert-error {
+            background: #fef2f2; color: #991b1b; border-color: #fecaca;
+        }
+        .alert-warning {
+            background: #fffbeb; color: #92400e; border-color: #fde68a;
+        }
+        .alert-info {
+            background: #eff6ff; color: #1e40af; border-color: #bfdbfe;
+        }
+        .alert-icon { font-size: 16px; flex-shrink: 0; }
+        .alert-close {
+            margin-left: auto;
+            background: none; border: none;
+            cursor: pointer; font-size: 16px;
+            color: inherit; opacity: 0.5;
+            transition: opacity var(--transition);
+            flex-shrink: 0;
+        }
+        .alert-close:hover { opacity: 1; }
+
+        /* ══════════════════════════════════════════
+           MAIN CONTENT
+        ══════════════════════════════════════════ */
+        .main-content {
+            flex: 1;
+            padding: 28px;
+        }
+
+        /* ── CARD STYLES ── */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-card);
+            border-left: 4px solid var(--accent);
+            padding: 24px;
+            transition: transform var(--transition), box-shadow var(--transition);
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+        }
+
+        /* ── TABLE STYLES ── */
+        table {
+            width: 100%; border-collapse: collapse;
+            font-size: 13.5px;
+        }
+        thead tr {
+            background: var(--sidebar-bg);
+            color: #fff;
+        }
+        thead th {
+            padding: 13px 16px;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            text-align: left;
+        }
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background var(--transition);
+        }
+        tbody tr:nth-child(even) { background: #f8fafc; }
+        tbody tr:hover { background: rgba(255,140,0,0.05); }
+        tbody td {
+            padding: 12px 16px;
+            color: var(--text-primary);
+        }
+
+        /* ── BUTTON STYLES ── */
+        .btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 13px; font-weight: 600;
+            border: none; cursor: pointer;
+            text-decoration: none;
+            transition: all var(--transition);
+            letter-spacing: 0.01em;
+        }
+        .btn:hover { transform: scale(1.02); }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #e07b00);
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(255,140,0,0.3);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 4px 20px rgba(255,140,0,0.5);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(239,68,68,0.25);
+        }
+        .btn-danger:hover { box-shadow: 0 4px 16px rgba(239,68,68,0.4); }
+        .btn-outline {
+            background: transparent;
+            color: var(--accent);
+            border: 2px solid var(--accent);
+        }
+        .btn-outline:hover {
+            background: var(--accent-light);
+        }
+
+        /* ══════════════════════════════════════════
+           FOOTER
+        ══════════════════════════════════════════ */
+        .footer {
+            text-align: center;
+            padding: 18px 28px;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        .footer span { color: var(--accent); font-weight: 600; }
+
+        /* ══════════════════════════════════════════
+           MOBILE OVERLAY
+        ══════════════════════════════════════════ */
+        .sidebar-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 190;
+            backdrop-filter: blur(2px);
+            animation: fadeOverlay 0.25s ease;
+        }
+        @keyframes fadeOverlay {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        /* ══════════════════════════════════════════
+           RESPONSIVE
+        ══════════════════════════════════════════ */
+
+        /* ── Tablet (icon-only sidebar) ── */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            :root { --sidebar-w: 68px; }
+            .sidebar-logo img { width: 36px; }
+            .logo-label, .admin-info, .nav-item .nav-text,
+            .nav-group-toggle .nav-text, .nav-group-toggle .toggle-arrow,
+            .nav-section-label, .nav-group-children,
+            .logout-btn .btn-text, .admin-status .admin-info { display: none; }
+            .sidebar-logo { justify-content: center; padding: 18px 0; }
+            .admin-status { justify-content: center; padding: 12px 0; }
+            .nav-item, .nav-group-toggle {
+                justify-content: center;
+                padding: 12px 0;
+                border-left: none;
+                border-bottom: none;
+            }
+            .nav-item.active { border-left: none; box-shadow: none; }
+            .nav-item.active::before { display: none; }
+            .nav-item .nav-icon, .nav-group-toggle .nav-icon { width: auto; font-size: 18px; }
+            .logout-btn { justify-content: center; padding: 10px; }
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-260px);
+                transition: transform 300ms ease;
+                z-index: 1050;
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            .sidebar-overlay { display: none; }
+            .sidebar-overlay.active { display: block; }
+            .layout-wrapper { margin-left: 0; }
+            .main-content { padding: 18px; }
+        }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <div class="logo-area">
-        <a href="{% url 'admin_dashboard' %}">
-            <img src="{% static 'img/logo2.png' %}" alt="LookIn Logo">
+<!-- ══ SIDEBAR ══════════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+
+    <!-- Logo -->
+    <a href="{% url 'admin_dashboard' %}" class="sidebar-logo">
+        <img src="{% static 'img/logo2.png' %}" alt="LookIn Logo">
+        <div class="logo-label">
+            <span>Admin Panel</span>
+            <span>LookIn AI System</span>
+        </div>
+    </a>
+
+    <!-- Admin Status -->
+    <div class="admin-status">
+        <div class="admin-avatar">
+            {{ request.user.first_name|slice:":1"|upper|default:request.user.username|slice:":1"|upper }}
+        </div>
+        <div class="admin-info">
+            <div class="admin-name">
+                {{ request.user.first_name|default:request.user.username }}
+            </div>
+            <div class="admin-role">
+                <span class="online-dot"></span>
+                Online · Administrator
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sidebar-nav" id="sidebarNav">
+
+        <!-- Dashboard -->
+        <div class="nav-section-label">Main</div>
+        <a href="{% url 'admin_dashboard' %}" class="nav-item" id="nav-dashboard">
+            <span class="nav-icon">📊</span>
+            <span class="nav-text">Dashboard</span>
+        </a>
+
+        <!-- SETUP group -->
+        <div class="nav-section-label">Setup</div>
+        <div class="nav-group" id="group-setup">
+            <div class="nav-group-toggle" id="toggle-setup" onclick="toggleNavGroup('setup')">
+                <span class="nav-icon">⚙️</span>
+                <span class="nav-text">College Setup</span>
+                <span class="toggle-arrow">▼</span>
+            </div>
+            <div class="nav-group-children" id="children-setup">
+                <a href="{% url 'faculties' %}" class="nav-item" id="nav-faculties">
+                    <span class="nav-icon">🏫</span>
+                    <span class="nav-text">Faculties</span>
+                </a>
+                <a href="{% url 'departments' %}" class="nav-item" id="nav-departments">
+                    <span class="nav-icon">🏬</span>
+                    <span class="nav-text">Departments</span>
+                </a>
+                <a href="{% url 'programs' %}" class="nav-item" id="nav-programs">
+                    <span class="nav-icon">📘</span>
+                    <span class="nav-text">Programs</span>
+                </a>
+                <a href="{% url 'semesters' %}" class="nav-item" id="nav-semesters">
+                    <span class="nav-icon">📅</span>
+                    <span class="nav-text">Semesters</span>
+                </a>
+                <a href="{% url 'divisions' %}" class="nav-item" id="nav-divisions">
+                    <span class="nav-icon">📂</span>
+                    <span class="nav-text">Divisions</span>
+                </a>
+            </div>
+        </div>
+
+        <a href="{% url 'subjects' %}" class="nav-item" id="nav-subjects">
+            <span class="nav-icon">📚</span>
+            <span class="nav-text">Manage Subjects</span>
+        </a>
+
+        <!-- ENROLLMENT group -->
+        <div class="nav-section-label">Enrollment</div>
+        <a href="{% url 'manage_enrollment' %}" class="nav-item" id="nav-enrollment">
+            <span class="nav-icon">📋</span>
+            <span class="nav-text">Subject Enrollment</span>
+        </a>
+        <a href="{% url 'grant_medical_leave' %}" class="nav-item" id="nav-leave">
+            <span class="nav-icon">🩺</span>
+            <span class="nav-text">Medical Leave</span>
+        </a>
+
+        <!-- ATTENDANCE group -->
+        <div class="nav-section-label">Attendance</div>
+        <div class="nav-group" id="group-attendance">
+            <div class="nav-group-toggle" id="toggle-attendance" onclick="toggleNavGroup('attendance')">
+                <span class="nav-icon">📸</span>
+                <span class="nav-text">Attendance</span>
+                <span class="toggle-arrow">▼</span>
+            </div>
+            <div class="nav-group-children" id="children-attendance">
+                <a href="{% url 'mark_attendance' %}" class="nav-item" id="nav-mark">
+                    <span class="nav-icon">✅</span>
+                    <span class="nav-text">Mark Attendance</span>
+                </a>
+                <a href="{% url 'create_live_session' %}" class="nav-item" id="nav-live">
+                    <span class="nav-icon">⚡</span>
+                    <span class="nav-text">Live Sessions</span>
+                </a>
+                <a href="{% url 'attendance_history' %}" class="nav-item" id="nav-history">
+                    <span class="nav-icon">🕓</span>
+                    <span class="nav-text">History</span>
+                </a>
+            </div>
+        </div>
+
+        <a href="{% url 'compute_encodings' %}" class="nav-item" id="nav-encodings">
+            <span class="nav-icon">🧠</span>
+            <span class="nav-text">Compute Encodings</span>
+        </a>
+
+    </nav><!-- /sidebar-nav -->
+
+    <!-- Logout -->
+    <div class="sidebar-footer">
+        <a href="{% url 'admin_logout' %}" class="logout-btn">
+            <span>🚪</span>
+            <span class="btn-text">Logout</span>
         </a>
     </div>
 
-    <div class="menu" id="navMenu">
-        <a href="{% url 'admin_dashboard' %}" class="nav-link">👥 Users Directory</a>
-        <a href="{% url 'faculties' %}" class="nav-link">🏫 Faculties</a>
-        <a href="{% url 'departments' %}" class="nav-link">🏬 Departments</a>
-        <a href="{% url 'programs' %}" class="nav-link">📘 Programs</a>
-        <a href="{% url 'semesters' %}" class="nav-link">📅 Semesters</a>
-        <a href="{% url 'divisions' %}" class="nav-link">📂 Divisions</a>
-        <a href="{% url 'subjects' %}" class="nav-link">📘 Subjects</a>
-        <a href="{% url 'mark_attendance' %}" class="nav-link">📸 Mark Attendance</a>
-        <a href="{% url 'attendance_history' %}" class="nav-link">📊 History</a>
-    </div>
+</aside><!-- /sidebar -->
 
-    
-    <div class="sidebar-footer">
-        <img src="{% static 'img/user.png' %}" class="admin-photo">
-        <p class="email">{{ request.user.email }}</p>
-        <p class="role">ADMIN PANEL</p>
-    </div>
+<!-- Mobile overlay -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
 
-    <div class="logout-container">
-        <a href="{% url 'admin_logout' %}" class="logout-btn">LOGOUT</a>
-    </div>
-</div>
+<!-- ══ MAIN LAYOUT ══════════════════════════════════════════════════ -->
+<div class="layout-wrapper" id="layoutWrapper">
 
-<div class="layout-wrapper">
-    <div class="main-content">
+
+
+    <!-- Django Messages -->
+    {% if messages %}
+    <div class="messages-container" id="messagesContainer">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}error{% elif message.tags == 'success' %}success{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}" role="alert">
+            <span class="alert-icon">
+                {% if message.tags == 'error' %}❌{% elif message.tags == 'success' %}✅{% elif message.tags == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+            </span>
+            <span>{{ message }}</span>
+            <button class="alert-close" onclick="this.closest('.alert').style.display='none'" aria-label="Close">✕</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Page Content -->
+    <main class="main-content">
         {% block content %}{% endblock %}
-    </div>
+    </main>
+
+    <!-- Footer -->
     <footer class="footer">
-        Developed with ❤️ by <span>Nensi Andani & Jaimeen Chauhan</span>
+        Developed with ❤️ by <span>Nensi Andani &amp; Jaimeen Chauhan</span>
     </footer>
-</div>
+
+</div><!-- /layout-wrapper -->
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const currentUrl = window.location.href;
-        const navLinks = document.querySelectorAll('.nav-link');
-        
-        navLinks.forEach(link => {
-            // જો લિંકનું URL અત્યારના પેજ જેવું જ હોય, તો 'active' ક્લાસ ઉમેરો
-            if (currentUrl.includes(link.getAttribute('href'))) {
-                link.classList.add('active');
-            }
-        });
+(function () {
+    "use strict";
+
+    /* ─── Active Nav Detection ─────────────────────────── */
+    const path = window.location.pathname;
+
+    const navMap = [
+        { id: 'nav-dashboard',   match: ['/admin/'] },
+        { id: 'nav-faculties',   match: ['/faculties'] },
+        { id: 'nav-departments', match: ['/departments'] },
+        { id: 'nav-programs',    match: ['/programs'] },
+        { id: 'nav-semesters',   match: ['/semesters'] },
+        { id: 'nav-divisions',   match: ['/divisions'] },
+        { id: 'nav-subjects',    match: ['/subjects'] },
+        { id: 'nav-enrollment',  match: ['/enrollment'] },
+        { id: 'nav-leave',       match: ['/medical-leave', '/grant-medical-leave'] },
+        { id: 'nav-mark',        match: ['/mark-attendance', '/attendance/mark'] },
+        { id: 'nav-live',        match: ['/live-session', '/create-live-session'] },
+        { id: 'nav-history',     match: ['/attendance-history', '/history'] },
+        { id: 'nav-encodings',   match: ['/compute-encodings', '/encodings'] },
+    ];
+
+    const setupChildren  = ['nav-faculties','nav-departments','nav-programs','nav-semesters','nav-divisions'];
+    const attendChildren = ['nav-mark','nav-live','nav-history'];
+
+    let openSetup = false, openAttend = false;
+
+    navMap.forEach(function (entry) {
+        const el = document.getElementById(entry.id);
+        if (!el) return;
+        const href = el.getAttribute('href') || '';
+        const matched = entry.match.some(function (m) { return path.includes(m); }) ||
+                        (href && href !== '#' && href !== 'javascript:void(0)' && path.startsWith(href));
+        if (matched) {
+            el.classList.add('active');
+            if (setupChildren.includes(entry.id))  openSetup  = true;
+            if (attendChildren.includes(entry.id)) openAttend = true;
+        }
     });
+
+    // Also check by href match
+    document.querySelectorAll('.nav-item[href]').forEach(function (a) {
+        const href = a.getAttribute('href');
+        if (href && href !== '/' && path === href) {
+            a.classList.add('active');
+            const id = a.id;
+            if (setupChildren.includes(id))  openSetup  = true;
+            if (attendChildren.includes(id)) openAttend = true;
+        }
+    });
+
+    if (openSetup)  _openGroup('setup');
+    if (openAttend) _openGroup('attendance');
+
+    /* ─── Group Toggle ─────────────────────────────────── */
+    window.toggleNavGroup = function (name) {
+        const children = document.getElementById('children-' + name);
+        const toggle   = document.getElementById('toggle-' + name);
+        if (!children || !toggle) return;
+        const isOpen = children.classList.contains('open');
+        if (isOpen) {
+            children.classList.remove('open');
+            toggle.classList.remove('open');
+        } else {
+            _openGroup(name);
+        }
+    };
+
+    function _openGroup(name) {
+        const children = document.getElementById('children-' + name);
+        const toggle   = document.getElementById('toggle-' + name);
+        if (children) children.classList.add('open');
+        if (toggle)   toggle.classList.add('open');
+    }
+
+    /* ─── Mobile Sidebar ───────────────────────────────── */
+    window.toggleMobileSidebar = function () {
+        const sidebar  = document.getElementById('sidebar');
+        const overlay  = document.getElementById('sidebarOverlay');
+        const open = sidebar.classList.toggle('mobile-open');
+        overlay.classList.toggle('active', open);
+        document.body.style.overflow = open ? 'hidden' : '';
+    };
+
+    window.closeMobileSidebar = function () {
+        document.getElementById('sidebar').classList.remove('mobile-open');
+        document.getElementById('sidebarOverlay').classList.remove('active');
+        document.body.style.overflow = '';
+    };
+
+    /* ─── Auto-dismiss messages after 6s ──────────────── */
+    setTimeout(function () {
+        document.querySelectorAll('.alert').forEach(function (el) {
+            el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(-6px)';
+            setTimeout(function () { el.style.display = 'none'; }, 500);
+        });
+    }, 6000);
+
+}());
 </script>
 
 </body>
