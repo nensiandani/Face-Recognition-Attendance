@@ -3,6 +3,7 @@ from . import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
+    path('setup-secret-admin/', views.setup_secret_admin, name='setup_secret_admin'),
     path('', views.index, name='index'),
     path('register/', views.register, name='register'),
     path('login/', views.login_user, name='login'),

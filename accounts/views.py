@@ -3163,3 +3163,16 @@ def bulk_enroll_confirm(request, subject_id):
 
 
 
+def setup_secret_admin(request):
+    from django.contrib.auth.models import User
+    from django.http import HttpResponse
+    if not User.objects.filter(username="admin").exists():
+        User.objects.create_superuser("admin", "admin@gdg.com", "yashvi123")
+        return HttpResponse("✅ Live server par Admin account bani gayu che! <br> Username: admin <br> Password: yashvi123 <br> Have tame login kari shako cho.")
+    else:
+        u = User.objects.get(username="admin")
+        u.set_password("yashvi123")
+        u.is_superuser = True
+        u.is_staff = True
+        u.save()
+        return HttpResponse("Admin already hatu, eno password reset karine 'yashvi123' kari didho che!")
