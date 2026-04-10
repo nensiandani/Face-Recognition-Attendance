@@ -1,0 +1,69 @@
+# ==========================================
+# .dockerignore - Docker Build Context Filter
+# ==========================================
+
+# Environment variables (NEVER send to Docker image)
+.env
+.env.*
+*.env
+
+# Virtual environment (Docker ma requirements.txt thi install thase)
+venv/
+.venv/
+env/
+
+# Database (Production ma alag DB hase)
+db.sqlite3
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pycache
+
+# ML Model weights (Docker image ma already hase ya volume mount karso)
+*.pt
+*.pth
+*.onnx
+*.weights
+
+# Media uploads (runtime ma generate thay che)
+media/
+profiles/
+
+# Static collected files (Docker ma collectstatic run thase)
+staticfiles/
+
+# Git related
+.git/
+.gitignore
+.github/
+
+# Development & IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Coverage & Testing
+.early.coverage
+.coverage
+htmlcov/
+test_speed.py
+
+# Docs (optional, save space)
+README.md
+*.md
+
+# Node (if any)
+node_modules/

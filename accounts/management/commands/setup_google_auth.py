@@ -40,23 +40,25 @@ class Command(BaseCommand):
         try:
             from allauth.socialaccount.models import SocialApp
 
-            app, created = SocialApp.objects.update_or_create(
+            # ✅ AGGRESSIVE CLEANUP: Wipe ALL Google entries to guarantee NO duplicates!
+            deleted_count, _ = SocialApp.objects.filter(provider='google').delete()
+            if deleted_count > 0:
+                self.stdout.write(self.style.WARNING(f'Wiped {deleted_count} existing Google SocialApp(s) to fix duplicates.'))
+
+            # ✅ Create exactly 1 brand new entry
+            app = SocialApp.objects.create(
                 provider='google',
-                defaults={
-                    'name': 'Google',
-                    'client_id': client_id,
-                    'secret': client_secret,
-                    'key': '',
-                }
+                name='Google',
+                client_id=client_id,
+                secret=client_secret,
+                key='',
             )
 
-            # Link to site if not already
-            if site not in app.sites.all():
-                app.sites.add(site)
+            # Assign site freshly
+            app.sites.add(site)
 
-            action = 'Created' if created else 'Updated'
             self.stdout.write(self.style.SUCCESS(
-                f'{action} Google SocialApp with client_id: {client_id[:12]}...'
+                f'Successfully recreated Google SocialApp with client_id: {client_id[:12]}...'
             ))
         except Exception as e:
             self.stdout.write(self.style.ERROR(f'Error setting up Google Auth: {e}'))
