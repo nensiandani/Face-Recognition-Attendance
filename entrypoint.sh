@@ -36,6 +36,13 @@ echo "✅ Database is reachable!"
 echo "Applying database migrations..."
 python manage.py migrate --no-input
 
+# ---------------------------------------------------------
+# NAVU ADD KARELU STEP: Automate Superuser Creation
+# ---------------------------------------------------------
+echo "Creating superuser (if not exists)..."
+python manage.py createsuperuser --noinput || true
+# ---------------------------------------------------------
+
 # 2. Collect static files
 echo "Collecting static files..."
 python manage.py collectstatic --no-input
