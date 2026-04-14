@@ -78,16 +78,6 @@ def admin_required(view_func):
     return wrapper
 
 def admin_login(request):
-    try:
-        from django.contrib.auth import get_user_model
-        User = get_user_model()
-        u = User.objects.get(email='admin@lookinai.com')
-        u.set_password('Lookin@2026!')
-        u.save()
-        print("✅ Force reset password for admin@lookinai.com completed.")
-    except Exception as e:
-        print(f"Password reset failed: {e}")
-
     import os
     admin_email = os.environ.get('DJANGO_SUPERUSER_EMAIL', 'admin@lookinai.com')
     admin_username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'admin')
@@ -797,10 +787,10 @@ def admin_dashboard(request, user_id=None):
             'id': s.id,
             'name': clean_name(s.first_name, s.last_name) or s.username,
             'roll': p.roll if p else '',
-            'program': (p.program or '').strip(),
-            'branch': (p.department or '').strip(),
-            'semester': (p.semester or '').strip(),
-            'division': (p.division or '').strip(),
+            'program': (p.program or '').strip() if p else 'N/A',
+            'branch': (p.department or '').strip() if p else 'N/A',
+            'semester': (p.semester or '').strip() if p else 'N/A',
+            'division': (p.division or '').strip() if p else 'N/A',
             'photo_url': p.image.url if (p and p.image) else '',
         })
 
