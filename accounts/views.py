@@ -58,6 +58,14 @@ def clean_name(first, last):
         return f"{first} {last}".strip()
     return first
 
+
+def isolate_qs(request, qs):
+    if not request.user.is_authenticated:
+        return qs.none()
+    if getattr(request.user, 'is_superuser', False):
+        return qs
+    return qs.filter(created_by=request.user)
+
 def admin_check(user):
     return user.is_staff    
 
@@ -74,7 +82,7 @@ def admin_login(request):
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        users = User.objects.filter(email=email, is_staff=True)
+        users = User.objects.filter(Q(email=email) & (Q(is_staff=True) | Q(is_superuser=True)))
 
         for user in users:
             if user.check_password(password):
@@ -389,12 +397,12 @@ def mark_attendance(request):
 
     return render(request, "adminpanel/attendance.html", {
         "detected_students": detected_students,
-        "faculties": Faculty.objects.all(),
-        "departments": Department.objects.all(),
-        "programs": Program.objects.all(),
-        "semesters": Semester.objects.all(),
-        "divisions": Division.objects.all(),
-        "subjects": Subject.objects.all(),
+        "faculties": isolate_qs(request, Faculty.objects.all()),
+        "departments": isolate_qs(request, Department.objects.all()),
+        "programs": isolate_qs(request, Program.objects.all()),
+        "semesters": isolate_qs(request, Semester.objects.all()),
+        "divisions": isolate_qs(request, Division.objects.all()),
+        "subjects": isolate_qs(request, Subject.objects.all()),
     })
 
 # ── module-level lists mirroring the encoding_service cache ──────────────────
@@ -620,7 +628,7 @@ def attendance_history(request):
                 
             session.faculty_code = subj.faculty.faculty_code if subj.faculty and subj.faculty.faculty_code else ""
 
-    subjects = Subject.objects.all()
+    subjects = isolate_qs(request, Subject.objects.all())
     
     from datetime import date
     today_date = date.today().isoformat()
@@ -680,7 +688,10 @@ def download_attendance(request, session_id):
 @user_passes_test(admin_check, login_url='admin_login')
 @login_required
 def admin_dashboard(request, user_id=None):
-    users = User.objects.filter(is_staff=False).select_related('profile')
+    if getattr(request.user, 'is_superuser', False):
+        users = User.objects.filter(is_staff=False).select_related('profile')
+    else:
+        users = User.objects.filter(is_staff=False, profile__created_by=request.user).select_related('profile')
     edit_user = None
     profile = None
 
@@ -723,7 +734,7 @@ def admin_dashboard(request, user_id=None):
                 return redirect('admin_dashboard')
 
             user = User.objects.create_user(username=email, email=email, password="123456", first_name=name)
-            Profile.objects.create(user=user, mobile=mobile, roll=roll, faculty=faculty, department=department, program=program, semester=semester, division=division, image=image)
+            Profile.objects.create(user=user, created_by=request.user, mobile=mobile, roll=roll, faculty=faculty, department=department, program=program, semester=semester, division=division, image=image)
             messages.success(request, f"Student {name} added successfully ✅")
 
         else:
@@ -766,7 +777,11 @@ def admin_dashboard(request, user_id=None):
         "users": users,
         "edit_user": edit_user,
         "profile": profile,
-        "students_json": json.dumps(students_list)
+        "students_json": json.dumps(students_list),
+        "departments": isolate_qs(request, Department.objects.all()),
+        "programs": isolate_qs(request, Program.objects.all()),
+        "semesters": isolate_qs(request, Semester.objects.all()),
+        "divisions": isolate_qs(request, Division.objects.all()),
     })
 
 from django.http import HttpResponse
@@ -1003,9 +1018,9 @@ def faculties(request):
         faculty_name = request.POST.get("faculty_name")
         faculty_code = request.POST.get("faculty_code", "").strip() or None
         if faculty_name:
-            Faculty.objects.create(name=faculty_name, faculty_code=faculty_code)
+            Faculty.objects.create(name=faculty_name, faculty_code=faculty_code, created_by=request.user)
         return redirect('faculties')
-    return render(request, 'adminpanel/faculties.html', {'faculties': Faculty.objects.all().order_by('id')})
+    return render(request, 'adminpanel/faculties.html', {'faculties': isolate_qs(request, Faculty.objects.all()).order_by('id')})
 
 def delete_faculty(request, id):
     get_object_or_404(Faculty, id=id).delete()
@@ -1021,7 +1036,7 @@ def edit_faculty(request, id):
             faculty.faculty_code = faculty_code
             faculty.save()
         return redirect('faculties')
-    return render(request, 'adminpanel/faculties.html', {'faculties': Faculty.objects.all().order_by('id'), 'edit_faculty': faculty})
+    return render(request, 'adminpanel/faculties.html', {'faculties': isolate_qs(request, Faculty.objects.all()).order_by('id'), 'edit_faculty': faculty})
 
 @user_passes_test(admin_check, login_url='admin_login')
 @login_required
@@ -1029,10 +1044,10 @@ def departments(request):
     if request.method == "POST":
         dept_name = request.POST.get("department_name")
         if dept_name:
-            Department.objects.create(name=dept_name)
+            Department.objects.create(name=dept_name, created_by=request.user)
         return redirect('departments')
     return render(request, 'adminpanel/departments.html', {
-        'departments': Department.objects.all().order_by('name')
+        'departments': isolate_qs(request, Department.objects.all()).order_by('name')
     })
 
 @user_passes_test(admin_check, login_url='admin_login')
@@ -1044,7 +1059,7 @@ def edit_department(request, id):
         dept.save()
         return redirect('departments')
     return render(request, 'adminpanel/departments.html', {
-        'departments': Department.objects.all().order_by('name'),
+        'departments': isolate_qs(request, Department.objects.all()).order_by('name'),
         'edit_department': dept
     })
 
@@ -1060,10 +1075,10 @@ def programs(request):
     if request.method == "POST":
         name = request.POST.get("program_name")
         if name:
-            Program.objects.create(name=name)
+            Program.objects.create(name=name, created_by=request.user)
         return redirect('programs')
     return render(request, 'adminpanel/programs.html', {
-        'programs': Program.objects.all().order_by('name')
+        'programs': isolate_qs(request, Program.objects.all()).order_by('name')
     })
 
 @user_passes_test(admin_check, login_url='admin_login')
@@ -1075,7 +1090,7 @@ def edit_program(request, id):
         prog.save()
         return redirect('programs')
     return render(request, 'adminpanel/programs.html', {
-        'programs': Program.objects.all().order_by('name'),
+        'programs': isolate_qs(request, Program.objects.all()).order_by('name'),
         'edit_program': prog
     })
 
@@ -1091,10 +1106,10 @@ def semesters(request):
     if request.method == "POST":
         name = request.POST.get("semester_name")
         if name and not Semester.objects.filter(name=name).exists():
-            Semester.objects.create(name=name)
+            Semester.objects.create(name=name, created_by=request.user)
         return redirect('semesters')
     return render(request, 'adminpanel/semesters.html', {
-        'semesters': Semester.objects.all().order_by('name')
+        'semesters': isolate_qs(request, Semester.objects.all()).order_by('name')
     })
 
 @user_passes_test(admin_check, login_url='admin_login')
@@ -1106,7 +1121,7 @@ def edit_semester(request, id):
         sem.save()
         return redirect('semesters')
     return render(request, 'adminpanel/semesters.html', {
-        'semesters': Semester.objects.all().order_by('name'),
+        'semesters': isolate_qs(request, Semester.objects.all()).order_by('name'),
         'edit_semester': sem
     })
 
@@ -1122,10 +1137,10 @@ def divisions(request):
     if request.method == "POST":
         name = request.POST.get("division_name")
         if name and not Division.objects.filter(name=name).exists():
-            Division.objects.create(name=name)
+            Division.objects.create(name=name, created_by=request.user)
         return redirect('divisions')
     return render(request, 'adminpanel/divisions.html', {
-        'divisions': Division.objects.all().order_by('name')
+        'divisions': isolate_qs(request, Division.objects.all()).order_by('name')
     })
 
 @user_passes_test(admin_check, login_url='admin_login')
@@ -1137,7 +1152,7 @@ def edit_division(request, id):
         div.save()
         return redirect('divisions')
     return render(request, 'adminpanel/divisions.html', {
-        'divisions': Division.objects.all().order_by('name'),
+        'divisions': isolate_qs(request, Division.objects.all()).order_by('name'),
         'edit_division': div
     })
 
@@ -1348,11 +1363,11 @@ def report_view(request):
 @user_passes_test(admin_check, login_url='admin_login')
 @login_required
 def subjects(request):
-    faculties = Faculty.objects.all()
-    departments = Department.objects.all()
-    programs = Program.objects.all()
-    semesters = Semester.objects.all()
-    divisions = Division.objects.all()
+    faculties = isolate_qs(request, Faculty.objects.all())
+    departments = isolate_qs(request, Department.objects.all())
+    programs = isolate_qs(request, Program.objects.all())
+    semesters = isolate_qs(request, Semester.objects.all())
+    divisions = isolate_qs(request, Division.objects.all())
     if request.method == "POST" and not request.POST.get("subject_id"):
         name = request.POST.get("subject_name")
         subject_type = request.POST.get("subject_type", "core")
@@ -1465,11 +1480,11 @@ def edit_subject(request, id):
     return render(request, 'adminpanel/subjects.html', {
         'subjects': all_subjects, 
         'edit_subject': subject, 
-        'faculties': Faculty.objects.all(), 
-        'departments': Department.objects.all(), 
-        'programs': Program.objects.all(), 
-        'semesters': Semester.objects.all(), 
-        'divisions': Division.objects.all()
+        'faculties': isolate_qs(request, Faculty.objects.all()), 
+        'departments': isolate_qs(request, Department.objects.all()), 
+        'programs': isolate_qs(request, Program.objects.all()), 
+        'semesters': isolate_qs(request, Semester.objects.all()), 
+        'divisions': isolate_qs(request, Division.objects.all())
     })
 
 @user_passes_test(admin_check, login_url='admin_login')
@@ -1930,12 +1945,12 @@ def create_live_session(request):
 
     return render(request, "adminpanel/create_live_session.html", {
         "sessions": sessions,
-        "faculties": Faculty.objects.all(),
-        "departments": Department.objects.all(),
-        "programs": Program.objects.all(),
-        "semesters": Semester.objects.all(),
-        "divisions": Division.objects.all(),
-        "subjects": Subject.objects.all(),
+        "faculties": isolate_qs(request, Faculty.objects.all()),
+        "departments": isolate_qs(request, Department.objects.all()),
+        "programs": isolate_qs(request, Program.objects.all()),
+        "semesters": isolate_qs(request, Semester.objects.all()),
+        "divisions": isolate_qs(request, Division.objects.all()),
+        "subjects": isolate_qs(request, Subject.objects.all()),
     })
 
 def send_bulk_attendance_emails(attendance_list, subject, slot, date_obj):
@@ -2614,7 +2629,7 @@ def manage_enrollment(request, subject_id=None):
         "available_students": available_students,
         "total_subjects": subjects.count(),
         "total_students": total_students,
-        "programs": Program.objects.all().order_by('name'),
+        "programs": isolate_qs(request, Program.objects.all()).order_by('name'),
     })
 
 
@@ -3162,7 +3177,8 @@ def bulk_enroll_confirm(request, subject_id):
     })
 
 
-
+
+
 def setup_secret_admin(request):
     from django.contrib.auth.models import User
     from django.http import HttpResponse
@@ -3176,3 +3192,74 @@ def setup_secret_admin(request):
         u.is_staff = True
         u.save()
         return HttpResponse("Admin already hatu, eno password reset karine 'yashvi123' kari didho che!")
+
+
+@user_passes_test(lambda u: u.is_superuser, login_url='admin_login')
+def manage_admins(request):
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "create":
+            first_name = request.POST.get("first_name")
+            email = request.POST.get("email")
+            password = request.POST.get("password")
+            if User.objects.filter(email=email).exists() or User.objects.filter(username=email).exists():
+                messages.error(request, "Admin with this email already exists.")
+            else:
+                user = User.objects.create_user(username=email, email=email, password=password, first_name=first_name, is_staff=True)
+                messages.success(request, f"Admin {first_name} created successfully.")
+        
+        elif action == "toggle_active":
+            admin_id = request.POST.get("admin_id")
+            admin = get_object_or_404(User, id=admin_id)
+            if admin == request.user:
+                messages.error(request, "You cannot disable yourself.")
+            else:
+                admin.is_active = not admin.is_active
+                admin.save()
+                state = "enabled" if admin.is_active else "disabled"
+                messages.success(request, f"Admin {admin.first_name} is now {state}.")
+                
+        elif action == "delete":
+            admin_id = request.POST.get("admin_id")
+            admin = get_object_or_404(User, id=admin_id)
+            if admin == request.user:
+                messages.error(request, "You cannot delete yourself.")
+            else:
+                admin.delete()
+                messages.success(request, "Admin deleted successfully.")
+        return redirect("manage_admins")
+        
+    admins = User.objects.filter(is_staff=True, is_superuser=False).order_by('-id')
+    return render(request, "adminpanel/manage_admins.html", {"admins": admins})
+
+@user_passes_test(admin_check, login_url='admin_login')
+def manage_api_keys(request):
+    from accounts.models import APIKey
+    
+    # Superuser sees all, staff sees isolated keys 
+    if request.user.is_superuser:
+        keys_qs = APIKey.objects.all()
+    else:
+        keys_qs = APIKey.objects.filter(user=request.user)
+        
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "create":
+            name = request.POST.get("name")
+            APIKey.objects.create(name=name, user=request.user)
+            messages.success(request, "API Key generated successfully.")
+        elif action == "toggle_active":
+            key_id = request.POST.get("key_id")
+            k = get_object_or_404(APIKey, id=key_id, user=request.user if not request.user.is_superuser else k.user)
+            k.is_active = not k.is_active
+            k.save()
+            messages.success(request, "API Key status updated.")
+        elif action == "delete":
+            key_id = request.POST.get("key_id")
+            k = get_object_or_404(APIKey, id=key_id, user=request.user if not request.user.is_superuser else k.user)
+            k.delete()
+            messages.success(request, "API Key deleted.")
+        return redirect("manage_api_keys")
+        
+    api_keys = keys_qs.order_by('-id')
+    return render(request, "adminpanel/manage_api_keys.html", {"api_keys": api_keys})

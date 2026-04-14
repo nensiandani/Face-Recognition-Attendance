@@ -627,6 +627,22 @@
             <span class="nav-text">Compute Encodings</span>
         </a>
 
+        <!-- INTEGRATIONS -->
+        <div class="nav-section-label">Integrations</div>
+        <a href="{% url 'manage_api_keys' %}" class="nav-item" id="nav-apikeys">
+            <span class="nav-icon">🔑</span>
+            <span class="nav-text">API Clients</span>
+        </a>
+
+        <!-- SUPER ADMIN TOOLS -->
+        {% if request.user.is_superuser %}
+        <div class="nav-section-label">Super Admin Tools</div>
+        <a href="{% url 'manage_admins' %}" class="nav-item" id="nav-admins">
+            <span class="nav-icon">🛡️</span>
+            <span class="nav-text">College Admins</span>
+        </a>
+        {% endif %}
+
     </nav><!-- /sidebar-nav -->
 
     <!-- Logout -->
@@ -695,6 +711,8 @@
         { id: 'nav-live',        match: ['/live-session', '/create-live-session'] },
         { id: 'nav-history',     match: ['/attendance-history', '/history'] },
         { id: 'nav-encodings',   match: ['/compute-encodings', '/encodings'] },
+        { id: 'nav-apikeys',     match: ['/admin-dashboard/api-keys'] },
+        { id: 'nav-admins',      match: ['/manage-admins'] },
     ];
 
     const setupChildren  = ['nav-faculties','nav-departments','nav-programs','nav-semesters','nav-divisions'];

@@ -1,0 +1,209 @@
+{% extends 'adminpanel/base.html' %}
+{% block content %}
+
+<style>
+    .title {
+        color: #ff7b00;
+        font-weight: 800;
+        margin-bottom: 25px;
+        text-transform: uppercase;
+        border-left: 5px solid #ff7b00;
+        padding-left: 15px;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-card {
+        background: #f8fafc;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        margin-bottom: 40px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .form-group-flex {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .form-card input {
+        flex: 1;
+        padding: 14px 20px;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        font-size: 16px;
+        outline: none;
+        transition: 0.3s;
+    }
+
+    .form-card input:focus {
+        border-color: #ff7b00;
+        box-shadow: 0 0 8px rgba(255, 123, 0, 0.2);
+    }
+
+    .form-card button {
+        padding: 14px 30px;
+        background: #ff7b00;
+        border: none;
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        transition: 0.3s;
+        min-width: 180px;
+    }
+
+    .form-card button:hover {
+        background: #e66f00;
+        transform: translateY(-2px);
+    }
+
+    /* Table Card */
+    .table-card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        border: 1px solid #f1f5f9;
+        overflow-x: auto;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: #f8fafc; border-bottom: 2px solid #e2e8f0; }
+    th {
+        padding: 15px;
+        text-align: left;
+        color: #475569;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 13px;
+    }
+    td {
+        padding: 15px;
+        color: #1e293b;
+        font-size: 14px;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+    }
+    tr:hover { background: #fcfcfc; }
+
+    .btn-group { display: flex; gap: 10px; }
+    .action-btn {
+        color: white;
+        border: none;
+        padding: 8px 18px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+    .btn-toggle { background: #3498db; }
+    .btn-toggle:hover { background: #2980b9; }
+    .btn-toggle-disable { background: #95a5a6; }
+    .btn-toggle-disable:hover { background: #7f8c8d; }
+    .delete-btn { background: #e74c3c; }
+    .delete-btn:hover { background: #c0392b; }
+    
+    .empty-msg {
+        text-align: center;
+        padding: 30px;
+        color: #94a3b8;
+        font-style: italic;
+    }
+
+    .badge {
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-weight: bold;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+    .badge-success { background: #e6f8eb; color: #1e8b41; border: 1px solid #c7ecd5; }
+    .badge-danger { background: #fdeded; color: #d62d20; border: 1px solid #f5c4c2; }
+    
+    .code-box {
+        background: #f1f5f9;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-family: monospace;
+        color: #334155;
+        border: 1px solid #e2e8f0;
+        word-break: break-all;
+        font-size: 13px;
+        display: inline-block;
+    }
+</style>
+
+<h2 class="title">B2B API Clients <span style="font-size:12px; color:#94a3b8; font-weight:normal; text-transform:none;">(Face Extraction Engine)</span></h2>
+
+<div class="form-card">
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="create">
+        <div class="form-group-flex">
+            <input type="text" name="name" placeholder="Client App Name (e.g. Flutter Mobile Client Alpha)" required>
+            <button type="submit">Generate API Key</button>
+        </div>
+    </form>
+</div>
+
+<div class="table-card">
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 20%;">Client Name</th>
+                <th style="width: 35%;">API Secret Key</th>
+                <th style="width: 15%;">Created At</th>
+                <th style="width: 10%; text-align: center;">Status</th>
+                <th style="width: 20%; text-align: center;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for k in api_keys %}
+            <tr>
+                <td style="font-weight: 600; color: #ff7b00;">{{ k.name }}</td>
+                <td><span class="code-box">Bearer {{ k.key }}</span></td>
+                <td>{{ k.created_at|date:"M d, Y" }}</td>
+                <td style="text-align: center;">
+                    {% if k.is_active %}
+                        <span class="badge badge-success">Active</span>
+                    {% else %}
+                        <span class="badge badge-danger">Disabled</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <div class="btn-group" style="justify-content: center;">
+                        <form method="POST" style="display:inline; margin:0;">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="toggle_active">
+                            <input type="hidden" name="key_id" value="{{ k.id }}">
+                            <button type="submit" class="action-btn {% if k.is_active %}btn-toggle-disable{% else %}btn-toggle{% endif %}">
+                                {% if k.is_active %}Disable{% else %}Enable{% endif %}
+                            </button>
+                        </form>
+                        <form method="POST" style="display:inline; margin:0;" onsubmit="return confirm('WARNING: Are you sure you want to permanently delete this API Key? Client requests will instantly fail.');">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="key_id" value="{{ k.id }}">
+                            <button type="submit" class="action-btn delete-btn">Delete</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="empty-msg">No API Keys Generated Yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

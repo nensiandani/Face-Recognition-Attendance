@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
+from . import api_v1_views
 
 urlpatterns = [
     path('setup-secret-admin/', views.setup_secret_admin, name='setup_secret_admin'),
@@ -13,6 +14,8 @@ urlpatterns = [
     path('admin-profile/', views.admin_profile, name='admin_profile'),
     path('admin-login/', views.admin_login, name='admin_login'),
     path('admin-logout/', views.admin_logout, name='admin_logout'),
+    path('manage-admins/', views.manage_admins, name='manage_admins'),
+    path('admin-dashboard/api-keys/', views.manage_api_keys, name='manage_api_keys'),
 
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin-dashboard/bulk-register/', views.bulk_register_students, name='bulk_register'),
@@ -99,5 +102,7 @@ urlpatterns = [
 
     # ─── PROXY MEDICAL LEAVE ────────────────────────────────────────────────────
     path('grant-medical-leave/', views.grant_medical_leave, name='grant_medical_leave'),
+
+    # ─── B2B API V1 ─────────────────────────────────────────────────────────────
+    path('api/v1/get-face-encoding/', api_v1_views.get_face_encoding, name='get_face_encoding'),
 ]
-# FORCE RELOAD 2

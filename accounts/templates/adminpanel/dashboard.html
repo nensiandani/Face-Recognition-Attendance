@@ -239,10 +239,9 @@
             <label>Branch</label>
             <select name="department" required>
                 <option value="" disabled {% if not profile %}selected{% endif %}>Select Branch</option>
-                <option value="ICT" {% if profile.department == "ICT" %}selected{% endif %}>ICT</option>
-                <option value="ICT-CS" {% if profile.department == "ICT-CS" %}selected{% endif %}>ICT-CS</option>
-                <option value="MnC" {% if profile.department == "MnC" %}selected{% endif %}>MnC</option>
-                <option value="EVD" {% if profile.department == "EVD" %}selected{% endif %}>EVD</option>
+                {% for b in departments %}
+                <option value="{{ b.name }}" {% if profile.department == b.name %}selected{% endif %}>{{ b.name }}</option>
+                {% endfor %}
             </select>
         </div>
 
@@ -250,9 +249,9 @@
             <label>Degree Program</label>
             <select name="program" required>
                 <option value="" disabled {% if not profile %}selected{% endif %}>Select Program</option>
-                <option value="BTech" {% if profile.program == "BTech" %}selected{% endif %}>BTech</option>
-                <option value="MTech" {% if profile.program == "MTech" %}selected{% endif %}>MTech</option>
-                <option value="Msc" {% if profile.program == "Msc" %}selected{% endif %}>Msc</option>
+                {% for p in programs %}
+                <option value="{{ p.name }}" {% if profile.program == p.name %}selected{% endif %}>{{ p.name }}</option>
+                {% endfor %}
             </select>
         </div>
 
@@ -260,8 +259,8 @@
             <label>Current Semester</label>
             <select name="semester" required>
                 <option value="" disabled {% if not profile %}selected{% endif %}>Select Semester</option>
-                {% for i in "12345678"|make_list %}
-                    <option value="Semester {{ i }}" {% if profile.semester == "Semester "|add:i %}selected{% endif %}>Semester {{ i }}</option>
+                {% for s in semesters %}
+                <option value="{{ s.name }}" {% if profile.semester == s.name %}selected{% endif %}>{{ s.name }}</option>
                 {% endfor %}
             </select>
         </div>
@@ -270,8 +269,9 @@
             <label>Division</label>
             <select name="division" required>
                 <option value="" disabled {% if not profile %}selected{% endif %}>Select Division</option>
-                <option value="A" {% if profile.division == "A" %}selected{% endif %}>A</option>
-                <option value="B" {% if profile.division == "B" %}selected{% endif %}>B</option>
+                {% for d in divisions %}
+                <option value="{{ d.name }}" {% if profile.division == d.name %}selected{% endif %}>{{ d.name }}</option>
+                {% endfor %}
             </select>
         </div>
 

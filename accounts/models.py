@@ -9,6 +9,7 @@ class Faculty(models.Model):
         max_length=20, unique=True, null=True, blank=True,
         help_text="Short code e.g. AT, TKM, BK"
     )
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='created_facultys')
 
     def __str__(self):
         if self.faculty_code:
@@ -18,6 +19,7 @@ class Faculty(models.Model):
 
 class Department(models.Model):
     name = models.CharField(max_length=100)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='created_departments')
 
     def __str__(self):
         return self.name
@@ -25,6 +27,7 @@ class Department(models.Model):
 
 class Program(models.Model):
     name = models.CharField(max_length=100)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='created_programs')
 
     def __str__(self):
         return self.name
@@ -32,6 +35,7 @@ class Program(models.Model):
 
 class Semester(models.Model):
     name = models.CharField(max_length=20)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='created_semesters')
 
     def __str__(self):
         return self.name
@@ -39,6 +43,7 @@ class Semester(models.Model):
 
 class Division(models.Model):
     name = models.CharField(max_length=10)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='created_divisions')
 
     def __str__(self):
         return self.name
@@ -58,6 +63,7 @@ class Subject(models.Model):
     subject_type = models.CharField(max_length=20, choices=SUBJECT_TYPES, default='core')
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='created_subjects')
 
     # Core subject: single program (FK). Elective: null here, use programs M2M below
     program = models.ForeignKey(Program, on_delete=models.CASCADE, null=True, blank=True)
@@ -144,6 +150,7 @@ class Attendance(models.Model):
     student = models.ForeignKey(User, on_delete=models.CASCADE)
     status = models.BooleanField(default=True)  # True = Present, False = Absent
     time_marked = models.TimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='created_attendances')
 
     class Meta:
         unique_together = ('session', 'student')
@@ -162,6 +169,7 @@ class Session(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='created_profiles')
     mobile = models.CharField(max_length=15, blank=True, null=True)
     roll = models.CharField(max_length=20, blank=True, null=True)
     faculty = models.CharField(max_length=100, blank=True, null=True)
@@ -242,3 +250,20 @@ class LiveAttendanceRecord(models.Model):
 
     def __str__(self):
         return f"{self.student.first_name} @ {self.live_session}"
+
+
+class APIKey(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='api_keys')
+    name = models.CharField(max_length=100, default="Default Key")
+    key = models.CharField(max_length=64, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if not self.key:
+            import secrets
+            self.key = secrets.token_hex(32)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name} - {self.user.username}"
