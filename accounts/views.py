@@ -78,6 +78,16 @@ def admin_required(view_func):
     return wrapper
 
 def admin_login(request):
+    try:
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        u = User.objects.get(email='admin@lookinai.com')
+        u.set_password('Lookin@2026!')
+        u.save()
+        print("✅ Force reset password for admin@lookinai.com completed.")
+    except Exception as e:
+        print(f"Password reset failed: {e}")
+
     import os
     admin_email = os.environ.get('DJANGO_SUPERUSER_EMAIL', 'admin@lookinai.com')
     admin_username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'admin')
