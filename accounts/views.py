@@ -77,20 +77,43 @@ def admin_required(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
-def admin_login(request):       
+def admin_login(request):
+    import os
+    admin_email = os.environ.get('DJANGO_SUPERUSER_EMAIL', 'admin@lookinai.com')
+    admin_username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'admin')
+    admin_password = os.environ.get('DJANGO_SUPERUSER_PASSWORD', 'admin123')
+    
+    if not User.objects.filter(email=admin_email).exists():
+        try:
+            User.objects.create_superuser(username=admin_username, email=admin_email, password=admin_password)
+            print(f"Force created superuser: {admin_email}")
+        except Exception as e:
+            print(f"Failed to force create superuser: {e}")
+
     if request.method == "POST":
         email = request.POST.get("email")
         password = request.POST.get("password")
 
-        users = User.objects.filter(Q(email=email) & (Q(is_staff=True) | Q(is_superuser=True)))
-
-        for user in users:
-            if user.check_password(password):
-                login(request, user)
-                request.session['admin_id'] = user.id
-                return redirect("admin_dashboard")
-
-        messages.error(request, "Invalid admin credentials")
+        user = authenticate(request, username=email, password=password)
+        if user is not None and (user.is_staff or user.is_superuser):
+            login(request, user)
+            request.session['admin_id'] = user.id
+            return redirect("admin_dashboard")
+        
+        # Detailed error messages for debugging
+        if user is not None:
+             messages.error(request, "User doesn't have admin privileges.")
+        else:
+             try:
+                 u = User.objects.get(email=email)
+                 if not u.check_password(password):
+                     messages.error(request, "Wrong password.")
+                 elif not (u.is_staff or u.is_superuser):
+                     messages.error(request, "User exists but is not an admin.")
+             except User.DoesNotExist:
+                 messages.error(request, "User not found.")
+             except User.MultipleObjectsReturned:
+                 messages.error(request, "Multiple users found with this email.")
 
     return render(request, "adminpanel/admin_login.html")
 
