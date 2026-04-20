@@ -21,6 +21,11 @@
 <br />
 
 <!-- Stats -->
+<a href="https://lookinai.gdgdau.cloud"><img src="https://img.shields.io/badge/🌐_LIVE_DEMO-lookinai.gdgdau.cloud-22c55e?style=for-the-badge&labelColor=16a34a" alt="Live Demo" /></a>
+
+<br /><br />
+
+<!-- Stats -->
 <img src="https://img.shields.io/badge/Accuracy-95%25+-brightgreen?style=flat-square" />
 <img src="https://img.shields.io/badge/Processing-<3s_per_photo-blue?style=flat-square" />
 <img src="https://img.shields.io/badge/Models-512D_Embeddings-purple?style=flat-square" />
@@ -87,6 +92,8 @@
 **LookIn AI** eliminates the tedious manual roll-call process by leveraging deep learning-based face recognition. Teachers can simply upload a **group photo**, record a **video** of the classroom, or start a **live webcam session** — and the system automatically identifies students, marks attendance, sends email notifications to absentees, and generates downloadable Excel reports.
 
 Now with **Multi-Tenant SaaS** support, each college gets its own isolated data environment — and the new **B2B REST API** lets mobile/Flutter clients plug directly into the face recognition engine with full liveness detection.
+
+> 🌐 **Try it live:** [lookinai.gdgdau.cloud](https://lookinai.gdgdau.cloud)
 
 ---
 
