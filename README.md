@@ -11,10 +11,12 @@
   <a href="#"><img src="https://img.shields.io/badge/OpenCV-4.x-5C3EE8?style=for-the-badge&logo=opencv&logoColor=white&labelColor=5C3EE8" alt="OpenCV" /></a>
   <a href="#"><img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white&labelColor=2496ED" alt="Docker" /></a>
   <a href="#"><img src="https://img.shields.io/badge/PostgreSQL-NeonDB-4169E1?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=4169E1" alt="PostgreSQL" /></a>
+  <a href="#"><img src="https://img.shields.io/badge/Multi--Tenant-SaaS-10b981?style=for-the-badge&logo=cloudflare&logoColor=white&labelColor=10b981" alt="Multi-Tenant" /></a>
+  <a href="#"><img src="https://img.shields.io/badge/B2B_REST_API-v1-f59e0b?style=for-the-badge&logo=fastapi&logoColor=white&labelColor=f59e0b" alt="B2B API" /></a>
 </p>
 
 <!-- Animated Typing -->
-<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=24&duration=3000&pause=1000&color=8B5CF6&center=true&vCenter=true&multiline=true&repeat=true&width=700&height=100&lines=🎯+Real-Time+Face+Recognition+Attendance;📸+Group+Photo+%2B+Video+%2B+Live+Webcam;🤖+Powered+by+InsightFace+Buffalo_L+Model" alt="Typing SVG" /></a>
+<a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=600&size=24&duration=3000&pause=1000&color=8B5CF6&center=true&vCenter=true&multiline=true&repeat=true&width=750&height=160&lines=🎯+Real-Time+Face+Recognition+Attendance;📸+Group+Photo+%2B+Video+%2B+Live+Webcam;🤖+Powered+by+InsightFace+Buffalo_L+Model;🏢+Multi-Tenant+SaaS+%7C+B2B+REST+API" alt="Typing SVG" /></a>
 
 <br />
 
@@ -22,6 +24,8 @@
 <img src="https://img.shields.io/badge/Accuracy-95%25+-brightgreen?style=flat-square" />
 <img src="https://img.shields.io/badge/Processing-<3s_per_photo-blue?style=flat-square" />
 <img src="https://img.shields.io/badge/Models-512D_Embeddings-purple?style=flat-square" />
+<img src="https://img.shields.io/badge/Tenants-Multi--College-orange?style=flat-square" />
+<img src="https://img.shields.io/badge/Liveness-3--Frame_Check-red?style=flat-square" />
 
 </div>
 
@@ -34,8 +38,12 @@
 
 - [✨ Overview](#-overview)
 - [🚀 Key Features](#-key-features)
+- [🆕 What's New](#-whats-new)
 - [🏗️ System Architecture](#️-system-architecture)
 - [🧠 AI Pipeline](#-ai-pipeline)
+- [🏢 Multi-Tenant Architecture](#-multi-tenant-architecture)
+- [🔌 B2B REST API](#-b2b-rest-api)
+- [🔑 API Key Management](#-api-key-management)
 - [📁 Project Structure](#-project-structure)
 - [📊 Database Models](#-database-models)
 - [🔗 API Endpoints](#-api-endpoints)
@@ -68,12 +76,17 @@
 │   group photo analysis, video processing, and real-time         │
 │   live webcam scanning for hands-free attendance marking.       │
 │                                                                 │
+│   Now featuring Multi-Tenant SaaS architecture for multiple     │
+│   colleges and a B2B REST API for Flutter/mobile integration.   │
+│                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 </div>
 
 **LookIn AI** eliminates the tedious manual roll-call process by leveraging deep learning-based face recognition. Teachers can simply upload a **group photo**, record a **video** of the classroom, or start a **live webcam session** — and the system automatically identifies students, marks attendance, sends email notifications to absentees, and generates downloadable Excel reports.
+
+Now with **Multi-Tenant SaaS** support, each college gets its own isolated data environment — and the new **B2B REST API** lets mobile/Flutter clients plug directly into the face recognition engine with full liveness detection.
 
 ---
 
@@ -104,8 +117,29 @@
 - Anti-spoofing liveness detection built-in
 - Session auto-transfers to permanent attendance log
 
+### 🏢 Multi-Tenant SaaS
+- Strict data isolation per college/institution
+- Super Admin oversees all tenants
+- Staff Admins see only their college's data
+- `created_by` relationship enforced across all models
+- Fully scalable for multiple institutions
+
 </td>
 <td width="50%">
+
+### 🔌 B2B REST API
+- `/api/v1/get-face-encoding/` endpoint for mobile clients
+- Base64 image input — JSON embedding output
+- 3-frame liveness detection enforced on every request
+- Returns 512-D float32 embedding for matched face
+- Designed for Flutter / Android / iOS integration
+
+### 🔑 API Key Management
+- Admins generate & manage API keys from dashboard
+- Secure `secrets.token_hex(32)` key generation
+- Bearer token authentication for all B2B requests
+- Toggle key active/inactive status on the fly
+- Full audit trail per API client
 
 ### 📧 Smart Email Notifications
 - Automatic absent alert emails
@@ -122,15 +156,36 @@
 - Date range and subject filters
 
 ### 🔐 Authentication & Security
+- **Email-based login** (replaced username login)
 - Email OTP verification on registration
 - Strong password enforcement (8+ chars, uppercase, lowercase, digit, special)
 - Google OAuth 2.0 social login
 - CSRF protection on all form endpoints
 - Admin-only access control with session guard
+- Automated superuser provisioning in Docker
 
 </td>
 </tr>
 </table>
+
+---
+
+## 🆕 What's New
+
+> Latest major release — highlights of everything added on top of v1.
+
+<div align="center">
+
+| # | Feature | Category | Status |
+|---|---------|----------|--------|
+| 🏢 | **Multi-Tenant SaaS Architecture** — data isolation per college | Architecture | ✅ Shipped |
+| 🔌 | **B2B REST API** — `/api/v1/get-face-encoding/` for Flutter/mobile | API | ✅ Shipped |
+| 🧬 | **3-Frame Liveness Detection** — anti-spoofing on B2B API | AI / Security | ✅ Shipped |
+| 🔑 | **API Key Management** — generate & manage Bearer tokens | Security | ✅ Shipped |
+| 📧 | **Email Authentication Backend** — login via email (not username) | Auth | ✅ Shipped |
+| 🐳 | **Automated Docker Superuser Provisioning** — zero-touch deployment | DevOps | ✅ Shipped |
+
+</div>
 
 ---
 
@@ -142,6 +197,7 @@ graph TB
         A[👨‍🏫 Admin Panel] --> |Upload Photo/Video| B
         C[📹 Live Scan Page] --> |Webcam Frame| B
         E[👨‍🎓 Student Portal] --> |View Attendance| B
+        M[📱 Mobile / Flutter App] --> |Bearer Token + Base64| B
     end
 
     subgraph Server["⚙️ Django Backend"]
@@ -149,24 +205,34 @@ graph TB
         F --> G[Encoding Service]
         F --> H[Session Buffer]
         F --> I[Email Service]
+        F --> T[Tenant Filter Middleware]
+        F --> K2[API Key Auth Layer]
     end
 
     subgraph AI["🧠 AI Engine"]
         G --> J[InsightFace buffalo_l]
         J --> K[Face Detection]
         J --> L[512-D Embedding]
-        L --> M[Cosine Similarity Matching]
+        L --> M2[Cosine Similarity Matching]
+        G --> LV[3-Frame Liveness Check]
+    end
+
+    subgraph Tenant["🏢 Multi-Tenant Layer"]
+        T --> SA[Super Admin — All Colleges]
+        T --> CA[Staff Admin — Own College Only]
     end
 
     subgraph Storage["💾 Data Layer"]
         H --> N[(PostgreSQL / SQLite)]
         F --> O[Cloudinary CDN]
         G --> P[In-Memory Cache]
+        K2 --> AK[(APIKey Table)]
     end
 
     style Client fill:#f0f4ff,stroke:#6366f1
     style Server fill:#fef3f2,stroke:#ef4444
     style AI fill:#ecfdf5,stroke:#10b981
+    style Tenant fill:#fdf4ff,stroke:#a855f7
     style Storage fill:#fffbeb,stroke:#f59e0b
 ```
 
@@ -194,8 +260,16 @@ The system uses **InsightFace's Buffalo_L** model — a production-grade face an
 ┌──────────┐    ┌──────────┐    ┌──────────────┐    ┌─────────────┐    ┌──────────┐
 │  Input   │───▶│ Preproc  │───▶│  Detection   │───▶│  Embedding  │───▶│ Matching │
 │ Photo /  │    │ CLAHE +  │    │ InsightFace  │    │  512-D Vec  │    │ Cosine   │
-│ Video    │    │ Unsharp  │    │  RetinaFace  │    │  ArcFace    │    │ Sim > θ  │
-└──────────┘    └──────────┘    └──────────────┘    └─────────────┘    └──────────┘
+│ Video /  │    │ Unsharp  │    │  RetinaFace  │    │  ArcFace    │    │ Sim > θ  │
+│ Base64   │    └──────────┘    └──────────────┘    └─────────────┘    └──────────┘
+└──────────┘
+      │
+      ▼ (B2B API only)
+┌──────────────┐
+│  3-Frame     │
+│  Liveness    │
+│  Detection   │
+└──────────────┘
 ```
 
 ### Multi-Pass Matching Strategy
@@ -227,11 +301,171 @@ The system uses a **3-pass matching algorithm** for group photos to maximize rec
 ### Anti-Spoofing: Liveness Detection
 
 ```python
+# Standard webcam liveness (live scan page):
 # Pixel-diff on 64×64 downsampled grayscale frames
 # Requires 3-5 frames captured ~300ms apart
 # Variance threshold: 1.8 (prevents photo/screen attacks)
 # Processing time: < 0.1s total
+
+# B2B API liveness (strict):
+# Requires EXACTLY 3 frames in the JSON payload
+# All 3 frames analysed for motion variance
+# liveness_passed: true/false returned in response
+# Embedding only returned if liveness_passed == true
 ```
+
+---
+
+## 🏢 Multi-Tenant Architecture
+
+LookIn AI now operates as a **true multi-tenant SaaS platform**, allowing multiple colleges and institutions to share a single deployment while keeping all data completely isolated.
+
+```mermaid
+graph TD
+    SA[🛡️ Super Admin] --> CA1[🏫 College A Admin]
+    SA[🛡️ Super Admin] --> CA2[🏫 College B Admin]
+    SA[🛡️ Super Admin] --> CA3[🏫 College C Admin]
+
+    CA1 --> S1[Students A]
+    CA1 --> F1[Faculty A]
+    CA1 --> D1[Departments A]
+
+    CA2 --> S2[Students B]
+    CA2 --> F2[Faculty B]
+    CA2 --> D2[Departments B]
+
+    CA3 --> S3[Students C]
+    CA3 --> F3[Faculty C]
+    CA3 --> D3[Departments C]
+```
+
+### How Isolation Works
+
+| Role | Access Scope |
+|------|-------------|
+| **Super Admin** | All colleges, all students, all data — global view |
+| **Staff Admin** | Only records created under their account (`created_by = self`) |
+| **Student** | Only their own profile, attendance, and reports |
+
+### Models with Tenant Isolation
+
+The `created_by` foreign key is enforced across all core models:
+
+```
+Faculty      ──── created_by ──→ Admin User
+Department   ──── created_by ──→ Admin User
+Program      ──── created_by ──→ Admin User
+Subject      ──── created_by ──→ Admin User
+Profile      ──── created_by ──→ Admin User
+```
+
+Every queryset is automatically filtered by the logged-in admin's identity — a Staff Admin at College A can **never** access College B's students, subjects, or attendance records.
+
+---
+
+## 🔌 B2B REST API
+
+A new programmatic API designed for **mobile clients (Flutter / Android / iOS)** to use LookIn AI's face recognition engine directly.
+
+### Endpoint
+
+```
+POST /api/v1/get-face-encoding/
+Authorization: Bearer <your-api-key>
+Content-Type: application/json
+```
+
+### Request Payload
+
+```json
+{
+  "frames": [
+    "<base64-encoded-image-frame-1>",
+    "<base64-encoded-image-frame-2>",
+    "<base64-encoded-image-frame-3>"
+  ]
+}
+```
+
+> ⚠️ **Exactly 3 frames are required.** This enforces the liveness detection protocol. Requests with fewer or more frames are rejected.
+
+### Response — Liveness Passed ✅
+
+```json
+{
+  "liveness_passed": true,
+  "embedding": [0.021, -0.134, 0.887, ...],
+  "embedding_dimensions": 512,
+  "model": "buffalo_l"
+}
+```
+
+### Response — Liveness Failed ❌
+
+```json
+{
+  "liveness_passed": false,
+  "embedding": null,
+  "reason": "Insufficient motion variance between frames. Possible spoofing attempt."
+}
+```
+
+### Response — Auth Error 🔒
+
+```json
+{
+  "error": "Unauthorized",
+  "detail": "Invalid or inactive API key."
+}
+```
+
+### Integration Flow (Flutter Example)
+
+```
+┌──────────────┐       3 frames (base64)        ┌─────────────────┐
+│  Flutter App │  ──────────────────────────▶   │  LookIn AI API  │
+│              │  ◀──────────────────────────   │  /api/v1/get-   │
+│  512-D embed │       JSON response             │  face-encoding/ │
+└──────────────┘                                 └─────────────────┘
+        │
+        ▼
+  Local matching / cloud matching on mobile side
+```
+
+---
+
+## 🔑 API Key Management
+
+Admins can create and manage API keys directly from the admin dashboard — no manual database edits required.
+
+### Key Generation
+
+```python
+# Secure random 64-character hex token
+import secrets
+api_key = secrets.token_hex(32)  # e.g. "a3f9b2c1d4e5..."
+```
+
+### APIKey Model
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | CharField | Label for the API client (e.g., "Flutter App v1") |
+| `key` | CharField | 64-char hex token — shown once on creation |
+| `created_by` | ForeignKey | Admin who generated the key |
+| `is_active` | BooleanField | Toggle to enable / disable the key |
+| `created_at` | DateTimeField | Timestamp of key creation |
+| `last_used_at` | DateTimeField | Last successful authenticated request |
+
+### Authentication
+
+All B2B API requests must include the key as a **Bearer token**:
+
+```http
+Authorization: Bearer a3f9b2c1d4e5f6...
+```
+
+Keys are validated against the `APIKey` table on every request — inactive keys are rejected with a `401 Unauthorized`.
 
 ---
 
@@ -249,9 +483,9 @@ Face-Recognition-Attendance/
 │
 ├── 📂 accounts/                    # Main application module
 │   ├── __init__.py
-│   ├── models.py                   # 13 database models (User, Profile, Attendance, etc.)
-│   ├── views.py                    # 50+ view functions (3165 lines)
-│   ├── urls.py                     # 40+ URL patterns with REST API endpoints
+│   ├── models.py                   # 14 database models (+ new APIKey model)
+│   ├── views.py                    # 50+ view functions (3165+ lines)
+│   ├── urls.py                     # 40+ URL patterns + new B2B API endpoints
 │   ├── admin.py                    # Django admin configuration
 │   ├── apps.py                     # App configuration
 │   ├── signals.py                  # Auto-compute face encoding on profile save
@@ -261,17 +495,21 @@ Face-Recognition-Attendance/
 │   ├── ⚠️  yolo_detector.py       # DEPRECATED — stub for import compatibility
 │   ├── 📊 session_buffer.py       # In-memory buffer + bulk DB write (psycopg2)
 │   ├── 🛠️  utils.py               # Legacy recognition helper (InsightFace-backed)
+│   ├── 🔐 backends.py             # Custom EmailBackend for email-based login
+│   ├── 🔑 api_auth.py             # Bearer token API key authentication decorator
+│   ├── 🌐 b2b_api.py              # B2B REST API views (/api/v1/get-face-encoding/)
 │   │
 │   ├── 📂 management/
 │   │   └── 📂 commands/
-│   │       ├── setup_google_auth.py    # Auto-configure Google OAuth credentials
-│   │       └── send_weekly_reports.py  # Weekly attendance summary email reports
+│   │       ├── setup_google_auth.py       # Auto-configure Google OAuth credentials
+│   │       ├── send_weekly_reports.py     # Weekly attendance summary email reports
+│   │       └── create_default_superuser.py # Docker auto-provisioning superuser
 │   │
 │   ├── 📂 migrations/             # Django database migrations
 │   │
 │   ├── 📂 templates/              # HTML templates
 │   │   ├── index.html              # Landing page
-│   │   ├── login.html              # Student login
+│   │   ├── login.html              # Student login (email-based)
 │   │   ├── register.html           # Student registration with OTP
 │   │   ├── verify_otp.html         # Email OTP verification page
 │   │   ├── profile.html            # Student profile management
@@ -295,6 +533,7 @@ Face-Recognition-Attendance/
 │   │   │   ├── compute_encodings.html   # Bulk face encoding recompute
 │   │   │   ├── manage_enrollment.html   # Subject enrollment manager
 │   │   │   ├── medical_leave.html       # Medical leave / proxy attendance
+│   │   │   ├── api_keys.html       # API Key management dashboard  ← NEW
 │   │   │   ├── subjects.html       # Subject CRUD (Core + Elective)
 │   │   │   ├── faculties.html      # Faculty management
 │   │   │   ├── departments.html    # Department management
@@ -321,19 +560,13 @@ Face-Recognition-Attendance/
 ├── 📂 attendance/                  # App placeholder (empty)
 │
 ├── 📂 static/                      # Project-level static files
-│   ├── 1.jpeg, 2.jpeg              # Sample images
-│   └── 3.mp4                       # Sample video
-│
 ├── 📂 media/                       # User-uploaded files (gitignored)
-│   ├── 📂 attendance/             # Uploaded attendance photos/videos
-│   └── 📂 profiles/              # Student profile photos
-│
 ├── 📂 profiles/                    # Profile images storage
 │
 ├── 📄 manage.py                    # Django management entry point
 ├── 📄 requirements.txt             # Python dependencies
 ├── 📄 Dockerfile                   # Docker container configuration
-├── 📄 entrypoint.sh                # Docker entrypoint (migrate + collectstatic + gunicorn)
+├── 📄 entrypoint.sh                # Docker entrypoint (migrate + collectstatic + superuser + gunicorn)
 ├── 📄 build.sh                     # Build script for deployment (Render)
 ├── 📄 .env                         # Environment variables (gitignored)
 ├── 📄 .gitignore                   # Git ignore rules
@@ -351,6 +584,7 @@ erDiagram
     User ||--o{ SubjectEnrollment : enrolls
     User ||--o{ LiveAttendanceRecord : scans
     User ||--o{ LiveAttendanceSession : creates
+    User ||--o{ APIKey : owns
 
     Faculty ||--o{ Subject : teaches
     Department ||--o{ Subject : belongs_to
@@ -372,25 +606,36 @@ erDiagram
     Profile {
         string mobile
         string roll
-        string faculty
-        string department
-        string program
-        string semester
-        string division
-        image image
-        binary face_encoding
+        string faculty_name
+        string department_name
+        string program_name
+        string semester_name
+        string division_name
+        string photo_url
+        string face_encoding_b64
         datetime encoding_updated_at
+        int created_by_id
+    }
+
+    APIKey {
+        string name
+        string key
+        int is_active
+        datetime created_at
+        datetime last_used_at
+        int created_by_id
     }
 
     Subject {
         string name
         string course_code
-        enum subject_type
+        string subject_type
+        int created_by_id
     }
 
     Attendance {
-        boolean status
-        time time_marked
+        int status
+        string time_marked
     }
 
     LiveAttendanceRecord {
@@ -403,20 +648,21 @@ erDiagram
 
 | Model | Description |
 |-------|-------------|
-| `Faculty` | Faculty/Professor entity with name and short code |
-| `Department` | Academic department |
-| `Program` | Academic program (BTech, MTech, etc.) |
+| `Faculty` | Faculty/Professor entity — isolated by `created_by` |
+| `Department` | Academic department — isolated by `created_by` |
+| `Program` | Academic program (BTech, MTech, etc.) — isolated by `created_by` |
 | `Semester` | Semester identifier |
 | `Division` | Class division (A, B, C, etc.) |
-| `Subject` | Subject with type (Core / Elective), linked to Faculty & Department |
+| `Subject` | Subject with type (Core / Elective) — isolated by `created_by` |
 | `SubjectProgramSemester` | Elective subject ↔ (Program, Semester) mapping |
 | `SubjectEnrollment` | Student enrollment in a specific subject |
 | `Lecture` | Lecture slot definition |
 | `AttendanceSession` | Permanent attendance session record (photo/video/live) |
 | `Attendance` | Individual student attendance record (Present/Absent) |
-| `Profile` | Extended user profile with face encoding (512-d float32 binary) |
+| `Profile` | Extended user profile with face encoding (512-d float32 binary) — isolated by `created_by` |
 | `LiveAttendanceSession` | Real-time live webcam scanning session |
 | `LiveAttendanceRecord` | Individual live scan record with confidence score |
+| `APIKey` | **NEW** — B2B API key with Bearer token, active flag, last-used tracking |
 
 ---
 
@@ -428,7 +674,7 @@ erDiagram
 |--------|----------|-------------|
 | `GET/POST` | `/register/` | Student registration with email OTP |
 | `POST` | `/verify-otp/` | OTP verification |
-| `GET/POST` | `/login/` | Student login |
+| `GET/POST` | `/login/` | Student login (**email-based** — not username) |
 | `GET` | `/logout/` | Logout |
 | `GET/POST` | `/profile/` | Student profile management |
 | `POST` | `/reset_password/` | Password reset via email |
@@ -443,6 +689,16 @@ erDiagram
 | `POST` | `/admin-dashboard/bulk-delete/` | Bulk student deletion |
 | `GET/POST` | `/admin-dashboard/compute-encodings/` | Recompute all face encodings |
 | `GET/POST` | `/admin-dashboard/live-sessions/` | Create & manage live webcam sessions |
+| `GET/POST` | `/admin-dashboard/api-keys/` | **NEW** — Manage B2B API keys |
+| `POST` | `/admin-dashboard/api-keys/create/` | **NEW** — Generate new API key |
+| `POST` | `/admin-dashboard/api-keys/<id>/toggle/` | **NEW** — Enable/disable an API key |
+| `POST` | `/admin-dashboard/api-keys/<id>/delete/` | **NEW** — Delete an API key |
+
+### 🆕 B2B REST API (v1)
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| `POST` | `/api/v1/get-face-encoding/` | Bearer Token | Submit 3 base64 frames → get 512-D embedding + liveness result |
 
 ### Attendance System
 
@@ -479,12 +735,12 @@ erDiagram
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET/POST` | `/faculties/` | Faculty management (name + code) |
-| `GET/POST` | `/departments/` | Department management |
-| `GET/POST` | `/programs/` | Program management |
+| `GET/POST` | `/faculties/` | Faculty management (tenant-isolated) |
+| `GET/POST` | `/departments/` | Department management (tenant-isolated) |
+| `GET/POST` | `/programs/` | Program management (tenant-isolated) |
 | `GET/POST` | `/semesters/` | Semester management |
 | `GET/POST` | `/divisions/` | Division management |
-| `GET/POST` | `/subjects/` | Subject management (Core + Elective with program-semester pairs) |
+| `GET/POST` | `/subjects/` | Subject management (tenant-isolated) |
 
 ### Miscellaneous
 
@@ -509,6 +765,8 @@ erDiagram
 | **Database (Dev)** | ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?style=flat-square&logo=sqlite) | Development database |
 | **File Storage** | ![Cloudinary](https://img.shields.io/badge/Cloudinary-CDN-3448C5?style=flat-square&logo=cloudinary) | Media file hosting (profile photos) |
 | **Auth** | ![Google](https://img.shields.io/badge/Google_OAuth-2.0-4285F4?style=flat-square&logo=google) | Social login via django-allauth |
+| **Auth Backend** | ![Email](https://img.shields.io/badge/Custom-EmailBackend-EA4335?style=flat-square&logo=gmail) | Email-based authentication |
+| **B2B API Auth** | ![Bearer](https://img.shields.io/badge/Bearer-Token_Auth-f59e0b?style=flat-square&logo=jsonwebtokens) | API key authentication |
 | **Email** | ![Gmail](https://img.shields.io/badge/Gmail_SMTP-587-EA4335?style=flat-square&logo=gmail) | Absent alerts & OTP verification |
 | **Server** | ![Gunicorn](https://img.shields.io/badge/Gunicorn-WSGI-499848?style=flat-square&logo=gunicorn) | Production WSGI server |
 | **Static** | ![WhiteNoise](https://img.shields.io/badge/WhiteNoise-Static-lightgrey?style=flat-square) | Static file serving |
@@ -578,6 +836,10 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 
 # Database (Optional — defaults to SQLite)
 DATABASE_URL=postgresql://user:pass@host/dbname?sslmode=require
+
+# Docker superuser auto-provisioning (Optional)
+DJANGO_SUPERUSER_EMAIL=admin@example.com
+DJANGO_SUPERUSER_PASSWORD=yourpassword
 ```
 
 ### 5. Run Migrations
@@ -625,6 +887,8 @@ docker run -p 8000:8000 \
   -e CLOUDINARY_API_SECRET=your-secret \
   -e EMAIL_USER=your-email \
   -e EMAIL_PASS=your-app-password \
+  -e DJANGO_SUPERUSER_EMAIL=admin@example.com \
+  -e DJANGO_SUPERUSER_PASSWORD=yourpassword \
   lookin-ai
 ```
 
@@ -635,8 +899,11 @@ FROM python:3.10-slim
 # Installs build tools (cmake, gcc) for native dependencies
 # Installs dlib-bin separately for optimized build caching
 # Uses multi-layer RUN for efficient Docker layer caching
-# Entrypoint: migrate → collectstatic → setup_google_auth → gunicorn
+# Entrypoint: migrate → collectstatic → setup_google_auth
+#           → create_default_superuser (NEW) → gunicorn
 ```
+
+> 🆕 The `create_default_superuser` management command auto-provisions a superuser on first boot using `DJANGO_SUPERUSER_EMAIL` and `DJANGO_SUPERUSER_PASSWORD` — no manual `createsuperuser` step required in production.
 
 ---
 
@@ -655,6 +922,8 @@ FROM python:3.10-slim
 | `GOOGLE_CLIENT_ID` | ❌ | Google OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | ❌ | Google OAuth client secret |
 | `SITE_DOMAIN` | ❌ | Domain for email links (default: `localhost:8000`) |
+| `DJANGO_SUPERUSER_EMAIL` | ❌ | Auto-create superuser on Docker boot (NEW) |
+| `DJANGO_SUPERUSER_PASSWORD` | ❌ | Auto-create superuser password on Docker boot (NEW) |
 
 ---
 
@@ -693,7 +962,7 @@ python manage.py test accounts.tests.TestFaceEncodingRoundtrip
 ```mermaid
 graph LR
     A[Register] -->|OTP Email| B[Verify OTP]
-    B --> C[Login]
+    B --> C[Login via Email]
     C --> D[Complete Profile]
     D -->|Upload Photo| E[Auto Face Encoding]
     E --> F[View Attendance]
@@ -703,6 +972,7 @@ graph LR
 
 **Student can:**
 - Register with email OTP verification or Google OAuth
+- Log in using their **email address** (not username)
 - Upload profile photo (face encoding auto-computed via Django signal)
 - View attendance log with date range & subject filters
 - View analytics dashboard with cumulative trend charts
@@ -726,11 +996,13 @@ graph LR
     H --> I
     I --> J[Send Absent Emails]
     I --> K[Download Excel Report]
+    B --> L[Manage API Keys]
+    L --> M[B2B Mobile Client Access]
 ```
 
 **Admin can:**
-- Manage students (add, edit, delete, bulk CSV+ZIP import)
-- Manage academic hierarchy (Faculty → Department → Program → Semester → Division → Subject)
+- Manage students (add, edit, delete, bulk CSV+ZIP import) — **scoped to their college only**
+- Manage academic hierarchy (Faculty → Department → Program → Semester → Division → Subject) — **tenant-isolated**
 - Mark attendance via **3 modes**: Group Photo upload, Video upload, Live Webcam session
 - Manage subject enrollments (individual + CSV bulk enrollment with preview)
 - View attendance history with subject & date filters
@@ -738,6 +1010,22 @@ graph LR
 - Compute/recompute face encodings for all students
 - Grant medical leave / proxy attendance
 - Create and close live sessions (auto-transfers to permanent attendance log)
+- **NEW** — Generate and manage B2B API keys for mobile/Flutter integrations
+
+---
+
+### 🔌 B2B Mobile Client Workflow
+
+```mermaid
+graph LR
+    A[Admin creates API Key] --> B[Mobile App receives key]
+    B --> C[Capture 3 frames via camera]
+    C --> D[POST /api/v1/get-face-encoding/]
+    D --> E{Liveness Check}
+    E -->|Pass| F[Return 512-D embedding]
+    E -->|Fail| G[Return liveness_passed: false]
+    F --> H[App does matching locally]
+```
 
 ---
 
@@ -756,6 +1044,8 @@ graph LR
 | **OPT 9** | Minimal Modules | Only `detection + recognition` modules loaded (not genderage/landmark) |
 | **OPT 10** | Early Exit | Stop video processing once all enrolled students are confirmed |
 | **OPT 11** | Background Threads | Email sending and face encoding run in daemon threads |
+| **OPT 12** | Tenant Query Filter | All admin querysets pre-filtered by `created_by` — zero cross-tenant DB leakage |
+| **OPT 13** | API Key Cache | Active API keys cached to avoid repeated DB lookups on every B2B request |
 
 ---
 
@@ -773,6 +1063,6 @@ graph LR
 
 <br /><br />
 
-<img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=500&size=18&duration=4000&pause=2000&color=6366F1&center=true&vCenter=true&width=500&lines=Thank+you+for+visiting+LookIn+AI+🚀" alt="Footer" />
+<img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&weight=500&size=18&duration=4000&pause=2000&color=6366F1&center=true&vCenter=true&width=600&lines=Thank+you+for+visiting+LookIn+AI+🚀;Now+with+Multi-Tenant+SaaS+%26+B2B+API!" alt="Footer" />
 
 </div>
